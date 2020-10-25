@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在项目中，经常会把用户操作动作和业务操作进行绑定，比如点击登录按钮会进行登录网络请求、点击下载图片等等。ReactiveCocoa 中提供捆绑副作用和信号的 RACCommand，开发者可以利用 RACCommand 来实现类似这种 动作-响应 绑定的功能。">
+<meta name="keywords" content="ReactiveCocoa,iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactiveCocoa-RACCommand原理分析">
+<meta property="og:url" content="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/index.html">
+<meta property="og:site_name" content="Laucp&#39;s Blog">
+<meta property="og:description" content="在项目中，经常会把用户操作动作和业务操作进行绑定，比如点击登录按钮会进行登录网络请求、点击下载图片等等。ReactiveCocoa 中提供捆绑副作用和信号的 RACCommand，开发者可以利用 RACCommand 来实现类似这种 动作-响应 绑定的功能。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/image-20190323202025627.png">
+<meta property="og:image" content="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/image-20190323202159063.png">
+<meta property="og:updated_time" content="2020-10-24T01:58:24.834Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactiveCocoa-RACCommand原理分析">
+<meta name="twitter:description" content="在项目中，经常会把用户操作动作和业务操作进行绑定，比如点击登录按钮会进行登录网络请求、点击下载图片等等。ReactiveCocoa 中提供捆绑副作用和信号的 RACCommand，开发者可以利用 RACCommand 来实现类似这种 动作-响应 绑定的功能。">
+<meta name="twitter:image" content="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/image-20190323202025627.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ReactiveCocoa-RACCommand原理分析 | Laucp's Blog</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Laucp's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/03/23/ReactiveCocoa-RACCommand/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chipengliu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Laucp's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">ReactiveCocoa-RACCommand原理分析
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-23 19:42:31" itemprop="dateCreated datePublished" datetime="2019-03-23T19:42:31+08:00">2019-03-23</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在项目中，经常会把用户操作动作和业务操作进行绑定，比如点击登录按钮会进行登录网络请求、点击下载图片等等。ReactiveCocoa 中提供捆绑副作用和信号的 RACCommand，开发者可以利用 RACCommand 来实现类似这种 动作-响应 绑定的功能。</p>
+<a id="more"></a>
+<h2 id="RACCommand-定义"><a href="#RACCommand-定义" class="headerlink" title="RACCommand 定义"></a>RACCommand 定义</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// RACCommand.h</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RACCommand</span>&lt;<span class="title">__contravariant</span> <span class="title">InputType</span>, <span class="title">__covariant</span> <span class="title">ValueType</span>&gt; : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSignal&lt;RACSignal&lt;ValueType&gt; *&gt; *executionSignals;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSignal&lt;<span class="built_in">NSNumber</span> *&gt; *executing;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSignal&lt;<span class="built_in">NSNumber</span> *&gt; *enabled;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSignal&lt;<span class="built_in">NSError</span> *&gt; *errors;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (atomic, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> allowsConcurrentExecution;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithSignalBlock:(RACSignal&lt;ValueType&gt; * (^)(InputType _Nullable input))signalBlock;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithEnabled:(<span class="keyword">nullable</span> RACSignal&lt;<span class="built_in">NSNumber</span> *&gt; *)enabledSignal signalBlock:(RACSignal&lt;ValueType&gt; * (^)(InputType _Nullable input))signalBlock;</span><br><span class="line"></span><br><span class="line">- (RACSignal&lt;ValueType&gt; *)execute:(<span class="keyword">nullable</span> InputType)input;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>头文件中，RACCommand 对外暴露了5个属性，作用分别是：</p>
+<ol>
+<li>executionSignals：高阶信号，当执行 <code>-execute:</code> 方法的时候，会创建新的信号，这个信号通过 executionSignals 发送出去</li>
+<li>executing：发送的是布尔值，标志着 RACCommand 是否正在执行中，信号值是布尔值</li>
+<li>enabled：标志 RACCommand 是否可以执行 <code>-execute:</code></li>
+<li>errors：执行 <code>-execute:</code> 方法，过程中出现的 error 都由此发送</li>
+<li>allowsConcurrentExecution：是否允许 RACCommand 并发执行，atomic 修饰，getter/setter方法是原子性的</li>
+</ol>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// RACCommand.m</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RACCommand</span> () </span>&#123;</span><br><span class="line">	<span class="comment">// Atomic backing variable for `allowsConcurrentExecution`.</span></span><br><span class="line">	<span class="keyword">volatile</span> uint32_t _allowsConcurrentExecution;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// A subject that sends added execution signals.</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSubject *addedExecutionSignalsSubject;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// A subject that sends the new value of `allowsConcurrentExecution` whenever it changes.</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSubject *allowsConcurrentExecutionSubject;</span><br><span class="line"></span><br><span class="line"><span class="comment">// `enabled`, but without a hop to the main thread.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Values from this signal may arrive on any thread.</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACSignal *immediateEnabled;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The signal block that the receiver was initialized with.</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, <span class="keyword">readonly</span>) RACSignal * (^signalBlock)(<span class="keyword">id</span> input);</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>RACCommand 实现文件中定义了4个属性以及1个实例变量：</p>
+<ol>
+<li><p>_allowsConcurrentExecution：头文件属性 <code>allowsConcurrentExecution</code> 对应的实例变量，用 volatile 修饰，结合头文件属性的 atomic 关键子保证读写的原子性</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)allowsConcurrentExecution &#123;</span><br><span class="line">	<span class="keyword">return</span> _allowsConcurrentExecution != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setAllowsConcurrentExecution:(<span class="built_in">BOOL</span>)allowed &#123;</span><br><span class="line">	<span class="keyword">if</span> (allowed) &#123;</span><br><span class="line">		OSAtomicOr32Barrier(<span class="number">1</span>, &amp;_allowsConcurrentExecution);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		OSAtomicAnd32Barrier(<span class="number">0</span>, &amp;_allowsConcurrentExecution);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	[<span class="keyword">self</span>.allowsConcurrentExecutionSubject sendNext:@(_allowsConcurrentExecution)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 setter 方法中，当 allowed == YES，采用 OSAtomicOr32Barrier 对 _allowsConcurrentExecution 和 1 做或运算；否则就执行 OSAtomicAnd32Barrier 和 0进行与运算；OSAtomicOr32Barrier/OSAtomicAnd32Barrier 都是原子运算</p>
+</li>
+<li><p>allowsConcurrentExecutionSubject：当 _allowsConcurrentExecution 被修改的时候会通过该信号给订阅发送修改后的 _allowsConcurrentExecution 值</p>
+</li>
+<li><p>addedExecutionSignalsSubject：执行 <code>-execute:</code> 方法的时候会创建一个新的 RACSignal 信号并将其通过 addedExecutionSignalsSubject 发送出去</p>
+</li>
+<li><p>immediateEnabled：判断 <code>-execute:</code> 方法创建的 RACSignal 是否能被订阅，immediateEnabled 会任意的线程给订阅者发送信号值</p>
+</li>
+<li><p>RACSignal * (^signalBlock)(id input)：执行 <code>-execute:</code> 方法的时候，会根据 signalBlock 创建RACSignal</p>
+</li>
+</ol>
+<h2 id="RACCommand-初始化"><a href="#RACCommand-初始化" class="headerlink" title="RACCommand 初始化"></a>RACCommand 初始化</h2><p>RACCommand 提供了2个初始化方法：</p>
+<ol>
+<li><code>- (instancetype)initWithSignalBlock:(RACSignal&lt;id&gt; * (^)(id input))signalBlock</code></li>
+<li><code>- (instancetype)initWithEnabled:(RACSignal *)enabledSignal signalBlock:(RACSignal&lt;id&gt; * (^)(id input))signalBlock</code></li>
+</ol>
+<p>第一个初始化方法是基于第二个进行封装，所以这里直接分析第二个方法：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)initWithEnabled:(RACSignal *)enabledSignal signalBlock:(RACSignal&lt;<span class="keyword">id</span>&gt; * (^)(<span class="keyword">id</span> input))signalBlock &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(signalBlock != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line">	_addedExecutionSignalsSubject = [RACSubject new];</span><br><span class="line">	_allowsConcurrentExecutionSubject = [RACSubject new];</span><br><span class="line">	_signalBlock = [signalBlock <span class="keyword">copy</span>];</span><br><span class="line"></span><br><span class="line">	_executionSignals = [[[<span class="keyword">self</span>.addedExecutionSignalsSubject</span><br><span class="line">		map:^(RACSignal *signal) &#123;</span><br><span class="line">			<span class="keyword">return</span> [signal catchTo:[RACSignal empty]];</span><br><span class="line">		&#125;]</span><br><span class="line">		deliverOn:RACScheduler.mainThreadScheduler]</span><br><span class="line">		setNameWithFormat:<span class="string">@"%@ -executionSignals"</span>, <span class="keyword">self</span>];</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// `errors` needs to be multicasted so that it picks up all</span></span><br><span class="line">	<span class="comment">// `activeExecutionSignals` that are added.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// In other words, if someone subscribes to `errors` _after_ an execution</span></span><br><span class="line">	<span class="comment">// has started, it should still receive any error from that execution.</span></span><br><span class="line">	RACMulticastConnection *errorsConnection = [[[<span class="keyword">self</span>.addedExecutionSignalsSubject</span><br><span class="line">		flattenMap:^(RACSignal *signal) &#123;</span><br><span class="line">			<span class="keyword">return</span> [[signal</span><br><span class="line">				ignoreValues]</span><br><span class="line">				catch:^(<span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">					<span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:error];</span><br><span class="line">				&#125;];</span><br><span class="line">		&#125;]</span><br><span class="line">		deliverOn:RACScheduler.mainThreadScheduler]</span><br><span class="line">		publish];</span><br><span class="line">	</span><br><span class="line">	_errors = [errorsConnection.signal setNameWithFormat:<span class="string">@"%@ -errors"</span>, <span class="keyword">self</span>];</span><br><span class="line">	[errorsConnection connect];</span><br><span class="line"></span><br><span class="line">	RACSignal *immediateExecuting = [[[[<span class="keyword">self</span>.addedExecutionSignalsSubject</span><br><span class="line">		flattenMap:^(RACSignal *signal) &#123;</span><br><span class="line">			<span class="keyword">return</span> [[[signal</span><br><span class="line">				catchTo:[RACSignal empty]]</span><br><span class="line">				then:^&#123;</span><br><span class="line">					<span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:@<span class="number">-1</span>];</span><br><span class="line">				&#125;]</span><br><span class="line">				startWith:@<span class="number">1</span>];</span><br><span class="line">		&#125;]</span><br><span class="line">		scanWithStart:@<span class="number">0</span> reduce:^(<span class="built_in">NSNumber</span> *running, <span class="built_in">NSNumber</span> *next) &#123;</span><br><span class="line">			<span class="keyword">return</span> @(running.integerValue + next.integerValue);</span><br><span class="line">		&#125;]</span><br><span class="line">		map:^(<span class="built_in">NSNumber</span> *count) &#123;</span><br><span class="line">			<span class="keyword">return</span> @(count.integerValue &gt; <span class="number">0</span>);</span><br><span class="line">		&#125;]</span><br><span class="line">		startWith:@NO];</span><br><span class="line"></span><br><span class="line">	_executing = [[[[[immediateExecuting</span><br><span class="line">		deliverOn:RACScheduler.mainThreadScheduler]</span><br><span class="line">		<span class="comment">// This is useful before the first value arrives on the main thread.</span></span><br><span class="line">		startWith:@NO]</span><br><span class="line">		distinctUntilChanged]</span><br><span class="line">		replayLast]</span><br><span class="line">		setNameWithFormat:<span class="string">@"%@ -executing"</span>, <span class="keyword">self</span>];</span><br><span class="line">	</span><br><span class="line">	RACSignal *moreExecutionsAllowed = [RACSignal</span><br><span class="line">		<span class="keyword">if</span>:[<span class="keyword">self</span>.allowsConcurrentExecutionSubject startWith:@NO]</span><br><span class="line">		then:[RACSignal <span class="keyword">return</span>:@YES]</span><br><span class="line">		<span class="keyword">else</span>:[immediateExecuting not]];</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (enabledSignal == <span class="literal">nil</span>) &#123;</span><br><span class="line">		enabledSignal = [RACSignal <span class="keyword">return</span>:@YES];</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		enabledSignal = [enabledSignal startWith:@YES];</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	_immediateEnabled = [[[[RACSignal</span><br><span class="line">		combineLatest:@[ enabledSignal, moreExecutionsAllowed ]]</span><br><span class="line">		and]</span><br><span class="line">		takeUntil:<span class="keyword">self</span>.rac_willDeallocSignal]</span><br><span class="line">		replayLast];</span><br><span class="line">	</span><br><span class="line">	_enabled = [[[[[<span class="keyword">self</span>.immediateEnabled</span><br><span class="line">		take:<span class="number">1</span>]</span><br><span class="line">		concat:[[<span class="keyword">self</span>.immediateEnabled skip:<span class="number">1</span>] deliverOn:RACScheduler.mainThreadScheduler]]</span><br><span class="line">		distinctUntilChanged]</span><br><span class="line">		replayLast]</span><br><span class="line">		setNameWithFormat:<span class="string">@"%@ -enabled"</span>, <span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在初始化方法中对定义的属性进行初始化</p>
+<h3 id="executionSignals"><a href="#executionSignals" class="headerlink" title="executionSignals"></a>executionSignals</h3><p>executionSignals 是通过对 addedExecutionSignalsSubject 信号值进行 map 操作，这里如果捕捉到 addedExecutionSignalsSubject 发送了 error 就转换成 RACEmptySignal 返回。executionSignals 所有信号都在主线程发送。</p>
+<p>executionSignals 是高阶信号，当 _allowsConcurrentExecution == NO，可以通过 <code>-switchToLatest</code> 来进行降阶操作；反之需要用 <code>-flatten</code> 方法降阶 </p>
+<h3 id="errors"><a href="#errors" class="headerlink" title="errors"></a>errors</h3><p>errors 信号也是对 addedExecutionSignalsSubject 进行转换后的新信号。</p>
+<ol>
+<li>对 addedExecutionSignalsSubject 进行 flattenMap 将 addedExecutionSignalsSubject 发送的信号进行  ignoreValues 处理，也就是忽略常规的信号</li>
+<li>后面通过 <code>-catch:</code> 捕获 signal 发送的 NSError，包装成RACSignal</li>
+<li>将所有信号都放在主线程发送给订阅者</li>
+</ol>
+<p>概括来说，errors 信号主要作用是把 RACCommand 执行过程中产出的 NSError 发送给订阅者</p>
+<h3 id="immediateExecuting"><a href="#immediateExecuting" class="headerlink" title="immediateExecuting"></a>immediateExecuting</h3><ol>
+<li>对 addedExecutionSignalsSubject 进行 <code>-flatten:</code> 操作，对其发送的信号进行 <code>-catchTo:</code> 操作，捕获到 error 会转化成 RACEmptySignal。</li>
+<li>通过 <code>-then:</code> 方法将所有信号值再转化成 -1 发送出去。</li>
+<li>步骤2发送序列之前在头部插入 1</li>
+<li>对步骤3的序列进行迭代相加</li>
+<li>判断步骤四的序列值是否大于0，返回 BOOL 值信号序列，并且头部插入 NO</li>
+</ol>
+<p>大概过程如图所示(_allowsConcurrentExecution == NO)：</p>
+<p><img src="/2019/03/23/ReactiveCocoa-RACCommand/image-20190323202025627.png" alt="image-20190323202025627"></p>
+<h3 id="executing"><a href="#executing" class="headerlink" title="executing"></a>executing</h3><p>该信号是通过封装 immediateExecuting 信号并将其在主线程发送，首先会在信号序列里插入 NO，然后当 immediateExecuting 信号值发生变化的时候会给订阅者发送信号值，并且每次被订阅都可以收到最新的一次信号值。</p>
+<p>executing 表示 RACCommand 当前是否有正在执行的任务</p>
+<h3 id="moreExecutionsAllowed"><a href="#moreExecutionsAllowed" class="headerlink" title="moreExecutionsAllowed"></a>moreExecutionsAllowed</h3><p>如果收到 allowsConcurrentExecutionSubject 信号值且为 YES，则会执行 <code>-then:</code> 给订阅者发送 YES，反之给订阅发送 immediateExecuting 最新信号值的取反结果</p>
+<p>moreExecutionsAllowed 表示当前 RACCommand 是否允许并发执行多个任务</p>
+<h3 id="immediateEnabled"><a href="#immediateEnabled" class="headerlink" title="immediateEnabled"></a>immediateEnabled</h3><p>immediateEnabled 发送的信号值是通过将参数 enabledSignal 和 moreExecutionsAllowed 这个2个信号的最新信号值做与运算后得到的结果</p>
+<p><img src="/2019/03/23/ReactiveCocoa-RACCommand/image-20190323202159063.png" alt="image-20190323202159063"></p>
+<h3 id="enabled"><a href="#enabled" class="headerlink" title="enabled"></a>enabled</h3><p>enabled 是通过封装 immediateEnabled 获取，与后者的主要区别是，enabled 会将除了第一个信号外的信号放在主线程发送。</p>
+<h2 id="RACCommand-执行"><a href="#RACCommand-执行" class="headerlink" title="RACCommand 执行"></a>RACCommand 执行</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)execute:(<span class="keyword">id</span>)input &#123;</span><br><span class="line">	<span class="comment">// `immediateEnabled` is guaranteed to send a value upon subscription, so</span></span><br><span class="line">	<span class="comment">// -first is acceptable here.</span></span><br><span class="line">	<span class="built_in">BOOL</span> enabled = [[<span class="keyword">self</span>.immediateEnabled first] boolValue];</span><br><span class="line">	<span class="keyword">if</span> (!enabled) &#123;</span><br><span class="line">		<span class="built_in">NSError</span> *error = [<span class="built_in">NSError</span> errorWithDomain:RACCommandErrorDomain code:RACCommandErrorNotEnabled userInfo:@&#123;</span><br><span class="line">			<span class="built_in">NSLocalizedDescriptionKey</span>: <span class="built_in">NSLocalizedString</span>(<span class="string">@"The command is disabled and cannot be executed"</span>, <span class="literal">nil</span>),</span><br><span class="line">			RACUnderlyingCommandErrorKey: <span class="keyword">self</span></span><br><span class="line">		&#125;];</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> [RACSignal error:error];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	RACSignal *signal = <span class="keyword">self</span>.signalBlock(input);</span><br><span class="line">	<span class="built_in">NSCAssert</span>(signal != <span class="literal">nil</span>, <span class="string">@"nil signal returned from signal block for value: %@"</span>, input);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// We subscribe to the signal on the main thread so that it occurs _after_</span></span><br><span class="line">	<span class="comment">// -addActiveExecutionSignal: completes below.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// This means that `executing` and `enabled` will send updated values before</span></span><br><span class="line">	<span class="comment">// the signal actually starts performing work.</span></span><br><span class="line">	RACMulticastConnection *connection = [[signal</span><br><span class="line">		subscribeOn:RACScheduler.mainThreadScheduler]</span><br><span class="line">		multicast:[RACReplaySubject subject]];</span><br><span class="line">	</span><br><span class="line">	[<span class="keyword">self</span>.addedExecutionSignalsSubject sendNext:connection.signal];</span><br><span class="line"></span><br><span class="line">	[connection connect];</span><br><span class="line">	<span class="keyword">return</span> [connection.signal setNameWithFormat:<span class="string">@"%@ -execute: %@"</span>, <span class="keyword">self</span>, RACDescription(input)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>同步获取 immediateEnabled 信号的第一个值，判断是否当前是否可以执行任务，不能则返回 RACErrorSignal</p>
+</li>
+<li><p>通过初始化保存的 signalBlock 闭包创建 RACSignal 类型对象 signal，断言判断 signal 是否为空</p>
+</li>
+<li><p>signal 在主线程订阅并将其转化成热信号 (connection.signal)</p>
+</li>
+<li><p>connection.signal 被订阅之前通过 addedExecutionSignalsSubject 发送，更新 executing 和 enabled 信号</p>
+</li>
+<li><p>执行 <code>[connection connect]</code>，signal 被订阅，最后返回 connection.signal</p>
+</li>
+</ol>
+<p><strong>备注：</strong> <code>-execute:</code> 方法和 executionSignals 信号都是返回最终信号 connection.signal；但是 executionSignals 是热信号，它最终信号被订阅之前发送，所以要通过 executionSignals 获取当前执行的最终信号，需要在 <code>-execute:</code> 执行之前进行订阅。</p>
+<h2 id="RACCommand-对于系统类的扩展"><a href="#RACCommand-对于系统类的扩展" class="headerlink" title="RACCommand 对于系统类的扩展"></a>RACCommand 对于系统类的扩展</h2><h3 id="UIButton-RACCommandSupport"><a href="#UIButton-RACCommandSupport" class="headerlink" title="UIButton+RACCommandSupport"></a>UIButton+RACCommandSupport</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">- (RACCommand *)rac_command &#123;</span><br><span class="line">	<span class="keyword">return</span> objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIButtonRACCommandKey</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setRac_command:(RACCommand *)command &#123;</span><br><span class="line">	objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIButtonRACCommandKey</span>, command, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Check for stored signal in order to remove it and add a new one</span></span><br><span class="line">	RACDisposable *disposable = objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIButtonEnabledDisposableKey</span>);</span><br><span class="line">	[disposable dispose];</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (command == <span class="literal">nil</span>) <span class="keyword">return</span>;</span><br><span class="line">	</span><br><span class="line">	disposable = [command.enabled setKeyPath:@keypath(<span class="keyword">self</span>.enabled) onObject:<span class="keyword">self</span>];</span><br><span class="line">	objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIButtonEnabledDisposableKey</span>, disposable, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">	</span><br><span class="line">	[<span class="keyword">self</span> rac_hijackActionAndTargetIfNeeded];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)rac_hijackActionAndTargetIfNeeded &#123;</span><br><span class="line">	SEL hijackSelector = <span class="keyword">@selector</span>(rac_commandPerformAction:);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> (<span class="built_in">NSString</span> *selector <span class="keyword">in</span> [<span class="keyword">self</span> actionsForTarget:<span class="keyword">self</span> forControlEvent:<span class="built_in">UIControlEventTouchUpInside</span>]) &#123;</span><br><span class="line">		<span class="keyword">if</span> (hijackSelector == <span class="built_in">NSSelectorFromString</span>(selector)) &#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	[<span class="keyword">self</span> addTarget:<span class="keyword">self</span> action:hijackSelector forControlEvents:<span class="built_in">UIControlEventTouchUpInside</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)rac_commandPerformAction:(<span class="keyword">id</span>)sender &#123;</span><br><span class="line">	[<span class="keyword">self</span>.rac_command execute:sender];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>-setRac_command:</code> 通过对象关联把 RACCommand 和 RACDisposable 绑定到 UIButton 中，绑定新 RACDisposable 前会将旧的先进行 dispose，如果 command 为空直接返回</li>
+<li>对 command 的 enabled 信号调用 <code>-setKeyPath:onObject:</code> 方法，把 UIButton 的 enable 属性和 enabled 信号进行绑定</li>
+<li>执行 <code>rac_hijackActionAndTargetIfNeeded</code> ，检查是否有对应的 action 为 <code>rac_commandPerformAction</code>，若没有则设置 target 和 action 为 @selector(rac_commandPerformAction) 的点击事件。</li>
+<li>按钮点击会触发 rac_command</li>
+</ol>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)setKeyPath:(<span class="built_in">NSString</span> *)keyPath onObject:(<span class="built_in">NSObject</span> *)object nilValue:(<span class="keyword">id</span>)nilValue &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(keyPath != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(object != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">	keyPath = [keyPath <span class="keyword">copy</span>];</span><br><span class="line"></span><br><span class="line">	RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Purposely not retaining 'object', since we want to tear down the binding</span></span><br><span class="line">	<span class="comment">// when it deallocates normally.</span></span><br><span class="line">	__block <span class="keyword">void</span> * <span class="keyword">volatile</span> objectPtr = (__bridge <span class="keyword">void</span> *)object;</span><br><span class="line"></span><br><span class="line">	RACDisposable *subscriptionDisposable = [<span class="keyword">self</span> subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">		<span class="comment">// Possibly spec, possibly compiler bug, but this __bridge cast does not</span></span><br><span class="line">		<span class="comment">// result in a retain here, effectively an invisible __unsafe_unretained</span></span><br><span class="line">		<span class="comment">// qualifier. Using objc_precise_lifetime gives the __strong reference</span></span><br><span class="line">		<span class="comment">// desired. The explicit use of __strong is strictly defensive.</span></span><br><span class="line">		__<span class="keyword">strong</span> <span class="built_in">NSObject</span> *object __attribute__((objc_precise_lifetime)) = (__bridge __<span class="keyword">strong</span> <span class="keyword">id</span>)objectPtr;</span><br><span class="line">		[object setValue:x ?: nilValue forKeyPath:keyPath];</span><br><span class="line">	&#125; error:^(<span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">		__<span class="keyword">strong</span> <span class="built_in">NSObject</span> *object __attribute__((objc_precise_lifetime)) = (__bridge __<span class="keyword">strong</span> <span class="keyword">id</span>)objectPtr;</span><br><span class="line"></span><br><span class="line">		<span class="built_in">NSCAssert</span>(<span class="literal">NO</span>, <span class="string">@"Received error from %@ in binding for key path \"%@\" on %@: %@"</span>, <span class="keyword">self</span>, keyPath, object, error);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Log the error if we're running with assertions disabled.</span></span><br><span class="line">		<span class="built_in">NSLog</span>(<span class="string">@"Received error from %@ in binding for key path \"%@\" on %@: %@"</span>, <span class="keyword">self</span>, keyPath, object, error);</span><br><span class="line"></span><br><span class="line">		[disposable dispose];</span><br><span class="line">	&#125; completed:^&#123;</span><br><span class="line">		[disposable dispose];</span><br><span class="line">	&#125;];</span><br><span class="line"></span><br><span class="line">	[disposable addDisposable:subscriptionDisposable];</span><br><span class="line"></span><br><span class="line">	RACDisposable *clearPointerDisposable = [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">		<span class="keyword">while</span> (<span class="literal">YES</span>) &#123;</span><br><span class="line">			<span class="keyword">void</span> *ptr = objectPtr;</span><br><span class="line">			<span class="keyword">if</span> (OSAtomicCompareAndSwapPtrBarrier(ptr, <span class="literal">NULL</span>, &amp;objectPtr)) &#123;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;];</span><br><span class="line"></span><br><span class="line">	[disposable addDisposable:clearPointerDisposable];</span><br><span class="line"></span><br><span class="line">	[object.rac_deallocDisposable addDisposable:disposable];</span><br><span class="line"></span><br><span class="line">	RACCompoundDisposable *objectDisposable = object.rac_deallocDisposable;</span><br><span class="line">	<span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">		[objectDisposable removeDisposable:disposable];</span><br><span class="line">		[disposable dispose];</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> <code>-setKeyPath:onObject:nilValue:</code> 主要作用是将 object 对应的 keypath 值和信号绑定到一起，主要有以下几个流程</p>
+<ol>
+<li><p>先订阅原信号，当收到原信号 sendNext 的时候，参数 object 根据 keypath 通过 KVO 赋值成对应的信号值。</p>
+</li>
+<li><p>当 object 被销毁的时候，会将 objectPtr 赋值为 NULL，取消步骤 1 的订阅</p>
+</li>
+<li><p>为了订阅的过程避免 object 被提前销毁，作者使用了 objc_precise_lifetime 修饰关键字来精确地控制 object 生命周期。注释中作者描述这可能是编译器的 bug：</p>
+<p>即使显示使用 __strong 修饰 object，在这里也不会对 object 进行一次 retain，相反实际效果和 unsafe_unretain 相似。所以这里使用 objc_precise_lifetime 明确告诉编译器 object 不会在 didSubcribe 闭包中销毁</p>
+</li>
+</ol>
+<h3 id="UIRefreshControl-RACCommandSupport"><a href="#UIRefreshControl-RACCommandSupport" class="headerlink" title="UIRefreshControl+RACCommandSupport"></a>UIRefreshControl+RACCommandSupport</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">- (RACCommand *)rac_command &#123;</span><br><span class="line">	<span class="keyword">return</span> objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIRefreshControlRACCommandKey</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setRac_command:(RACCommand *)command &#123;</span><br><span class="line">	objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIRefreshControlRACCommandKey</span>, command, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Dispose of any active command associations.</span></span><br><span class="line">	[objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIRefreshControlDisposableKey</span>) dispose];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (command == <span class="literal">nil</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Like RAC(self, enabled) = command.enabled; but with access to disposable.</span></span><br><span class="line">	RACDisposable *enabledDisposable = [command.enabled setKeyPath:@keypath(<span class="keyword">self</span>.enabled) onObject:<span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line">	RACDisposable *executionDisposable = [[[[[<span class="keyword">self</span></span><br><span class="line">		rac_signalForControlEvents:<span class="built_in">UIControlEventValueChanged</span>]</span><br><span class="line">		map:^(<span class="built_in">UIRefreshControl</span> *x) &#123;</span><br><span class="line">			<span class="keyword">return</span> [[[command</span><br><span class="line">				execute:x]</span><br><span class="line">				catchTo:[RACSignal empty]]</span><br><span class="line">				then:^&#123;</span><br><span class="line">					<span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:x];</span><br><span class="line">				&#125;];</span><br><span class="line">		&#125;] <span class="comment">// mapSignal</span></span><br><span class="line">		concat]</span><br><span class="line">		deliverOnMainThread]</span><br><span class="line">		subscribeNext:^(<span class="built_in">UIRefreshControl</span> *x) &#123;</span><br><span class="line">			[x endRefreshing];</span><br><span class="line">		&#125;];</span><br><span class="line"></span><br><span class="line">	RACDisposable *commandDisposable = [RACCompoundDisposable compoundDisposableWithDisposables:@[ enabledDisposable, executionDisposable ]];</span><br><span class="line">	objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">UIRefreshControlDisposableKey</span>, commandDisposable, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>同样也是通过关联属性的方法把 command 和 RACDisposable 关联到 UIRefreshControl 中，UIRefreshControl 的 enable 和 command.enable 绑定到一起</li>
+<li>订阅 UIRefreshControl 控件 UIControlEventValueChanged 事件信号，并对其事件信号进行 map 处理(返回的暂且称为mapSignal)，在 block 中 将信号值 x 也就是 UIRefreshControl 对象自己，作为参数执行 command的 <code>-execute:</code> 方法，方法返回的 RACSignal 执行 <code>catchTo:</code> 忽略其中的 error，然后进行 then 来将 UIRefreshControl 包装成RACSignal 返回。</li>
+<li>mapSignal 利用 concat 操作进行降阶，并把最终信号值放在主线程中发送。订阅最终信号，收到 sendNext 事件 UIRefreshControl 结束刷新</li>
+</ol>
+<p>参考文章：</p>
+<p><a href="https://halfrost.com/reactivecocoa_raccommand/#2racsignalexecuting" target="_blank" rel="noopener">ReactiveCocoa 中 RACCommand 底层实现分析</a></p>
+<p><a href="https://draveness.me/raccommand" target="_blank" rel="noopener">优雅的 RACCommand</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ReactiveCocoa/" rel="tag"># ReactiveCocoa</a>
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/12/ReactiveCocoa-cold-hot/" rel="next" title="ReactiveCocoa的冷信号与热信号">
+                <i class="fa fa-chevron-left"></i> ReactiveCocoa的冷信号与热信号
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/26/ReactiveCocoa-RACScheduler/" rel="prev" title="ReactiveCocoa-RACScheduler底层实现分析">
+                ReactiveCocoa-RACScheduler底层实现分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chipengliu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RACCommand-定义"><span class="nav-number">1.</span> <span class="nav-text">RACCommand 定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACCommand-初始化"><span class="nav-number">2.</span> <span class="nav-text">RACCommand 初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#executionSignals"><span class="nav-number">2.1.</span> <span class="nav-text">executionSignals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#errors"><span class="nav-number">2.2.</span> <span class="nav-text">errors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#immediateExecuting"><span class="nav-number">2.3.</span> <span class="nav-text">immediateExecuting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#executing"><span class="nav-number">2.4.</span> <span class="nav-text">executing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#moreExecutionsAllowed"><span class="nav-number">2.5.</span> <span class="nav-text">moreExecutionsAllowed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#immediateEnabled"><span class="nav-number">2.6.</span> <span class="nav-text">immediateEnabled</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#enabled"><span class="nav-number">2.7.</span> <span class="nav-text">enabled</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACCommand-执行"><span class="nav-number">3.</span> <span class="nav-text">RACCommand 执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACCommand-对于系统类的扩展"><span class="nav-number">4.</span> <span class="nav-text">RACCommand 对于系统类的扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UIButton-RACCommandSupport"><span class="nav-number">4.1.</span> <span class="nav-text">UIButton+RACCommandSupport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIRefreshControl-RACCommandSupport"><span class="nav-number">4.2.</span> <span class="nav-text">UIRefreshControl+RACCommandSupport</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

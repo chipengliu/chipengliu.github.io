@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="HTTP/HTTPS 可以通过 HTTP Response 中的 header 字段（如 Cache-Control、Expires、Last-Modified）告诉 client 是否需要对 response 进行缓存。有未过期的缓存，客户端可以使用缓存避免冗余的网络请求。 接下来探讨几个问题：  HTTP 协议如何利用 header 控制缓存的？  iOS（URLSession）对于非幂等的网">
+<meta name="keywords" content="iOS,HTTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="URLSession HTTP 缓存机制初探">
+<meta property="og:url" content="https://chipengliu.github.io/2020/05/19/urlsession-cache/index.html">
+<meta property="og:site_name" content="Laucp&#39;s Blog">
+<meta property="og:description" content="HTTP/HTTPS 可以通过 HTTP Response 中的 header 字段（如 Cache-Control、Expires、Last-Modified）告诉 client 是否需要对 response 进行缓存。有未过期的缓存，客户端可以使用缓存避免冗余的网络请求。 接下来探讨几个问题：  HTTP 协议如何利用 header 控制缓存的？  iOS（URLSession）对于非幂等的网">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-10-25T14:50:21.264Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="URLSession HTTP 缓存机制初探">
+<meta name="twitter:description" content="HTTP/HTTPS 可以通过 HTTP Response 中的 header 字段（如 Cache-Control、Expires、Last-Modified）告诉 client 是否需要对 response 进行缓存。有未过期的缓存，客户端可以使用缓存避免冗余的网络请求。 接下来探讨几个问题：  HTTP 协议如何利用 header 控制缓存的？  iOS（URLSession）对于非幂等的网">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://chipengliu.github.io/2020/05/19/urlsession-cache/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>URLSession HTTP 缓存机制初探 | Laucp's Blog</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Laucp's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2020/05/19/urlsession-cache/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chipengliu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Laucp's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">URLSession HTTP 缓存机制初探
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-05-19 16:00:08" itemprop="dateCreated datePublished" datetime="2020-05-19T16:00:08+08:00">2020-05-19</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>HTTP/HTTPS 可以通过 HTTP Response 中的 header 字段（如 <code>Cache-Control</code>、<code>Expires</code>、<code>Last-Modified</code>）告诉 client 是否需要对 response 进行缓存。有未过期的缓存，客户端可以使用缓存避免冗余的网络请求。</p>
+<p>接下来探讨几个问题：</p>
+<ol>
+<li><p>HTTP 协议如何利用 header 控制缓存的？</p>
+</li>
+<li><p>iOS（URLSession）对于非幂等的网络请求是否也支持本地缓存（如 POST）？ 疑问来自于 <a href="http://www.faqs.org/rfcs/rfc2616.html" target="_blank" rel="noopener">rfc2616</a></p>
+<blockquote>
+<p>Responses to this method are not cacheable, unless the response<br>includes appropriate Cache-Control or Expires header fields. However,<br>the 303 (See Other) response can be used to direct the user agent to<br>retrieve a cacheable resource.</p>
+</blockquote>
+</li>
+</ol>
+<a id="more"></a>
+<ol>
+<li>GET/POST 是否都会进行缓存</li>
+<li>缓存由哪些 HTTP header 字段影响</li>
+<li>边界场景<ol>
+<li><del>response 大于磁盘空间的5%不会触发<code>willCacheResponse</code> <a href="https://stackoverflow.com/questions/20290580/nscachedurlresponse-willcacheresponse-does-not-get-called" target="_blank" rel="noopener">参考</a></del></li>
+</ol>
+</li>
+</ol>
+<h2 id="HTTP-缓存机制"><a href="#HTTP-缓存机制" class="headerlink" title="HTTP 缓存机制"></a>HTTP 缓存机制</h2><p>利用缓存机制，HTTP 发请求可以可以分为3种情况：</p>
+<ol>
+<li>client 不发送 HTTP 请求， 直接使用本地的缓存。</li>
+<li>client 发送请求，server 校验请求头中的字段（如 <code>If-Modified-Since</code>、<code>If-None-Match</code>）并判断 client 缓存为有效，server 返回 304 状态码通知 client 使用本地缓存，304 的响应头也可以同时更新缓存文档的过期时间。</li>
+<li>和场景2类似，如果如果 server 判断 client 的缓存已经失效会返回 200 状态码和新的响应数据，client 根据响应头更新本地的缓存。</li>
+</ol>
+<h3 id="控制缓存常用的-header-字段"><a href="#控制缓存常用的-header-字段" class="headerlink" title="控制缓存常用的 header 字段"></a>控制缓存常用的 header 字段</h3><h4 id="1-Cache-Control"><a href="#1-Cache-Control" class="headerlink" title="1. Cache-Control"></a>1. Cache-Control</h4><blockquote>
+<p><strong>HTTP/1.1</strong>定义的 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control" target="_blank" rel="noopener"><code>Cache-Control</code></a> 头用来区分对缓存机制的支持情况， <em>请求头和响应头都支持这个属性</em>。通过它提供的不同的值来定义缓存策略。</p>
+</blockquote>
+<p><strong>在请求中使用：</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">字段</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">no-store</td>
+<td style="text-align:center">忽略本地缓存也就是拿到 response 不进行保存，每次 client 发起的请求都会下载完整的响应内容</td>
+</tr>
+<tr>
+<td style="text-align:center">no-cache</td>
+<td style="text-align:center">每次有请求发出时（即便是有未过期的本地缓存），带上相关字段 （如 <code>If-Modified-Since</code>、<code>If-None-Match</code>），server 端会验证请求中所描述的缓存是否过期，若未过期则返回 304 告知 client 使用本地缓存</td>
+</tr>
+<tr>
+<td style="text-align:center">only-if-cached</td>
+<td style="text-align:center">告诉（代理）服务器，客户端希望获取缓存的内容（若有），而不用向源服务器发请求。</td>
+</tr>
+<tr>
+<td style="text-align:center">max-age</td>
+<td style="text-align:center"><code>max-age=</code> 表示资源能够被缓存（保持新鲜）的最大时间，是距离请求发起的时间的秒数。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>在响应中使用：</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">字段</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">no-store</td>
+<td style="text-align:center">不直接使用缓存，要求想服务器发起（新鲜度）请求</td>
+</tr>
+<tr>
+<td style="text-align:center">no-cache</td>
+<td style="text-align:center">所有内容都不会被保存到缓存</td>
+</tr>
+<tr>
+<td style="text-align:center">must-revalidate</td>
+<td style="text-align:center">告诉 client，本地缓存过期前，可以使用缓存；本地缓存一旦过期，必须去 server 进行有效性校验。</td>
+</tr>
+<tr>
+<td style="text-align:center">only-if-cached</td>
+<td style="text-align:center">告诉（代理）服务器，客户端希望获取缓存的内容（若有），而不用向源服务器发请求。</td>
+</tr>
+<tr>
+<td style="text-align:center">max-age</td>
+<td style="text-align:center">告诉客户端该资源新鲜度的时间周期</td>
+</tr>
+</tbody>
+</table>
+<p>另外一些如  <code>private</code>、<code>public</code>  字段比较少用，这里不再阐述。</p>
+<h4 id="2-Last-Modified"><a href="#2-Last-Modified" class="headerlink" title="2. Last-Modified"></a>2. Last-Modified</h4><p>响应头可以作为一种弱校验器。说它弱是因为它只能精确到一秒。如果响应头里含有这个信息，客户端可以在后续的请求中带上 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Modified-Since" target="_blank" rel="noopener"><code>If-Modified-Since</code></a> /  <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Unmodified-Since" target="_blank" rel="noopener"><code>If-Unmodified-Since</code></a> 来验证缓存。</p>
+<p>当向服务端发起缓存校验的请求时，服务端会返回 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/200" target="_blank" rel="noopener"><code>200</code></a> ok表示返回正常的结果或者 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/304" target="_blank" rel="noopener"><code>304</code></a> Not Modified(不返回body)表示浏览器可以使用本地缓存文件。304的响应头也可以同时更新缓存文档的过期时间。</p>
+<ul>
+<li><strong>If-Modified-Since</strong> : 是一个条件式请求首部，服务器只在所请求的资源在给定的日期时间之后对内容进行过修改的情况下才会将资源返回，状态码为 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/200" target="_blank" rel="noopener"><code>200</code></a> 。如果请求的资源从那时起未经修改，那么返回一个不带有消息主体的 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/304" target="_blank" rel="noopener"><code>304</code></a> 响应，而在 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Last-Modified" target="_blank" rel="noopener"><code>Last-Modified</code></a> 首部中会带有上次修改时间。 不同于  <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Unmodified-Since" target="_blank" rel="noopener"><code>If-Unmodified-Since</code></a>, <code>If-Modified-Since</code> 只可以用在 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/GET" target="_blank" rel="noopener"><code>GET</code></a> 或 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/HEAD" target="_blank" rel="noopener"><code>HEAD</code></a> 请求中。</li>
+<li><strong>If-Unmodified-Since</strong>: HTTP协议中的 <strong><code>If-Unmodified-Since</code></strong> 消息头用于请求之中，使得当前请求成为条件式请求：只有当资源在指定的时间之后没有进行过修改的情况下，服务器才会返回请求的资源，或是接受 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/POST" target="_blank" rel="noopener"><code>POST</code></a> 或其他 non-<a href="https://developer.mozilla.org/zh-CN/docs/Glossary/safe" target="_blank" rel="noopener">safe</a> 方法的请求。如果所请求的资源在指定的时间之后发生了修改，那么会返回 <a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412" target="_blank" rel="noopener"><code>412</code></a> (Precondition Failed) 错误。</li>
+</ul>
+<p><code>If-Modified-Since</code> 和 <code>If-Unmodified-Since</code> 的区别是：</p>
+<ol>
+<li>If-Modified-Since 告诉服务器如果时间一致，返回状态码 <code>304</code></li>
+<li>If-Unmodified-Since 告诉服务器如果时间不一致，返回状态码 <code>412</code></li>
+</ol>
+<h4 id="3-Etag"><a href="#3-Etag" class="headerlink" title="3. Etag"></a>3. Etag</h4><p><code>ETag</code> HTTP响应头是资源的特定版本的标识符，类似于 hash 值。HTTP响应包会通过 Etag 把标识符告诉客户端。客户端下次请求时通过 <code>If-None-Match</code> 或 <code>If-Match</code> 带上该值，服务器对该值进行对比校验：如果一致则不要返回资源。</p>
+<p><code>If-None-Match</code> 和 <code>If-Match</code> 的区别是：</p>
+<ol>
+<li>If-None-Match：告诉服务器如果一致，返回状态码 <code>304</code>，不一致则返回资源</li>
+<li>If-Match：告诉服务器如果不一致，返回状态码 <code>412</code></li>
+</ol>
+<h3 id="有了-Last-Modified-为什么还需要-Etag-？"><a href="#有了-Last-Modified-为什么还需要-Etag-？" class="headerlink" title="有了 Last-Modified 为什么还需要 Etag ？"></a>有了 Last-Modified 为什么还需要 Etag ？</h3><p>ETag 是为了解决 Last-modified 的一些缺陷：</p>
+<ul>
+<li><p>一些资源的最后修改时间变了，但是内容没有改变，造成荣誉的请求</p>
+</li>
+<li><p>Last-modified 只能精确到秒级，如果一秒钟文件被多次修改，可能会导致客户端不能及时更新缓存数据。</p>
+</li>
+</ul>
+<blockquote>
+<p><code>Etag</code> 是服务器自动生成或者由开发者生成的对应资源在服务器端的唯一标识符，能够更加准确的控制缓存。<strong><code>Last-Modified</code> 与 <code>ETag</code> 是可以一起使用的，服务器会优先验证 <code>ETag</code>，一致的情况下，才会继续比对 <code>Last-Modified</code>，最后才决定是否返回 304</strong>。</p>
+</blockquote>
+<h2 id="URLSession-的缓存表现"><a href="#URLSession-的缓存表现" class="headerlink" title="URLSession 的缓存表现"></a>URLSession 的缓存表现</h2><p>URLSession 提供的缓存机制有一下几种，可以通过 NSURLSessionConfiguration/NSRequest 对象进行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSUInteger, NSURLRequestCachePolicy)</span><br><span class="line">&#123;</span><br><span class="line">  	// 默认的缓存策略，也是按照HTTP协议，根据不同字段进行标准的缓存策略</span><br><span class="line">    NSURLRequestUseProtocolCachePolicy = 0,</span><br><span class="line">    </span><br><span class="line">    // 忽略系统本地缓存，直接向服务器请求</span><br><span class="line">    NSURLRequestReloadIgnoringLocalCacheData = 1,</span><br><span class="line">  </span><br><span class="line">    // 忽略本地缓存，并告诉代理服务器不使用缓存，直接向源服务器请求数据</span><br><span class="line">    NSURLRequestReloadIgnoringLocalAndRemoteCacheData = 4,</span><br><span class="line">    NSURLRequestReloadIgnoringCacheData = NSURLRequestReloadIgnoringLocalCacheData,</span><br><span class="line"></span><br><span class="line">    // 不管过期与否都使用本地缓存，若没有则向服务器请求</span><br><span class="line">    NSURLRequestReturnCacheDataElseLoad = 2,</span><br><span class="line">    // 不管过期与否都使用本地缓存，若没有不向服务器请求，返回错误给上层</span><br><span class="line">    NSURLRequestReturnCacheDataDontLoad = 3,</span><br><span class="line">		</span><br><span class="line">    // 无论本地缓存过期与否，都先向服务器验证缓存的有效性</span><br><span class="line">    NSURLRequestReloadRevalidatingCacheData = 5,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>本文目的是验证 iOS 的 post 请求是否也会进行缓存，所以这里使用默认的缓存策略，也就是 <code>NSURLRequestUseProtocolCachePolicy</code></p>
+<p>验证步骤分2步:</p>
+<ol>
+<li>app 使用 get 请求，回包分别返回 <code>Cache-control</code> 、<code>Last-Modified</code> 、 <code>ETag</code> 的表现</li>
+<li>app 使用 post 请求，回包分别返回  <code>Cache-control</code> 、<code>Last-Modified</code> 、 <code>ETag</code> 的表现</li>
+</ol>
+<p>为了方便验证，服务端使用 beego 搭建本地简易 server</p>
+<h3 id="URLSession-GET-请求缓存"><a href="#URLSession-GET-请求缓存" class="headerlink" title="URLSession GET 请求缓存"></a>URLSession GET 请求缓存</h3><p>客户端主要代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];</span><br><span class="line">    config.requestCachePolicy = 0;</span><br><span class="line">    self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:NSOperationQueue.mainQueue];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (IBAction)GET:(id)sender &#123;</span><br><span class="line">    NSURL *URL = [NSURL URLWithString:@&quot;http://127.0.0.1:8080/get&quot;];</span><br><span class="line">    NSURLRequest *request = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:15];</span><br><span class="line">		NSURLSessionTask *task = [self.session dataTaskWithRequest:request];</span><br><span class="line">		[task resume];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (IBAction)POST:(id)sender &#123;</span><br><span class="line">    NSURL *URL = [NSURL URLWithString:@&quot;http://127.0.0.1:8080/post&quot;];</span><br><span class="line">    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:15];</span><br><span class="line">    request.HTTPMethod = @&quot;POST&quot;;</span><br><span class="line">    NSURLSessionTask *task = [self.session dataTaskWithRequest:request];</span><br><span class="line">    [task resume];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - NSURLSessionDataDelegate</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask</span><br><span class="line">didReceiveResponse:(NSURLResponse *)response</span><br><span class="line"> completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler &#123;</span><br><span class="line">    NSLog(@&quot;%s|response allHeaderFields=%@&quot;,</span><br><span class="line">          __func__, [(NSHTTPURLResponse *)response allHeaderFields]);</span><br><span class="line">    if (completionHandler) &#123;</span><br><span class="line">        completionHandler(NSURLSessionResponseAllow);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data &#123;</span><br><span class="line">    //NSString *responseStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];</span><br><span class="line">    NSLog(@&quot;%s|data length=%@&quot;,</span><br><span class="line">          __func__, @(data.length));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask</span><br><span class="line"> willCacheResponse:(NSCachedURLResponse *)proposedResponse</span><br><span class="line"> completionHandler:(void (^)(NSCachedURLResponse * _Nullable cachedResponse))completionHandler &#123;</span><br><span class="line">    NSLog(@&quot;%s|proposedResponse=%@&quot;, __func__, proposedResponse);</span><br><span class="line">    if (completionHandler) &#123;</span><br><span class="line">        completionHandler(proposedResponse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>Cache-Control</p>
+<ul>
+<li>服务端代码，设置回包数据的新鲜度为 60 秒</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *GetController)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> key, strings := <span class="keyword">range</span> c.Ctx.Request.Header &#123;</span><br><span class="line">		beego.Debug(key, <span class="string">"="</span>, strings)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Cache-Control: max-age=60</span></span><br><span class="line">  interval := <span class="number">60</span></span><br><span class="line">	maxAge := <span class="string">"max-age="</span> + strconv.Itoa(interval)</span><br><span class="line">	c.Ctx.Output.Header(<span class="string">"Cache-Control"</span>,maxAge)</span><br><span class="line">	c.Data[<span class="string">"json"</span>] = &amp;jsonData&#123;</span><br><span class="line">		<span class="number">10086</span>,</span><br><span class="line">		<span class="string">"message"</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *PostController)</span> <span class="title">Post</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> key, strings := <span class="keyword">range</span> c.Ctx.Request.Header &#123;</span><br><span class="line">		beego.Debug(key, <span class="string">"="</span>, strings);</span><br><span class="line">	&#125;</span><br><span class="line">	interval := <span class="number">60</span></span><br><span class="line">	maxAge := <span class="string">"max-age="</span> + strconv.Itoa(interval)</span><br><span class="line">	c.Ctx.Output.Header(<span class="string">"Cache-Control"</span>,maxAge)</span><br><span class="line">	c.Data[<span class="string">"json"</span>] = &amp;jsonData&#123;</span><br><span class="line">		<span class="number">10010</span>,</span><br><span class="line">		<span class="string">"message"</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>请求结果<ol>
+<li>GET：60秒内客户端重复触发请求，从第二次开始，会使用本地缓存，不会发出网络请求</li>
+<li>POST：客户端每次会发出网络请求，不会进行缓存</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><p>Last-Modified:</p>
+<ul>
+<li><p>服务端代码，设置回包数据的修改时间为 1609430400 秒（2021/1/1 00:00:00）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *GetController)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// ...略</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 这里简单处理，客户端如果带上If-Modified-Since，则都返回304告诉其用本地缓存</span></span><br><span class="line">  ims := c.Ctx.Request.Header.Get(<span class="string">"If-Modified-Since"</span>)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(ims) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		c.Ctx.ResponseWriter.WriteHeader(<span class="number">304</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 标记资源过期时间为2020/01/01 00:00:00</span></span><br><span class="line">  c.Ctx.Output.Header(<span class="string">"Last-Modified"</span>, <span class="string">"Fri, 01 Jan 2021 00:00:00 GMT"</span>)</span><br><span class="line">  </span><br><span class="line">	<span class="comment">// ...略</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *PostController)</span> <span class="title">Post</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// ...略</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 这里简单处理，客户端如果带上If-Modified-Since，则都返回304告诉其用本地缓存</span></span><br><span class="line">  ims := c.Ctx.Request.Header.Get(<span class="string">"If-Modified-Since"</span>)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(ims) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		c.Ctx.ResponseWriter.WriteHeader(<span class="number">304</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 标记资源过期时间为2020/01/01 00:00:00</span></span><br><span class="line">  c.Ctx.Output.Header(<span class="string">"Last-Modified"</span>, <span class="string">"Fri, 01 Jan 2021 00:00:00 GMT"</span>)</span><br><span class="line">  </span><br><span class="line">	<span class="comment">// ...略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>请求结果:</p>
+<ol>
+<li>GET：客户端每次都会发出网路请求；第一次响应收到 server 返回的 Last-Modified， 之后的请求中会通过 If-Modified-Since 客户端缓存的修改日期给到 server 端；若 server 端返回 304，则客户端使用本地的缓存，并且 URLSession 向上返回 200 的状态码。</li>
+<li>POST: 和 GET 表现一致</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>ETag</p>
+<ul>
+<li><p>服务端代码：利用 ETag 把资源进行标记</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">func (c *MainController) Get() &#123;</span><br><span class="line">  <span class="comment">//...略</span></span><br><span class="line">  </span><br><span class="line">	ims := c.Ctx.Request.Header.Get(<span class="string">"If-Modified-Since"</span>)</span><br><span class="line">	<span class="keyword">if</span> len(ims) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		c.Ctx.ResponseWriter.WriteHeader(<span class="number">304</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	inm := c.Ctx.Request.Header.Get(<span class="string">"If-None-Match"</span>)</span><br><span class="line">	<span class="keyword">if</span> len(inm) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		c.Ctx.ResponseWriter.WriteHeader(<span class="number">304</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		c.Ctx.Output.Header(<span class="string">"ETag"</span>, <span class="string">"ETagValueGet"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c.Data[<span class="string">"json"</span>] = &amp;jsonData&#123;</span><br><span class="line">		<span class="number">10086</span>,</span><br><span class="line">		<span class="string">"etag-message-get"</span>+inm,</span><br><span class="line">	&#125;</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *PostController) Post() &#123;</span><br><span class="line">	inm := c.Ctx.Request.Header.Get(<span class="string">"If-None-Match"</span>)</span><br><span class="line">	<span class="keyword">if</span> len(inm) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		c.Ctx.ResponseWriter.WriteHeader(<span class="number">304</span>)</span><br><span class="line">	 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		c.Ctx.Output.Header(<span class="string">"ETag"</span>, <span class="string">"ETagValuePost"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c.Data[<span class="string">"json"</span>] = &amp;jsonData&#123;</span><br><span class="line">		<span class="number">10010</span>,</span><br><span class="line">		<span class="string">"etag-message-post"</span>+inm,</span><br><span class="line">	&#125;</span><br><span class="line">	c.ServeJSON()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>请求结果:</p>
+<ol>
+<li>GET: 客户端每次都会发出网路请求；第一次响应收到 server 返回的 ETag， 之后的请求中会通过 If-None-Match 客户端缓存的标记给到 server 端；若 server 端返回 304，则客户端使用本地的缓存，并且 URLSession 向上返回 200 的状态码。</li>
+<li>POST: 和 GET 表现一致</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>URLSession 使用 NSURLRequestUseProtocolCachePolicy 策略的缓存表现可以概括为：</p>
+<ol>
+<li>如果 server 端通过  <code>Cache-Control</code> 告诉客户端资源新鲜度，则客户端在资源未过期之前，不会发出网络请求，直接使用本地缓存，只作用于 GET 请求。</li>
+<li>server 端台利用 <code>Last-Modified</code> 标记资源修改时间或者利用 ETag 标记资源版本，下次客户端重新发出网络请求，携带上  <code>If-Modified-Since</code> / <code>If-None-Match</code> ，server 端会通过 HTTP 状态码 200 / 304 告诉客户端是否可以使用本地的缓存，GET / POST 请求表现一致。</li>
+</ol>
+<p>回到文章开头的问题：（URLSession）非幂等的网络请求是否也支持缓存（如 POST）？</p>
+<p>从上文中简单的测试表现看，结论是不支持的，和 RFC 文档描述存在差异。于是网上搜索相关问题</p>
+<p><a href="https://stackoverflow.com/questions/3874274/how-to-cache-an-http-post-response" target="_blank" rel="noopener">How to cache an HTTP POST response?</a></p>
+<p><a href="https://stackoverflow.com/questions/626057/is-it-possible-to-cache-post-methods-in-http" target="_blank" rel="noopener">Is it possible to cache POST methods in HTTP?</a></p>
+<p>问题底下的回复其中提及到：POST 请求支持缓存，但是客户端如 Firefox 浏览器实现中不支持</p>
+<blockquote>
+<p>Note, however many browsers, including current Firefox 3.0.10, will not cache POST response regardless of the headers. IE behaves more smartly in this respect.</p>
+</blockquote>
+<p>然后再去查阅 mozilla 的相关文档，POST 请求利用 Content-Location 字段也是可以进行资源新鲜度描述并进行缓存，但是一般很少应用支持。<a href="https://developer.mozilla.org/en-US/docs/Glossary/cacheable" target="_blank" rel="noopener">Cacheable</a></p>
+<blockquote>
+<p>The method used in the request is itself <em>cacheable</em>, that is either a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET" target="_blank" rel="noopener"><code>GET</code></a> or a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD" target="_blank" rel="noopener"><code>HEAD</code></a> method. A response to a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST" target="_blank" rel="noopener"><code>POST</code></a> or <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH" target="_blank" rel="noopener"><code>PATCH</code></a> request can also be cached if freshness is indicated and the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Location" target="_blank" rel="noopener"><code>Content-Location</code></a> header is set, but this is rarely implemented. (For example, Firefox does not support it per <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=109553." target="_blank" rel="noopener">https://bugzilla.mozilla.org/show_bug.cgi?id=109553.</a>) Other methods, like <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT" target="_blank" rel="noopener"><code>PUT</code></a> or <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE" target="_blank" rel="noopener"><code>DELETE</code></a> are not cacheable and their result cannot be cached.</p>
+</blockquote>
+<p>而 <code>Content-Location</code> 定义是：</p>
+<blockquote>
+<p><strong><code>Content-Location</code></strong> 首部指定的是要返回的数据的地址选项。最主要的用途是用来指定要访问的资源经过<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_blank" rel="noopener">内容协商</a>后的结果的URL。</p>
+</blockquote>
+<p>结合我们的测试表现，只有通过 GET 请求响应包携带的 <code>Cache-Control</code> 才能实现让 URLSession 不发出请求直接使用本地缓存。</p>
+<p>参考文章：</p>
+<ol>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching_FAQ" target="_blank" rel="noopener">HTTP 缓存</a></li>
+<li><a href="https://tech.ebayinc.com/engineering/caching-http-post-requests-and-responses/" target="_blank" rel="noopener">Caching HTTP POST Requests and Responses</a></li>
+<li><a href="https://stackoverflow.com/questions/626057/is-it-possible-to-cache-post-methods-in-http" target="_blank" rel="noopener">Is it possible to cache POST methods in HTTP?</a></li>
+<li><a href="https://www.cnblogs.com/chyingp/p/no-cache-vs-must-revalidate.html" target="_blank" rel="noopener">web性能优化之：no-cache与must-revalidate深入探究</a></li>
+<li><a href="https://juejin.im/post/5d76162bf265da03b120738d" target="_blank" rel="noopener">iOS NSCache &amp; NSURLCache 机制原理探究 (二)</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/05/IGListKit/" rel="next" title="IGListKit 源码解析">
+                <i class="fa fa-chevron-left"></i> IGListKit 源码解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/24/dispatch-once-crash/" rel="prev" title="一次 dispatch_once 引发的 crash 的思考">
+                一次 dispatch_once 引发的 crash 的思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chipengliu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-缓存机制"><span class="nav-number">1.</span> <span class="nav-text">HTTP 缓存机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#控制缓存常用的-header-字段"><span class="nav-number">1.1.</span> <span class="nav-text">控制缓存常用的 header 字段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Cache-Control"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Cache-Control</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Last-Modified"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. Last-Modified</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Etag"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. Etag</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有了-Last-Modified-为什么还需要-Etag-？"><span class="nav-number">1.2.</span> <span class="nav-text">有了 Last-Modified 为什么还需要 Etag ？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URLSession-的缓存表现"><span class="nav-number">2.</span> <span class="nav-text">URLSession 的缓存表现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#URLSession-GET-请求缓存"><span class="nav-number">2.1.</span> <span class="nav-text">URLSession GET 请求缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

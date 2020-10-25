@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="此篇文章是学习分析 objc-msg-arm64.s 源码过程中需要用到的汇编知识的一点记录">
+<meta name="keywords" content="汇编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="汇编语言学习笔记">
+<meta property="og:url" content="https://chipengliu.github.io/2019/04/05/asm-note/index.html">
+<meta property="og:site_name" content="Laucp&#39;s Blog">
+<meta property="og:description" content="此篇文章是学习分析 objc-msg-arm64.s 源码过程中需要用到的汇编知识的一点记录">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://chipengliu.github.io/2019/04/05/asm-note/endian.png">
+<meta property="og:image" content="https://chipengliu.github.io/2019/04/05/asm-note/endian2.png">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1117042-e3fabfec65c187f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1000/format/webp">
+<meta property="og:image" content="https://chipengliu.github.io/2019/04/05/asm-note/work.png">
+<meta property="og:updated_time" content="2020-10-24T01:58:24.855Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="汇编语言学习笔记">
+<meta name="twitter:description" content="此篇文章是学习分析 objc-msg-arm64.s 源码过程中需要用到的汇编知识的一点记录">
+<meta name="twitter:image" content="https://chipengliu.github.io/2019/04/05/asm-note/endian.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://chipengliu.github.io/2019/04/05/asm-note/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>汇编语言学习笔记 | Laucp's Blog</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Laucp's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/04/05/asm-note/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chipengliu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Laucp's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">汇编语言学习笔记
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-05 20:26:55" itemprop="dateCreated datePublished" datetime="2019-04-05T20:26:55+08:00">2019-04-05</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算机基础/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>此篇文章是学习分析 objc-msg-arm64.s 源码过程中需要用到的汇编知识的一点记录</p>
+<a id="more"></a>
+<h2 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a>字节序</h2><p>在内存中有两种字节排布顺序，大端序(BE)或者小端序(LE)。两者的主要不同是对象中的每个字节在内存中的存储顺序存在差异。一般X86中是小端序，最低的字节存储在最低的地址上。在大端机中最高的字节存储在最低的地址上。</p>
+<p><img src="/2019/04/05/asm-note/endian.png" alt="endian"></p>
+<p>在版本3之前，ARM使用的是小端序，但在这之后就都是使用大端序了，但也允许切换回小端序。在我们样例代码所在的ARMv6中，指令代码是以<a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0301h/Cdfbbchb.html" target="_blank" rel="noopener">[小端序排列对齐]</a>。但是数据访问时采取大端序还是小端序使用程序状态寄存器(CPSR)的第9比特位来决定的。</p>
+<p><img src="/2019/04/05/asm-note/endian2.png" alt="endian2"></p>
+<h2 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h2><p>ARM 32位处理器有16个寄存器，从 r0 到 r15，每一个都是32位比特。调用约定指定他们其中的一些寄存器有特殊的用途，例如：</p>
+<ul>
+<li>r0-r3：用于存放传递给函数的参数；</li>
+<li>r4-r11：用于存放函数的本地参数；</li>
+<li>r12：是内部程序调用暂时寄存器。这个寄存器很特别是因为可以通过函数调用来改变它；</li>
+<li>r13：栈指针sp(stack pointer)。在计算机科学内栈是非常重要的术语。寄存器存放了一个指向<strong>栈顶</strong>的指针。看<a href="https://link.jianshu.com?t=http://en.wikipedia.org/wiki/Call_stack" target="_blank" rel="noopener">这里</a>了解更多关于栈的信息；</li>
+<li>r14：是链接寄存器lr(link register)。它保存了当目前函数返回时下一个函数的地址；</li>
+<li>r15：是程序计数器pc(program counter)。它存放了当前执行指令的地址。在每个指令执行完成后会自动增加；</li>
+</ul>
+<blockquote>
+<p>ARM寄存器 r0, r1, r2, r3四个寄存器是用来传递参数的; r4, r5, …, r11这些寄存器是通用的，在函数内部可以使用，<strong>但是用完需要恢复</strong>，所以一般函数里面会先把需要使用的寄存器入栈，比如如要使用r7作为临时变量，那么会有下面的调用： push {r7, lr} 即把r7和返回地址入栈，等到函数要返回前，再出栈恢复r7寄存器。 pop {r7, lr} r12 r13：sp栈指针寄存器，ARM使用FD栈，sp指向栈顶数据，且向下增长。 r14：lr保存返回地址——即调用该函数后下一条指令的地址 r15：pc——当前执行的指令地址</p>
+</blockquote>
+<p>64位处理器有34个寄存器，包括31个通用寄存器、SP、PC、CPSR。</p>
+<table>
+<thead>
+<tr>
+<th><strong>寄存器</strong></th>
+<th><strong>位数</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x0-x30</td>
+<td>64bit</td>
+<td>通用寄存器，如果有需要可以当做32bit使用：wO-w30</td>
+</tr>
+<tr>
+<td>FP(x29)</td>
+<td>64bit</td>
+<td>保存栈帧地址(栈底指针)</td>
+</tr>
+<tr>
+<td>LR(x30)</td>
+<td>64bit</td>
+<td>通常称 <code>x30</code> 为程序链接寄存器，保存子程序结束后需要执行的下一条指令</td>
+</tr>
+<tr>
+<td>SP</td>
+<td>64bit</td>
+<td>保存栈指针,使用 SP/WSP 来进行对 SP 寄存器的访问。严格来说叫栈顶指针，永远指向栈的顶部。</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>64bit</td>
+<td>程序计数器，俗称 PC 指针，总是指向即将要执行的下一条指令,在 arm64 中，软件是不能改写 PC 寄存器的。</td>
+</tr>
+<tr>
+<td>CPSR</td>
+<td>64bit</td>
+<td>状态寄存器</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>x0-x7: 用于子程序调用时的参数传递，<code>x0</code> 还用于返回值传递</p>
+</li>
+<li><p><code>x0 - x30</code> 是31个通用整形寄存器。每个寄存器可以存取一个64位大小的数。 当使用 <code>r0 - r30</code> 访问时，它就是一个64位的数。当使用 <code>w0 - w30</code> 访问时，访问的是这些寄存器的低32位</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1117042-e3fabfec65c187f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1000/format/webp" alt="img"></p>
+</li>
+</ul>
+<h3 id="浮点寄存器"><a href="#浮点寄存器" class="headerlink" title="浮点寄存器"></a>浮点寄存器</h3><p>因为浮点数的存储以及其运算的特殊性，CPU提供浮点数寄存器来处理浮点数；</p>
+<p>128位的浮点向量寄存器可分为5种:</p>
+<ul>
+<li>用作8位寄存器时记作  :Bn; (Byte,字节)</li>
+<li>用作16位寄存器时记作 :Hn; (Half Word,半字)</li>
+<li>用作32位寄存器时记作 :Sn; (Single Word,单字)</li>
+<li>用作64位寄存器时记作 :Dn; (Double Word,双字)</li>
+<li>用作128位寄存器时记作:Qn; (Quad Word,四字)<br>n=0 … 30;</li>
+</ul>
+<h2 id="伪操作"><a href="#伪操作" class="headerlink" title="伪操作"></a>伪操作</h2><h3 id="text"><a href="#text" class="headerlink" title=".text:"></a>.text:</h3><p>段保存代码，是只读和可执行的，后面那些指令都属于 <code>.text</code> 段。</p>
+<h3 id="global"><a href="#global" class="headerlink" title=".global"></a>.global</h3><p> 让一个符号对链接器可见，可以供其他链接对象模块使用。</p>
+<h3 id="extern"><a href="#extern" class="headerlink" title=".extern"></a>.extern</h3><p><code>.extern</code> FUNC 说明 FUNC 为外部函数，调用的时候可以遍访所有文件找到该函数并且使用它。</p>
+<h3 id="section"><a href="#section" class="headerlink" title=".section"></a>.section</h3><p>分段，用户可以通过 <code>.section</code> 伪操作来自定义一个段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.section expr; // expr 可以是 .text/.data/.bss</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line">.text	将定义符开始的代码编译到代码段</span><br><span class="line">.data 将定义符开始的数据编译到数据段</span><br><span class="line">.bss  将变量存放到.bss段，bss段通常是指用来存放程序中未初始化的全局变量的一块内存区域 数据段通常是指用来存			放程序中已初始化的全局变量的一块内存区域</span><br><span class="line"></span><br><span class="line">注意：源程序中.bss段应该在.text之前</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<h3 id="quad"><a href="#quad" class="headerlink" title=".quad"></a>.quad</h3><p>定义8字节的数据</p>
+<h2 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h2><h3 id="b"><a href="#b" class="headerlink" title="b"></a>b</h3><p>b {条件} 目标地址</p>
+<p>b 指令是最简单的跳转指令。一旦遇到一个 <code>b</code> 指令，ARM 处理器将立即跳转到给定的目标地址，从那里继<br>续执行。注意存储在跳转指令中的实际值是相对当前 PC 值的一个偏移量，而不是一个绝对地址，它的值由汇编器来计算（参考寻址方式中的相对寻址）。它是 24 位有符号数，左移两位后有符号扩展为 32 位，表示的有效偏移为 26 位(前后32MB 的地址空间)。以下指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">b Label		//程序无条件跳转到标号 Label 处执行</span><br><span class="line">cmp R1, ＃0 	//当 CPSR 寄存器中的 Z 条件码置位时，程序跳转到标号 Label 处执行</span><br><span class="line">beq Label</span><br></pre></td></tr></table></figure>
+<h3 id="bl"><a href="#bl" class="headerlink" title="bl"></a>bl</h3><p>branch with link</p>
+<p>bl{条件} 目标地址</p>
+<p>bl 是另一个跳转指令，但跳转之前，会在寄存器 r14(lr) 中保存 <code>pc</code> 的当前内容，因此，可以通过将 <code>r14</code> 的内容重新加载到 <code>pc</code> 中，来返回到跳转指令之后的那个指令处执行。该指令是实现子程序调用的一个基本但常用的手段。以下指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bl Label //当程序无条件跳转到标号 Label 处执行时，同时将当前的 pc 值保存到 r14 中</span><br></pre></td></tr></table></figure>
+<h3 id="bx"><a href="#bx" class="headerlink" title="bx"></a>bx</h3><p>bx{条件} 目标地址</p>
+<p>跳转到指令中所指定的目标地址，目标地址处的指令既可以是 ARM 指令，也可以是 Thumb 指令。</p>
+<h3 id="blx"><a href="#blx" class="headerlink" title="blx"></a>blx</h3><p>blx 指令从 ARM 指令集跳转到指令中所指定的目标地址，并将处理器的工作状态有 ARM 状态切换到 Thumb 状态，该指令同时将 pc 的当前内容保存到寄存器 <code>r14</code> 中。因此，当子程序使用 Thumb 指令集，而调用者使用ARM 指令集时，可以通过 BLX 指令实现子程序的调用和处理器工作状态的切换。</p>
+<h3 id="br"><a href="#br" class="headerlink" title="br"></a>br</h3><p>无条件的跳转命令，用于跳转到 reg 内容地址</p>
+<h3 id="adrp"><a href="#adrp" class="headerlink" title="adrp"></a>adrp</h3><p>计算指定的数据地址到当前pc寄存器值相对偏移</p>
+<h3 id="movw"><a href="#movw" class="headerlink" title="movw"></a>movw</h3><p>mov word，把16位立即数放到寄存器的底16位，<strong>高16位清0</strong></p>
+<h3 id="movt"><a href="#movt" class="headerlink" title="movt"></a>movt</h3><p>把16位立即数放到寄存器的高16位，<strong>低16位不影响</strong></p>
+<h3 id="movs"><a href="#movs" class="headerlink" title="movs"></a>movs</h3><p>用一个<strong>字节</strong>长度值来填充寄存器</p>
+<h3 id="ldr"><a href="#ldr" class="headerlink" title="ldr"></a>ldr</h3><p>把数据从内存中某处读取到寄存器；mov不能实现这个功能，mov只能在寄存器之间移动数据，或者把立即数移动到寄存器中</p>
+<h3 id="ldp-stp"><a href="#ldp-stp" class="headerlink" title="ldp/stp"></a>ldp/stp</h3><p>从栈取/存数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldp x29, x30, [sp], #16;		// 把 x29, x30的值存到 sp-16的地址上，并且把 sp-=16. </span><br><span class="line">stp x29, x30, [sp, #-16]!;	// 把 x29, x30的值存到 sp-16的地址上，并且把 sp-=16.</span><br></pre></td></tr></table></figure>
+<h3 id="SBFX-UBFX"><a href="#SBFX-UBFX" class="headerlink" title="SBFX/UBFX"></a>SBFX/UBFX</h3><p>有符号和无符号位域提取。 将一个寄存器中相邻的位复制到另一个寄存器的最低有效位，并用符号或零扩展到 32 位。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">op&#123;cond&#125; Rd(目标寄存器), Rn(源寄存器), #lsb, #width</span><br><span class="line">// lsb: 是位域中的最低有效位的位编码，范围从 0 到 31</span><br><span class="line">// width: 是位域宽度，范围从 1 到 (32–lsb)。</span><br></pre></td></tr></table></figure>
+<p>不要将 <code>r15</code> 用作 <code>Rd</code> 或 <code>Rn</code>。</p>
+<h3 id="cmp"><a href="#cmp" class="headerlink" title="cmp"></a>cmp</h3><p>cmp 操作对象1, 操作对象2</p>
+<p>计算 操作对象1 - 操作对象2 但不保存结果，只是根据结果修改相应的标志位。</p>
+<h3 id="cbz-cbnz"><a href="#cbz-cbnz" class="headerlink" title="cbz/cbnz"></a>cbz/cbnz</h3><p>cbz比较，为零则跳转；</p>
+<p>cbnz比较，为非零则跳转。</p>
+<h3 id="UXTH"><a href="#UXTH" class="headerlink" title="UXTH"></a>UXTH</h3><p>无符号（Unsigned）扩展一个半字（Half）到 32位，相当于左移 4 位。</p>
+<h3 id="ret"><a href="#ret" class="headerlink" title="ret"></a>ret</h3><p>返回；默认使用 lr 寄存器的值，通过底层指令指示 CPU 此处作为下条指令地址</p>
+<h3 id="使用例子"><a href="#使用例子" class="headerlink" title="使用例子"></a>使用例子</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mov r0, r1 =&gt; r0 = r1</span><br><span class="line">mov r0, #10 =&gt; r0 = 10</span><br><span class="line">ldr r0, [sp] =&gt; r0 = *sp</span><br><span class="line">str r0, [sp] =&gt; *sp = r0</span><br><span class="line">add r0, r1, r2 =&gt; r0 = r1 + r2</span><br><span class="line">add r0, r1 =&gt; r0 = r0 + r1</span><br><span class="line">push &#123;r0, r1, r2&#125; =&gt; r0, r1, r2 入栈</span><br><span class="line">pop &#123;r0, r1, r2&#125; =&gt; 栈顶出三个, 并赋值给r0, r1 and r2.</span><br><span class="line">b _label =&gt; pc = _label</span><br><span class="line">bl _label =&gt; lr = pc + 4; pc = _label</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ldr = 加载字，宽度四字节</span><br><span class="line">ldrh = 加载无符号的半字，宽度两字节</span><br><span class="line">ldrsh = 加载有符号的半字，宽度两字节</span><br><span class="line">ldrb = 加载无符号的字节</span><br><span class="line">ldrsb = 加载有符号的字节</span><br><span class="line">str = 存储字，宽度四字节</span><br><span class="line">strh = 存储无符号的半字，宽度两字节</span><br><span class="line">strsh = 存储有符号的半字，宽度两字节</span><br><span class="line">strb = 存储无符号的字节</span><br><span class="line">strsb = 存储有符号的字节</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/04/05/asm-note/work.png" alt="数据类型"></p>
+<h2 id="分析样例"><a href="#分析样例" class="headerlink" title="分析样例"></a>分析样例</h2><h4 id="样例一"><a href="#样例一" class="headerlink" title="样例一"></a>样例一</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> addFunction(<span class="keyword">int</span> a, <span class="keyword">int</span> b) &#123;</span><br><span class="line">    <span class="keyword">int</span> c = a + b;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">    .globl  _addFunction</span><br><span class="line">    .align  2</span><br><span class="line">    .code   16                      @ @addFunction</span><br><span class="line">    .thumb_func _addFunction</span><br><span class="line">_addFunction:</span><br><span class="line">    .cfi_startproc</span><br><span class="line">Lfunc_begin0:</span><br><span class="line">    .loc    1 13 0                  @ main.m:13:0</span><br><span class="line">@ BB#0:</span><br><span class="line">    sub sp, #12</span><br><span class="line">    str r0, [sp, #8]</span><br><span class="line">    str r1, [sp, #4]</span><br><span class="line">    .loc    1 14 18 prologue_end    @ main.m:14:18</span><br><span class="line">Ltmp0:</span><br><span class="line">    ldr r0, [sp, #8]</span><br><span class="line">    ldr r1, [sp, #4]</span><br><span class="line">    add r0, r1</span><br><span class="line">    str r0, [sp]</span><br><span class="line">    .loc    1 15 5                  @ main.m:15:5</span><br><span class="line">    ldr r0, [sp]</span><br><span class="line">    add sp, #12</span><br><span class="line">    bx  lr</span><br><span class="line">Ltmp1:</span><br><span class="line">Lfunc_end0:</span><br><span class="line">    .cfi_endproc</span><br></pre></td></tr></table></figure>
+<ol>
+<li>.号开始的行都不是汇编指令而是作用于汇编器，可忽略</li>
+<li>以冒号为结束的行，是汇编的<strong>标签</strong>，作用是方便代码进行路由而无需知道指令的位置；当链接生成二进制文件的时候，链接器会将标签转换成实际内存地址</li>
+<li>在汇编代码之后，以@开头的是对应代码文件的行数</li>
+</ol>
+<p>忽略掉注释和标签，重要的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">_addFunction:</span><br><span class="line">@ 1:</span><br><span class="line">    sub sp, #12</span><br><span class="line">@ 2:</span><br><span class="line">    str r0, [sp, #8]</span><br><span class="line">    str r1, [sp, #4]</span><br><span class="line">@ 3:</span><br><span class="line">    ldr r0, [sp, #8]</span><br><span class="line">    ldr r1, [sp, #4]</span><br><span class="line">@ 4:</span><br><span class="line">    add r0, r1</span><br><span class="line">@ 5:</span><br><span class="line">    str r0, [sp]</span><br><span class="line">    ldr r0, [sp]</span><br><span class="line">@ 6:</span><br><span class="line">    add sp, #12</span><br><span class="line">@ 7:</span><br><span class="line">    bx  lr</span><br></pre></td></tr></table></figure>
+<ol>
+<li>分配 12 个字节长度的内存，sp = sp - 12</li>
+<li><code>r0</code> 和 <code>r1</code> 存放着函数的2个参数，如果入参有四个参数，那么 <code>r2</code> 和 <code>r3</code> 就会分别存放第三和第四个参数。如果函数超过四个参数，或者一些例如结构体的参数超过了32位比特，那么参数将会通过栈来传递。这里通过 str 指令将 <code>r0</code> 和 <code>r1</code> 存储的值保存到 sp+8 和 sp+4 的栈内存位置</li>
+<li>和 <code>str</code> 指令相反的，<code>ldr</code> 指令是从一个内存中加载内容到寄存器。这里分别将栈内存 sp+8 和 sp+4 的值赋值给 <code>r0</code> 和 <code>r1</code>，这里和2重复了，编译器会对这里进行优化</li>
+<li>r0 = r0 + r1</li>
+<li><em>sp = r0, ro = </em>sp，重复操作会被编译器优化</li>
+<li>sp 指针地址增加12字节，sp = sp + 12，作用是为了回收步骤1申请的内存</li>
+<li>返回到调用函数，<code>lr</code> (link register)存放了调用函数执行完当前函数(addFunction)的下一条指令</li>
+</ol>
+<h4 id="样例二"><a href="#样例二" class="headerlink" title="样例二"></a>样例二</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">__attribute__((noinline))</span><br><span class="line"><span class="keyword">int</span> addFunction(<span class="keyword">int</span> a, <span class="keyword">int</span> b) &#123;</span><br><span class="line">    <span class="keyword">int</span> c = a + b;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> fooFunction() &#123;</span><br><span class="line">    <span class="keyword">int</span> add = addFunction(<span class="number">12</span>, <span class="number">34</span>);</span><br><span class="line">    printf(<span class="string">"add = %i"</span>, add);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">_fooFunction:</span><br><span class="line">@ 1:</span><br><span class="line">    push    &#123;r7, lr&#125;	//推入栈, sp减去8字节</span><br><span class="line">@ 2:</span><br><span class="line">    movs    r0, #12</span><br><span class="line">    movs    r1, #34</span><br><span class="line">@ 3:</span><br><span class="line">    mov r7, sp</span><br><span class="line">@ 4:</span><br><span class="line">    bl  _addFunction</span><br><span class="line">@ 5:</span><br><span class="line">    mov r1, r0</span><br><span class="line">@ 6:</span><br><span class="line">    movw    r0, :lower16:(L_.str-(LPC1_0+4))</span><br><span class="line">    movt    r0, :upper16:(L_.str-(LPC1_0+4))</span><br><span class="line">LPC1_0:</span><br><span class="line">    add r0, pc</span><br><span class="line">@ 7:</span><br><span class="line">    blx _printf</span><br><span class="line">@ 8:</span><br><span class="line">    pop &#123;r7, pc&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>r7</code> 和 <code>lr</code> 被推入到栈，意味着 <code>sp</code>（栈指针）<strong>减掉了8字节</strong>（栈指针始终指向<strong>栈顶</strong>，所以在 push 的时候会变小），因为 <code>r7</code> 和 <code>lr</code> 都是4字节。栈指针向<strong>低地址</strong>增长而且通过一个指令<strong>存储了两个值</strong>。<code>r7</code> 的值需要存储起来的原因是之后函数执行时它会被使用到并重写。</li>
+<li>通过 movs 指令将常量读取到 <code>r0</code> 和 <code>r1</code> 中(r0=12, r1=34)，这里用 movs 是直接以一个字节的长度去读取值并填充到寄存器中。此时 <code>r0</code> 和 <code>r1</code> 就是函数 addFunction 的2个参数</li>
+<li>调用函数 addFunction 前，先将 <code>sp</code>(栈指针) 保存起来，又因为 <code>r7</code> 寄存器存放函数的本地参数。你会发现剩余的函数代码中并没有使用栈指针或者r7，因此这是个小小的多余处理。有时候开启了优化也优化不掉。</li>
+<li>执行 <code>bl</code> 指令调用函数 addFunction，<code>lr</code>（链接寄存器）置为当前函数的下一个指令。</li>
+<li>此时 <code>r0</code> 保存了 addFunction 函数的返回值（样例一 @5），这个值会作为 printf 函数的第二个参数，所以用 mov 赋值给 <code>r1</code></li>
+<li>printf 函数的第一个参数是一个字符串。这三条指令作用是将字符串的<strong>开始地址</strong>的指针到 <code>r0</code> 寄存器。字符串存储在二进制文件中的『数据段』，只有最终二进制被链接时才能知道该数据的具体位置。字符串可以在main.m 生成的目标文件例找到。如果你在生成的汇编代码内搜索 <code>L.str</code>，便可找到它。前两个指令加载常量的地址，并减去标签的地址（LPC1_0+4字节，<code>add r0, pc</code> 指令占用4个字节）。r0 = r0 + pc（程序计数器），这样无论L.str在二进制文件的什么位置都能够准确的存放字符串的位置。 下面的图展示了内存分布。<code>L_.str - (LPC1_0 + 4)</code> 差值可以随便变动，但是加载r0的代码却不用变化。</li>
+<li><code>blx</code> 跟 <code>bl</code> 略有区别，x代表处理器工作状态。</li>
+<li>最后一条指令是推出<u>第一条指令推入</u>的值。这次寄存器的值是用栈中的值填充的，且栈指针增加了。回想下，<code>r7</code> 和 <code>lr</code> 之前是被推入到栈中，那么此时为何是推出来的值存入到了r7和pc中，而不是r7和lr呢？ 好的，记得lr是存储当前函数执行完成后的下一个指令地址吧。当你把lr推出栈赋值给pc后，执行将会从本函数调用的地方继续执行。这通常是一个函数返回的实现方式，而不是像 <code>addFunction</code> 那样切分支的方式。</li>
+</ol>
+<p>参考文章：</p>
+<ol>
+<li><a href="https://www.jianshu.com/p/544464a5e630" target="_blank" rel="noopener">iOS汇编教程：理解ARM</a></li>
+<li><a href="https://blog.csdn.net/bytxl/article/details/49883103" target="_blank" rel="noopener">汇编跳转指令B、BL、BX、BLX 和 BXJ的区别</a></li>
+<li><a href="https://blog.cnbluebox.com/blog/2017/07/24/arm64-start/" target="_blank" rel="noopener">iOS开发同学的arm64汇编入门</a></li>
+<li><a href="http://infocenter.arm.com/help/index.jsp" target="_blank" rel="noopener">arm developer</a></li>
+<li><a href="https://blog.csdn.net/Lcloud671/article/details/78232401" target="_blank" rel="noopener">C语言栈区的讲解(基于ARM)以及ARM sp,fp寄存器的作用</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/汇编/" rel="tag"># 汇编</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/01/ReactiveCocoa-RACChannel/" rel="next" title="ReactiveCocoa-RACChannel">
+                <i class="fa fa-chevron-left"></i> ReactiveCocoa-RACChannel
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/07/objc-msg-armd64/" rel="prev" title="objc-msg-arm64源码深入分析">
+                objc-msg-arm64源码深入分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chipengliu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#字节序"><span class="nav-number">1.</span> <span class="nav-text">字节序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寄存器"><span class="nav-number">2.</span> <span class="nav-text">寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#浮点寄存器"><span class="nav-number">2.1.</span> <span class="nav-text">浮点寄存器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#伪操作"><span class="nav-number">3.</span> <span class="nav-text">伪操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#text"><span class="nav-number">3.1.</span> <span class="nav-text">.text:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#global"><span class="nav-number">3.2.</span> <span class="nav-text">.global</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#extern"><span class="nav-number">3.3.</span> <span class="nav-text">.extern</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#section"><span class="nav-number">3.4.</span> <span class="nav-text">.section</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#quad"><span class="nav-number">3.5.</span> <span class="nav-text">.quad</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用指令"><span class="nav-number">4.</span> <span class="nav-text">常用指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#b"><span class="nav-number">4.1.</span> <span class="nav-text">b</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bl"><span class="nav-number">4.2.</span> <span class="nav-text">bl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bx"><span class="nav-number">4.3.</span> <span class="nav-text">bx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blx"><span class="nav-number">4.4.</span> <span class="nav-text">blx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#br"><span class="nav-number">4.5.</span> <span class="nav-text">br</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adrp"><span class="nav-number">4.6.</span> <span class="nav-text">adrp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#movw"><span class="nav-number">4.7.</span> <span class="nav-text">movw</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#movt"><span class="nav-number">4.8.</span> <span class="nav-text">movt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#movs"><span class="nav-number">4.9.</span> <span class="nav-text">movs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ldr"><span class="nav-number">4.10.</span> <span class="nav-text">ldr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ldp-stp"><span class="nav-number">4.11.</span> <span class="nav-text">ldp/stp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SBFX-UBFX"><span class="nav-number">4.12.</span> <span class="nav-text">SBFX/UBFX</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cmp"><span class="nav-number">4.13.</span> <span class="nav-text">cmp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cbz-cbnz"><span class="nav-number">4.14.</span> <span class="nav-text">cbz/cbnz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UXTH"><span class="nav-number">4.15.</span> <span class="nav-text">UXTH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ret"><span class="nav-number">4.16.</span> <span class="nav-text">ret</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用例子"><span class="nav-number">4.17.</span> <span class="nav-text">使用例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析样例"><span class="nav-number">5.</span> <span class="nav-text">分析样例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#样例一"><span class="nav-number">5.0.1.</span> <span class="nav-text">样例一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#样例二"><span class="nav-number">5.0.2.</span> <span class="nav-text">样例二</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

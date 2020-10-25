@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="背景前不久项目上一段代码出现 crash，因为 dispatch_once 出现死锁问题">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次 dispatch_once 引发的 crash 的思考">
+<meta property="og:url" content="https://chipengliu.github.io/2020/10/24/dispatch-once-crash/index.html">
+<meta property="og:site_name" content="Laucp&#39;s Blog">
+<meta property="og:description" content="背景前不久项目上一段代码出现 crash，因为 dispatch_once 出现死锁问题">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://chipengliu.github.io/2020/10/24/dispatch-once-crash/image-20201025190248972.png">
+<meta property="og:updated_time" content="2020-10-25T14:50:21.262Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次 dispatch_once 引发的 crash 的思考">
+<meta name="twitter:description" content="背景前不久项目上一段代码出现 crash，因为 dispatch_once 出现死锁问题">
+<meta name="twitter:image" content="https://chipengliu.github.io/2020/10/24/dispatch-once-crash/image-20201025190248972.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://chipengliu.github.io/2020/10/24/dispatch-once-crash/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>一次 dispatch_once 引发的 crash 的思考 | Laucp's Blog</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Laucp's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2020/10/24/dispatch-once-crash/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chipengliu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Laucp's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">一次 dispatch_once 引发的 crash 的思考
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-10-24 10:00:59" itemprop="dateCreated datePublished" datetime="2020-10-24T10:00:59+08:00">2020-10-24</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前不久项目上一段代码出现 crash，因为 dispatch_once 出现死锁问题</p>
+<a id="more"></a>
+<p>出现问题的代码简化后如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">@interface UIDevice (Screen)</span><br><span class="line"></span><br><span class="line">- (BOOL)isIPhoneX;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UIDevice (Screen)</span><br><span class="line"></span><br><span class="line">- (BOOL)isIPhoneX &#123;</span><br><span class="line">    static BOOL isIPhoneX = NO;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        if (@available(iOS 11.0, *)) &#123;</span><br><span class="line">            UIWindow *mainWindow = [UIApplication sharedApplication].windows.firstObject;</span><br><span class="line">            BOOL shouldRemoveWindow = NO;</span><br><span class="line">            if (!mainWindow) &#123;</span><br><span class="line">                mainWindow = [[UIWindow alloc] init];</span><br><span class="line">                mainWindow.backgroundColor = [UIColor clearColor];</span><br><span class="line">                shouldRemoveWindow = YES;</span><br><span class="line">            &#125;</span><br><span class="line">            if (mainWindow.safeAreaInsets.bottom &gt; 0.f) &#123;</span><br><span class="line">                isIPhoneX = YES;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            if (shouldRemoveWindow) &#123;</span><br><span class="line">                [mainWindow removeFromSuperview];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">    return isIPhoneX;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@implementation ViewController</span><br><span class="line"></span><br><span class="line">- (BOOL)prefersStatusBarHidden &#123;</span><br><span class="line">    if ([[UIDevice currentDevice] isIPhoneX]) &#123;</span><br><span class="line">        NSLog(@&quot;do something&quot;);</span><br><span class="line">      return NO;</span><br><span class="line">    &#125;</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>UIDevice分类方法 <code>-isIPhoneX</code> 内部调用 window 的 <code>safeAreaInsets</code> 属性，会触发当前显示的 ViewController <code>-prefersStatusBarHidden</code> 方法，而 <code>-prefersStatusBarHidden</code>  内部又再次调用了 <code>-isIPhoneX</code> 从而导致 dispatch_once 递归死锁。</p>
+<h2 id="dispatch-once-原理"><a href="#dispatch-once-原理" class="headerlink" title="dispatch_once 原理"></a>dispatch_once 原理</h2><p>那么 dispatch_once 为什么会递归使用的时候造成死锁呢？</p>
+<p>来看看其源码实现 （这里为了简化代码分析，选用libdispatch-339.1.9，项目上 GCD 版本和此版本不一样，但核心逻辑大致相同）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void</span><br><span class="line">dispatch_once(dispatch_once_t *val, dispatch_block_t block)</span><br><span class="line">&#123;</span><br><span class="line">  // 1. dispatch_once 逻辑入口</span><br><span class="line">	dispatch_once_f(val, block, _dispatch_Block_invoke(block));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">struct _dispatch_once_waiter_s &#123;</span><br><span class="line">	volatile struct _dispatch_once_waiter_s *volatile dow_next;</span><br><span class="line">	_dispatch_thread_semaphore_t dow_sema;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">#define DISPATCH_ONCE_DONE ((struct _dispatch_once_waiter_s *)~0l)</span><br><span class="line"></span><br><span class="line">void</span><br><span class="line">dispatch_once_f(dispatch_once_t *val, void *ctxt, dispatch_function_t func)</span><br><span class="line">&#123;</span><br><span class="line">	struct _dispatch_once_waiter_s * volatile *vval =</span><br><span class="line">			(struct _dispatch_once_waiter_s**)val;</span><br><span class="line">	struct _dispatch_once_waiter_s dow = &#123; NULL, 0 &#125;;</span><br><span class="line">	struct _dispatch_once_waiter_s *tail, *tmp;</span><br><span class="line">	_dispatch_thread_semaphore_t sema;</span><br><span class="line"></span><br><span class="line">  // 2. 判断 vval == NULL，如果 vval 的初始值为 NULL，返回 YES，同时把 &amp;dow 赋值给 vval；否则返回 NO。</span><br><span class="line">	if (dispatch_atomic_cmpxchg(vval, NULL, &amp;dow, acquire)) &#123;</span><br><span class="line">    // 2.1. 执行 block</span><br><span class="line">		_dispatch_client_callout(ctxt, func);</span><br><span class="line"></span><br><span class="line">		dispatch_atomic_maximally_synchronizing_barrier();</span><br><span class="line">		// above assumed to contain release barrier</span><br><span class="line">    </span><br><span class="line">    // 2.2. dispatch_atomic_xchg(vval, DISPATCH_ONCE_DONE) 将 vval 修改为指定状态 DISPATCH_ONCE_DONE</span><br><span class="line">    // 表示 block 以及执行完成</span><br><span class="line">		tmp = dispatch_atomic_xchg(vval, DISPATCH_ONCE_DONE, relaxed);</span><br><span class="line">    </span><br><span class="line">    // 2.3. 遍历链表的节点（block 执行过程期间加入的）</span><br><span class="line">    // 调用 _dispatch_thread_semaphore_signal 来唤醒等待中的信号量</span><br><span class="line">		tail = &amp;dow;</span><br><span class="line">		while (tail != tmp) &#123;</span><br><span class="line">			while (!tmp-&gt;dow_next) &#123;</span><br><span class="line">        // 2.4 若 tmp 的 next 指针还没更新完毕，等待其更新完毕</span><br><span class="line">				dispatch_hardware_pause();</span><br><span class="line">			&#125;</span><br><span class="line">			sema = tmp-&gt;dow_sema;</span><br><span class="line">			tmp = (struct _dispatch_once_waiter_s*)tmp-&gt;dow_next;</span><br><span class="line">      </span><br><span class="line">      // 2.5 发信号，通知链表其他节点，当前节点的任务以及执行完成</span><br><span class="line">			_dispatch_thread_semaphore_signal(sema);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">    // 3. 若首个任务未执行完毕</span><br><span class="line">		dow.dow_sema = _dispatch_get_thread_semaphore();</span><br><span class="line">		tmp = *vval;</span><br><span class="line">		for (;;) &#123;</span><br><span class="line">      // 3.1 若首个任务已经完成，结束等待</span><br><span class="line">			if (tmp == DISPATCH_ONCE_DONE) &#123;</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">      // 3.2 后续任务加入到链表</span><br><span class="line">      // 3.2.1 若 vval != tmp, for 循环等待其他节点插入操作完成</span><br><span class="line">			if (dispatch_atomic_cmpxchgvw(vval, tmp, &amp;dow, &amp;tmp, release)) &#123;</span><br><span class="line">        // 3.2.2 若 vval == tmp，vval = &amp;dow，更新队列节点为当前节点</span><br><span class="line">				dow.dow_next = tmp;</span><br><span class="line">        // 3.3 阻塞当前线程</span><br><span class="line">				_dispatch_thread_semaphore_wait(dow.dow_sema);</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		_dispatch_put_thread_semaphore(dow.dow_sema);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/10/24/dispatch-once-crash/image-20201025190248972.png" alt="image-20201025190248972"></p>
+<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a>问题原因</h2><p><code>- (BOOL)isIPhoneX</code> 方法中 dispatch_once  传入的 block 内部在相同线程递归执行 <code>- (BOOL)isIPhoneX</code> ，导致前一个任务被后一个任务阻塞，后一个任务又依赖于前一个的完成状态，导致死锁</p>
+<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><ol>
+<li><p>上文的 crash 是从逻辑细节看，因为传入 dispatch_once 的 block 内部递归执行触发同一个 dispatch_once。而从函数设计来看，是因为函数内部逻辑不够单纯，出现了外部依赖。dispatch_once 执行的 block 应该尽可能保持单纯、简单。</p>
+</li>
+<li><p>对于 <code>- (BOOL)isIPhoneX</code> 这个case 来说，允许极端情况下执行多次内部判断逻辑对性能影响不大，退而求之，可使用静态全局变量保存执行记录；如果遇到极端场景，一开始是并发执行，就允许多次执行完整的判断逻辑，而之后直接使用计算过的结果。这里可以参考QMUI 中判断全面屏的逻辑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">static NSInteger isNotchedScreen = -1;</span><br><span class="line">+ (BOOL)isNotchedScreen &#123;</span><br><span class="line">    if (@available(iOS 11, *)) &#123;</span><br><span class="line">        if (isNotchedScreen &lt; 0) &#123;</span><br><span class="line">            if (@available(iOS 12.0, *)) &#123;</span><br><span class="line">                SEL peripheryInsetsSelector = NSSelectorFromString([NSString stringWithFormat:@&quot;_%@%@&quot;, @&quot;periphery&quot;, @&quot;Insets&quot;]);</span><br><span class="line">                UIEdgeInsets peripheryInsets = UIEdgeInsetsZero;</span><br><span class="line">                [[UIScreen mainScreen] qmui_performSelector:peripheryInsetsSelector withPrimitiveReturnValue:&amp;peripheryInsets];</span><br><span class="line">                if (peripheryInsets.bottom &lt;= 0) &#123;</span><br><span class="line">                    UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];</span><br><span class="line">                    peripheryInsets = window.safeAreaInsets;</span><br><span class="line">                    if (peripheryInsets.bottom &lt;= 0) &#123;</span><br><span class="line">                        UIViewController *viewController = [UIViewController new];</span><br><span class="line">                        window.rootViewController = viewController;</span><br><span class="line">                        if (CGRectGetMinY(viewController.view.frame) &gt; 20) &#123;</span><br><span class="line">                            peripheryInsets.bottom = 1;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                isNotchedScreen = peripheryInsets.bottom &gt; 0 ? 1 : 0;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                isNotchedScreen = [QMUIHelper is58InchScreen] ? 1 : 0;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        isNotchedScreen = 0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return isNotchedScreen &gt; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Atomic-Builtins.html" target="_blank" rel="noopener">5.44 Built-in functions for atomic memory access</a></p>
+<p><a href="https://satanwoo.github.io/2016/04/11/dispatch-once/" target="_blank" rel="noopener">滥用单例之dispatch_once死锁</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/19/urlsession-cache/" rel="next" title="URLSession HTTP 缓存机制初探">
+                <i class="fa fa-chevron-left"></i> URLSession HTTP 缓存机制初探
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Chipengliu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatch-once-原理"><span class="nav-number">2.</span> <span class="nav-text">dispatch_once 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题原因"><span class="nav-number">3.</span> <span class="nav-text">问题原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反思"><span class="nav-number">4.</span> <span class="nav-text">反思</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">5.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
