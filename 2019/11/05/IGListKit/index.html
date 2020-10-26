@@ -1,131 +1,51 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
   <meta name="description" content="IGListKit 是 Instagram 维护一个 UI 框架，采用面向协议的思想，基于 UICollectionView 实现，由数据驱动的 UI 列表框架。本文基于 IGListKit 源码对其主要设计思想进行分析。">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IGListKit 源码解析">
 <meta property="og:url" content="https://chipengliu.github.io/2019/11/05/IGListKit/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
 <meta property="og:description" content="IGListKit 是 Instagram 维护一个 UI 框架，采用面向协议的思想，基于 UICollectionView 实现，由数据驱动的 UI 列表框架。本文基于 IGListKit 源码对其主要设计思想进行分析。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://chipengliu.github.io/2019/11/05/IGListKit/image-20191105193430090.png">
 <meta property="og:image" content="https://chipengliu.github.io/2019/11/05/IGListKit/image-20191105162410295.png">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.794Z">
+<meta property="article:published_time" content="2019-11-05T08:17:58.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.794Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IGListKit 源码解析">
-<meta name="twitter:description" content="IGListKit 是 Instagram 维护一个 UI 框架，采用面向协议的思想，基于 UICollectionView 实现，由数据驱动的 UI 列表框架。本文基于 IGListKit 源码对其主要设计思想进行分析。">
 <meta name="twitter:image" content="https://chipengliu.github.io/2019/11/05/IGListKit/image-20191105193430090.png">
 
+<link rel="canonical" href="https://chipengliu.github.io/2019/11/05/IGListKit/">
 
 
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2019/11/05/IGListKit/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -137,25 +57,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -164,9 +67,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -178,131 +80,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -310,127 +142,70 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/11/05/IGListKit/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">IGListKit 源码解析
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          IGListKit 源码解析
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-11-05 16:17:58" itemprop="dateCreated datePublished" datetime="2019-11-05T16:17:58+08:00">2019-11-05</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -438,39 +213,50 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
         <p>IGListKit 是 Instagram 维护一个 UI 框架，采用面向协议的思想，基于 UICollectionView 实现，由数据驱动的 UI 列表框架。本文基于 IGListKit 源码对其主要设计思想进行分析。</p>
 <a id="more"></a>
+
+
+
 <p>分析前，我们现看一下 IGListKit 中的数据和 UI 对应关系图</p>
 <p><img src="/2019/11/05/IGListKit/image-20191105193430090.png" alt="image-20191105193430090"></p>
 <p>可以看出 IGListKit 都是基于 IGListAdapter 进行数据传递和 UI 刷新的操作，接下来从 IGListAdapter 入手分析 IGListKit 具体做了哪些工作。</p>
 <h2 id="IGListAdapter"><a href="#IGListAdapter" class="headerlink" title="IGListAdapter"></a>IGListAdapter</h2><h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化:"></a>初始化:</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)initWithUpdater:(<span class="keyword">id</span> &lt;IGListUpdatingDelegate&gt;)updater</span><br><span class="line">                 viewController:(<span class="built_in">UIViewController</span> *)viewController</span><br><span class="line">               workingRangeSize:(<span class="built_in">NSInteger</span>)workingRangeSize &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    IGParameterAssert(updater);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">        <span class="comment">// objectLookupPointerFunctions 返回 hash 表计算 hash 以及比较 value 是否相同的设置</span></span><br><span class="line">        <span class="built_in">NSPointerFunctions</span> *keyFunctions = [updater objectLookupPointerFunctions];</span><br><span class="line">        <span class="built_in">NSPointerFunctions</span> *valueFunctions = [<span class="built_in">NSPointerFunctions</span> pointerFunctionsWithOptions:<span class="built_in">NSPointerFunctionsStrongMemory</span>];</span><br><span class="line">      	<span class="comment">// table 是以 object 为 key，sectionController 为 value 的 map</span></span><br><span class="line">        <span class="built_in">NSMapTable</span> *table = [[<span class="built_in">NSMapTable</span> alloc] initWithKeyPointerFunctions:keyFunctions valuePointerFunctions:valueFunctions capacity:<span class="number">0</span>];</span><br><span class="line">        _sectionMap = [[IGListSectionMap alloc] initWithMapTable:table];</span><br><span class="line"></span><br><span class="line">        _displayHandler = [IGListDisplayHandler new];</span><br><span class="line">        _workingRangeHandler = [[IGListWorkingRangeHandler alloc] initWithWorkingRangeSize:workingRangeSize];</span><br><span class="line">        _updateListeners = [<span class="built_in">NSHashTable</span> weakObjectsHashTable];</span><br><span class="line"></span><br><span class="line">      	<span class="comment">// 将 cell 和 sectionController 映射</span></span><br><span class="line">        _viewSectionControllerMap = [<span class="built_in">NSMapTable</span> mapTableWithKeyOptions:<span class="built_in">NSMapTableObjectPointerPersonality</span> | <span class="built_in">NSMapTableStrongMemory</span></span><br><span class="line">                                                          valueOptions:<span class="built_in">NSMapTableStrongMemory</span>];</span><br><span class="line"></span><br><span class="line">        _updater = updater;</span><br><span class="line">        _viewController = viewController;</span><br><span class="line"></span><br><span class="line">        [IGListDebugger trackAdapter:<span class="keyword">self</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>IGListSectionMap</strong>: 作用是映射 sectionController 和 collectionView 的 section 的对应关系，能在 O(1) 的时间复杂度根据 section 获取 sectionController。内部实现结果如下图:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">object -- objectToSectionControllerMap --&gt; IGListSectionController</span><br><span class="line">IGListSectionController -- objectToSectionControllerMap --&gt; object</span><br><span class="line">IGListSectionController -- sectionControllerToSectionMap --&gt; section</span><br><span class="line">section -- sectionControllerToSectionMap --&gt; IGListSectionController</span><br></pre></td></tr></table></figure>
+
 <p><strong>IGListDisplayHandler</strong>: 作用和对外暴露的 IGListAdapterPerformanceDelegate 类似，主要是对 UICollectionViewCell 生命周日相关对调的处理(cell 显示/消失/分区头部、尾部显示/消失)，内部会把事件传给 IGListSectionController 的 displayDelegate；在 IGListAdapter+UICollectionView.m 文件中进行调用。</p>
 <p><strong>IGListWorkingRangeHandler</strong>: 负责 collectionView 每个 section(sectionController) 的预加载的准备工作。在 IGListAdapter+UICollectionView.m 文件中进行调用，相关数据会保存起来，提供给 IGListAdapter 使用。</p>
 <p><strong>IGListAdapterUpdateListener:</strong> 代理集合，IGListAdapter 更新完数据后对集合的代理进行通知</p>
 <h4 id="数据源"><a href="#数据源" class="headerlink" title="数据源:"></a>数据源:</h4><p>IGListAdapter 会作为 UICollectionView 默认的 dataSource。</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)setCollectionView:(<span class="built_in">UICollectionView</span> *)collectionView &#123;</span><br><span class="line">    <span class="keyword">if</span> (_collectionView != collectionView || _collectionView.dataSource != <span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="built_in">NSMapTable</span>&lt;<span class="built_in">UICollectionView</span> *, IGListAdapter *&gt; *globalCollectionViewAdapterMap = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">if</span> (globalCollectionViewAdapterMap == <span class="literal">nil</span>) &#123;</span><br><span class="line">            globalCollectionViewAdapterMap = [<span class="built_in">NSMapTable</span> weakToWeakObjectsMapTable];</span><br><span class="line">        &#125;</span><br><span class="line">        [globalCollectionViewAdapterMap removeObjectForKey:_collectionView];</span><br><span class="line">        [[globalCollectionViewAdapterMap objectForKey:collectionView] setCollectionView:<span class="literal">nil</span>];</span><br><span class="line">        [globalCollectionViewAdapterMap setObject:<span class="keyword">self</span> forKey:collectionView];</span><br><span class="line"></span><br><span class="line">        _registeredCellIdentifiers = [<span class="built_in">NSMutableSet</span> new];</span><br><span class="line">        _registeredNibNames = [<span class="built_in">NSMutableSet</span> new];</span><br><span class="line">        _registeredSupplementaryViewIdentifiers = [<span class="built_in">NSMutableSet</span> new];</span><br><span class="line">        _registeredSupplementaryViewNibNames = [<span class="built_in">NSMutableSet</span> new];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">BOOL</span> settingFirstCollectionView = _collectionView == <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">        _collectionView = collectionView;</span><br><span class="line">        _collectionView.dataSource = <span class="keyword">self</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (@available(iOS <span class="number">10.0</span>, tvOS <span class="number">10</span>, *)) &#123;</span><br><span class="line">            _collectionView.prefetchingEnabled = <span class="literal">NO</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [_collectionView.collectionViewLayout ig_hijackLayoutInteractiveReorderingMethodForAdapter:<span class="keyword">self</span>];</span><br><span class="line">      	<span class="comment">// 使当前的布局失效，同时触发布局更新</span></span><br><span class="line">        [_collectionView.collectionViewLayout invalidateLayout];</span><br><span class="line"></span><br><span class="line">        [<span class="keyword">self</span> _updateCollectionViewDelegate];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!IGListExperimentEnabled(<span class="keyword">self</span>.experiments, IGListExperimentGetCollectionViewAtUpdate)</span><br><span class="line">            || settingFirstCollectionView) &#123;</span><br><span class="line">            [<span class="keyword">self</span> _updateAfterPublicSettingsChange];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>globalCollectionViewAdapterMap: key 为 collectionView，value 为 IGListAdapter</p>
 <p>通过 <code>- (void)setCollectionView:(UICollectionView *)collectionView</code> 关联 IGListAdapter 和 UICollectionView:</p>
 <pre><code>1. globalCollectionViewAdapterMap 先移除旧的 _collectionView 对应的 IGListAdapter，就是代码中的 self
 
  2. 将新 collectionView 之前绑定的 IGListAdapter 取消对 collectionView 绑定
- 3. 将新 collectionView 和当前 IGListAdapter 绑定
-</code></pre><p>dataSource 的方法实现再 IGListAdapter+UICollectionView.m 中，dataSource 的代理方法通过 IGSectionController 返回每个 section 对应的数据</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IGListAdapter+UICollectionView.m</span></span><br><span class="line"><span class="meta">#pragma mark - UICollectionViewDataSource</span></span><br><span class="line">- (<span class="built_in">NSInteger</span>)numberOfSectionsInCollectionView:(<span class="built_in">UICollectionView</span> *)collectionView &#123;...&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSInteger</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView numberOfItemsInSection:(<span class="built_in">NSInteger</span>)section &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">UICollectionViewCell</span> *)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView cellForItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">UICollectionReusableView</span> *)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView viewForSupplementaryElementOfKind:(<span class="built_in">NSString</span> *)kind atIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">BOOL</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView canMoveItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">  	<span class="keyword">const</span> <span class="built_in">NSInteger</span> sectionIndex = indexPath.section;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">NSInteger</span> itemIndex = indexPath.item;</span><br><span class="line"></span><br><span class="line">    IGListSectionController *sectionController = [<span class="keyword">self</span> sectionControllerForSection:sectionIndex];</span><br><span class="line">    <span class="keyword">return</span> [sectionController canMoveItemAtIndex:itemIndex];</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="keyword">void</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView</span><br><span class="line">   moveItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)sourceIndexPath</span><br><span class="line">           toIndexPath:(<span class="built_in">NSIndexPath</span> *)destinationIndexPath &#123;...&#125;</span><br></pre></td></tr></table></figure>
+ 3. 将新 collectionView 和当前 IGListAdapter 绑定</code></pre>
+<p>dataSource 的方法实现再 IGListAdapter+UICollectionView.m 中，dataSource 的代理方法通过 IGSectionController 返回每个 section 对应的数据</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IGListAdapter+UICollectionView.m</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> mark - UICollectionViewDataSource</span></span><br><span class="line">- (<span class="built_in">NSInteger</span>)numberOfSectionsInCollectionView:(<span class="built_in">UICollectionView</span> *)collectionView &#123;...&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSInteger</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView numberOfItemsInSection:(<span class="built_in">NSInteger</span>)section &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">UICollectionViewCell</span> *)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView cellForItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">UICollectionReusableView</span> *)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView viewForSupplementaryElementOfKind:(<span class="built_in">NSString</span> *)kind atIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="built_in">BOOL</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView canMoveItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">  	<span class="keyword">const</span> <span class="built_in">NSInteger</span> sectionIndex = indexPath.section;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">NSInteger</span> itemIndex = indexPath.item;</span><br><span class="line"></span><br><span class="line">    IGListSectionController *sectionController = [<span class="keyword">self</span> sectionControllerForSection:sectionIndex];</span><br><span class="line">    <span class="keyword">return</span> [sectionController canMoveItemAtIndex:itemIndex];</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">- (<span class="keyword">void</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView</span><br><span class="line">   moveItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)sourceIndexPath</span><br><span class="line">           toIndexPath:(<span class="built_in">NSIndexPath</span> *)destinationIndexPath &#123;...&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <h4 id="数据源更新-lt-IGListUpdatingDelegate-gt"><a href="#数据源更新-lt-IGListUpdatingDelegate-gt" class="headerlink" title="数据源更新 &lt;IGListUpdatingDelegate&gt;:"></a>数据源更新 <code>&lt;IGListUpdatingDelegate&gt;</code>:</h4><p>IGListAdapter 提供以下几种方法让外部进行数据更新:</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)performUpdatesAnimated:(<span class="built_in">BOOL</span>)animated completion:(<span class="keyword">nullable</span> IGListUpdaterCompletion)completion;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)reloadDataWithCompletion:(<span class="keyword">nullable</span> IGListUpdaterCompletion)completion;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)reloadObjects:(<span class="built_in">NSArray</span> *)objects;</span><br></pre></td></tr></table></figure>
+
 <p>我们先以 <code>-reloadDataWithCompletion:</code> 方法为例子，分析数据更新的过程：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)reloadDataWithCompletion:(<span class="keyword">nullable</span> IGListUpdaterCompletion)completion &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterDataSource&gt; dataSource = <span class="keyword">self</span>.dataSource;</span><br><span class="line">    <span class="built_in">UICollectionView</span> *collectionView = <span class="keyword">self</span>.collectionView;</span><br><span class="line">    <span class="keyword">if</span> (dataSource == <span class="literal">nil</span> || collectionView == <span class="literal">nil</span>) &#123;</span><br><span class="line">        IGLKLog(<span class="string">@"Warning: Your call to %s is ignored as dataSource or collectionView haven't been set."</span>, __PRETTY_FUNCTION__);</span><br><span class="line">        <span class="keyword">if</span> (completion) &#123;</span><br><span class="line">            completion(<span class="literal">NO</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 重新读取一次数据源代理方法，数据根据diffIdentifier去重</span></span><br><span class="line">    <span class="built_in">NSArray</span> *uniqueObjects = objectsWithDuplicateIdentifiersRemoved([dataSource objectsForListAdapter:<span class="keyword">self</span>]);</span><br><span class="line"></span><br><span class="line">    __<span class="keyword">weak</span> __typeof__(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    [<span class="keyword">self</span>.updater reloadDataWithCollectionViewBlock:[<span class="keyword">self</span> _collectionViewBlock]</span><br><span class="line">                                  reloadUpdateBlock:^&#123;</span><br><span class="line">                                    	<span class="comment">// 移除所有 section controllers 以便于重新生成</span></span><br><span class="line">                                      [weakSelf.sectionMap reset];</span><br><span class="line">                                    	<span class="comment">// 根据去重后的数据源重新生成 section controller</span></span><br><span class="line">                                      [weakSelf _updateObjects:uniqueObjects dataSource:dataSource];</span><br><span class="line">                                  &#125; completion:^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">                                      [weakSelf _notifyDidUpdate:IGListAdapterUpdateTypeReloadData animated:<span class="literal">NO</span>];</span><br><span class="line">                                      <span class="keyword">if</span> (completion) &#123;</span><br><span class="line">                                          completion(finished);</span><br><span class="line">                                      &#125;</span><br><span class="line">                                  &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)reloadDataWithCompletion:(<span class="keyword">nullable</span> IGListUpdaterCompletion)completion &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterDataSource&gt; dataSource = <span class="keyword">self</span>.dataSource;</span><br><span class="line">    <span class="built_in">UICollectionView</span> *collectionView = <span class="keyword">self</span>.collectionView;</span><br><span class="line">    <span class="keyword">if</span> (dataSource == <span class="literal">nil</span> || collectionView == <span class="literal">nil</span>) &#123;</span><br><span class="line">        IGLKLog(<span class="string">@&quot;Warning: Your call to %s is ignored as dataSource or collectionView haven&#x27;t been set.&quot;</span>, __PRETTY_FUNCTION__);</span><br><span class="line">        <span class="keyword">if</span> (completion) &#123;</span><br><span class="line">            completion(<span class="literal">NO</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 重新读取一次数据源代理方法，数据根据diffIdentifier去重</span></span><br><span class="line">    <span class="built_in">NSArray</span> *uniqueObjects = objectsWithDuplicateIdentifiersRemoved([dataSource objectsForListAdapter:<span class="keyword">self</span>]);</span><br><span class="line"></span><br><span class="line">    __<span class="keyword">weak</span> __typeof__(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    [<span class="keyword">self</span>.updater reloadDataWithCollectionViewBlock:[<span class="keyword">self</span> _collectionViewBlock]</span><br><span class="line">                                  reloadUpdateBlock:^&#123;</span><br><span class="line">                                    	<span class="comment">// 移除所有 section controllers 以便于重新生成</span></span><br><span class="line">                                      [weakSelf.sectionMap reset];</span><br><span class="line">                                    	<span class="comment">// 根据去重后的数据源重新生成 section controller</span></span><br><span class="line">                                      [weakSelf _updateObjects:uniqueObjects dataSource:dataSource];</span><br><span class="line">                                  &#125; completion:^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">                                      [weakSelf _notifyDidUpdate:IGListAdapterUpdateTypeReloadData animated:<span class="literal">NO</span>];</span><br><span class="line">                                      <span class="keyword">if</span> (completion) &#123;</span><br><span class="line">                                          completion(finished);</span><br><span class="line">                                      &#125;</span><br><span class="line">                                  &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>刷新数据之前，会先将数据去重，保证数据对应的 diffIdentifier 是唯一的。然后调用 IGListAdapterUpdater 的方法进行刷新数据</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)reloadDataWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock</span><br><span class="line">                   reloadUpdateBlock:(IGListReloadUpdateBlock)reloadUpdateBlock</span><br><span class="line">                          completion:(<span class="keyword">nullable</span> IGListUpdatingCompletion)completion &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    IGParameterAssert(collectionViewBlock != <span class="literal">nil</span>);</span><br><span class="line">    IGParameterAssert(reloadUpdateBlock != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">    IGListUpdatingCompletion localCompletion = completion;</span><br><span class="line">    <span class="keyword">if</span> (localCompletion) &#123;</span><br><span class="line">        [<span class="keyword">self</span>.completionBlocks addObject:localCompletion];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">self</span>.reloadUpdates = reloadUpdateBlock;</span><br><span class="line">    <span class="keyword">self</span>.queuedReloadData = <span class="literal">YES</span>;</span><br><span class="line">    [<span class="keyword">self</span> _queueUpdateWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)_queueUpdateWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    </span><br><span class="line">    __<span class="keyword">weak</span> __typeof__(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// dispatch_async 是为了执行 -performBatchUpdatesWithCollectionViewBlock: 前提供更多时间来完成数据更新处理，减少在主线程上进行差异化的操作</span></span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        <span class="keyword">if</span> (weakSelf.state != IGListBatchUpdateStateIdle</span><br><span class="line">            || ![weakSelf hasChanges]) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (weakSelf.hasQueuedReloadData) &#123;</span><br><span class="line">            [weakSelf performReloadDataWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            [weakSelf performBatchUpdatesWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>之后进入条件判断执行 <code>-performReloadDataWithCollectionViewBlock:</code> 方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">- (void)performReloadDataWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    </span><br><span class="line">    id&lt;IGListAdapterUpdaterDelegate&gt; delegate = self.delegate;</span><br><span class="line">    void (^reloadUpdates)(void) = self.reloadUpdates;</span><br><span class="line">    IGListBatchUpdates *batchUpdates = self.batchUpdates;</span><br><span class="line">    NSMutableArray *completionBlocks = [self.completionBlocks mutableCopy];</span><br><span class="line"></span><br><span class="line">  	// 清空相关状态</span><br><span class="line">    [self cleanStateBeforeUpdates];</span><br><span class="line"></span><br><span class="line">    void (^executeCompletionBlocks)(BOOL) = ^(BOOL finished) &#123;</span><br><span class="line">        for (IGListUpdatingCompletion block in completionBlocks) &#123;</span><br><span class="line">            block(finished);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        self.state = IGListBatchUpdateStateIdle;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    // 防止 collectionView 被释放导致崩溃</span><br><span class="line">    UICollectionView *collectionView = collectionViewBlock();</span><br><span class="line">    if (collectionView == nil) &#123;</span><br><span class="line">        [self _cleanStateAfterUpdates];</span><br><span class="line">        executeCompletionBlocks(NO);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 更新状态，避免更新数据的过程中去通知视图更新</span><br><span class="line">    self.state = IGListBatchUpdateStateExecutingBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">  	// 通知外部移除所有 section controllers，然后重新生成</span><br><span class="line">    if (reloadUpdates) &#123;</span><br><span class="line">        reloadUpdates();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	// 即使我们只是调用reloadData，也要执行所有存储的 batchUpdates 任务</span><br><span class="line">  	// 实际效果所有 section 视图的突变将被丢弃，建议使用者也将其实际的数据更新也放入 batchUpdates 任务集合中，因此，如果我们不执行该块，则 batchUpdates 是不会被触发</span><br><span class="line">    for (IGListItemUpdateBlock itemUpdateBlock in batchUpdates.itemUpdateBlocks) &#123;</span><br><span class="line">        itemUpdateBlock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // add any completion blocks from item updates. added after item blocks are executed in order to capture any</span><br><span class="line">    // re-entrant updates</span><br><span class="line">    [completionBlocks addObjectsFromArray:batchUpdates.itemCompletionBlocks];</span><br><span class="line"></span><br><span class="line">    self.state = IGListBatchUpdateStateExecutedBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">    [self _cleanStateAfterUpdates];</span><br><span class="line"></span><br><span class="line">    [delegate listAdapterUpdater:self willReloadDataWithCollectionView:collectionView];</span><br><span class="line">    [collectionView reloadData];</span><br><span class="line">    [collectionView.collectionViewLayout invalidateLayout];</span><br><span class="line">    [collectionView layoutIfNeeded];</span><br><span class="line">    [delegate listAdapterUpdater:self didReloadDataWithCollectionView:collectionView];</span><br><span class="line"></span><br><span class="line">    executeCompletionBlocks(YES);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">- (void)performReloadDataWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    </span><br><span class="line">    id&lt;IGListAdapterUpdaterDelegate&gt; delegate &#x3D; self.delegate;</span><br><span class="line">    void (^reloadUpdates)(void) &#x3D; self.reloadUpdates;</span><br><span class="line">    IGListBatchUpdates *batchUpdates &#x3D; self.batchUpdates;</span><br><span class="line">    NSMutableArray *completionBlocks &#x3D; [self.completionBlocks mutableCopy];</span><br><span class="line"></span><br><span class="line">  	&#x2F;&#x2F; 清空相关状态</span><br><span class="line">    [self cleanStateBeforeUpdates];</span><br><span class="line"></span><br><span class="line">    void (^executeCompletionBlocks)(BOOL) &#x3D; ^(BOOL finished) &#123;</span><br><span class="line">        for (IGListUpdatingCompletion block in completionBlocks) &#123;</span><br><span class="line">            block(finished);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        self.state &#x3D; IGListBatchUpdateStateIdle;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 防止 collectionView 被释放导致崩溃</span><br><span class="line">    UICollectionView *collectionView &#x3D; collectionViewBlock();</span><br><span class="line">    if (collectionView &#x3D;&#x3D; nil) &#123;</span><br><span class="line">        [self _cleanStateAfterUpdates];</span><br><span class="line">        executeCompletionBlocks(NO);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 更新状态，避免更新数据的过程中去通知视图更新</span><br><span class="line">    self.state &#x3D; IGListBatchUpdateStateExecutingBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">  	&#x2F;&#x2F; 通知外部移除所有 section controllers，然后重新生成</span><br><span class="line">    if (reloadUpdates) &#123;</span><br><span class="line">        reloadUpdates();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	&#x2F;&#x2F; 即使我们只是调用reloadData，也要执行所有存储的 batchUpdates 任务</span><br><span class="line">  	&#x2F;&#x2F; 实际效果所有 section 视图的突变将被丢弃，建议使用者也将其实际的数据更新也放入 batchUpdates 任务集合中，因此，如果我们不执行该块，则 batchUpdates 是不会被触发</span><br><span class="line">    for (IGListItemUpdateBlock itemUpdateBlock in batchUpdates.itemUpdateBlocks) &#123;</span><br><span class="line">        itemUpdateBlock();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; add any completion blocks from item updates. added after item blocks are executed in order to capture any</span><br><span class="line">    &#x2F;&#x2F; re-entrant updates</span><br><span class="line">    [completionBlocks addObjectsFromArray:batchUpdates.itemCompletionBlocks];</span><br><span class="line"></span><br><span class="line">    self.state &#x3D; IGListBatchUpdateStateExecutedBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">    [self _cleanStateAfterUpdates];</span><br><span class="line"></span><br><span class="line">    [delegate listAdapterUpdater:self willReloadDataWithCollectionView:collectionView];</span><br><span class="line">    [collectionView reloadData];</span><br><span class="line">    [collectionView.collectionViewLayout invalidateLayout];</span><br><span class="line">    [collectionView layoutIfNeeded];</span><br><span class="line">    [delegate listAdapterUpdater:self didReloadDataWithCollectionView:collectionView];</span><br><span class="line"></span><br><span class="line">    executeCompletionBlocks(YES);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-performReloadDataWithCollectionViewBlock:</code> 中也会触发保存在 batchUpdates 中的更新任务，以便及时刷新数据/界面，然后通过代理通知外部 UICollectionView 刷新的前后事件。</p>
 <p>可以看出 <code>-reloadDataWithCompletion:</code> 基本等同于强制刷新，会把所有刷新任务全部执行完之后，通知 UICollectionView 刷新界面。</p>
 <p>与 <code>-reloadDataWithCompletion:</code> 不同的是，IGListAdapter 还有提供另外一个方法进行数据刷新 <code>- (void)performUpdatesAnimated:completion:</code></p>
@@ -478,30 +264,47 @@
 <p>updater 会将更新数据 sectionMap 的操作保存到 objectTransitionBlock 中</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)performUpdateWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock</span><br><span class="line">                            fromObjects:(<span class="built_in">NSArray</span> *)fromObjects</span><br><span class="line">                         toObjectsBlock:(IGListToObjectBlock)toObjectsBlock</span><br><span class="line">                               animated:(<span class="built_in">BOOL</span>)animated</span><br><span class="line">                  objectTransitionBlock:(IGListObjectTransitionBlock)objectTransitionBlock</span><br><span class="line">                             completion:(IGListUpdatingCompletion)completion &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    IGParameterAssert(collectionViewBlock != <span class="literal">nil</span>);</span><br><span class="line">    IGParameterAssert(objectTransitionBlock != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 正在执行更新的过程中，同一时间内可能会有多个其他更新任务加入，</span></span><br><span class="line">    <span class="comment">// 执行更新动作的时候，是第一次加入的 fromObject 和 最后加入的 toObjects</span></span><br><span class="line">    <span class="comment">// 如果 self.fromObject == nil, 应该有先使用之前加入并且还没有执行的 batch update 任务的终点数据源(toObjects)</span></span><br><span class="line">    <span class="comment">// 这样做的目的是使整个数据变化可以串联起来</span></span><br><span class="line">    <span class="keyword">self</span>.fromObjects = <span class="keyword">self</span>.fromObjects ?: <span class="keyword">self</span>.pendingTransitionToObjects ?: fromObjects;</span><br><span class="line">    <span class="keyword">self</span>.toObjectsBlock = toObjectsBlock;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// disabled animations will always take priority</span></span><br><span class="line">    <span class="comment">// reset to YES in -cleanupState</span></span><br><span class="line">    <span class="keyword">self</span>.queuedUpdateIsAnimated = <span class="keyword">self</span>.queuedUpdateIsAnimated &amp;&amp; animated;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保证每次刷新使用最新的 objectTransitionBlock</span></span><br><span class="line">    <span class="keyword">self</span>.objectTransitionBlock = objectTransitionBlock;</span><br><span class="line"></span><br><span class="line">    IGListUpdatingCompletion localCompletion = completion;</span><br><span class="line">    <span class="keyword">if</span> (localCompletion) &#123;</span><br><span class="line">        [<span class="keyword">self</span>.completionBlocks addObject:localCompletion];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">self</span> _queueUpdateWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p> IGListUpdater 处理完传入的 fromObjects 和 toObjects，并保存数据转化的闭包 objectTransitionBlock，会调用 <code>-_queueUpdateWithCollectionViewBlock:</code> 方法，利用 dispatch_async 异步调用 <code>-performBatchUpdatesWithCollectionViewBlock:</code></p>
- <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br></pre></td><td class="code"><pre><span class="line"> - (<span class="keyword">void</span>)performBatchUpdatesWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    IGAssert(<span class="keyword">self</span>.state == IGListBatchUpdateStateIdle, <span class="string">@"Should not call batch updates when state isn't idle"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建局部变量，以便我们可以立即清除状态，但将这些数据传递到批处理更新任务中</span></span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterUpdaterDelegate&gt; delegate = <span class="keyword">self</span>.delegate;</span><br><span class="line">    <span class="built_in">NSArray</span> *fromObjects = [<span class="keyword">self</span>.fromObjects <span class="keyword">copy</span>];</span><br><span class="line">    IGListToObjectBlock toObjectsBlock = [<span class="keyword">self</span>.toObjectsBlock <span class="keyword">copy</span>];</span><br><span class="line">    <span class="built_in">NSMutableArray</span> *completionBlocks = [<span class="keyword">self</span>.completionBlocks mutableCopy];</span><br><span class="line">    <span class="keyword">void</span> (^objectTransitionBlock)(<span class="built_in">NSArray</span> *) = [<span class="keyword">self</span>.objectTransitionBlock <span class="keyword">copy</span>];</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">BOOL</span> animated = <span class="keyword">self</span>.queuedUpdateIsAnimated;</span><br><span class="line">    IGListBatchUpdates *batchUpdates = <span class="keyword">self</span>.batchUpdates;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 清理所有状态，以便在当前更新进行时可以合并新的更新</span></span><br><span class="line">    [<span class="keyword">self</span> cleanStateBeforeUpdates];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化更新完成之后的回调</span></span><br><span class="line">    <span class="keyword">void</span> (^executeCompletionBlocks)(<span class="built_in">BOOL</span>) = ^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">        <span class="keyword">self</span>.applyingUpdateData = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateIdle;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (IGListUpdatingCompletion block <span class="keyword">in</span> completionBlocks) &#123;</span><br><span class="line">            block(finished);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// collectionView 如果被销毁，则结束更新恢复相关状态</span></span><br><span class="line">    <span class="built_in">UICollectionView</span> *collectionView = collectionViewBlock();</span><br><span class="line">    <span class="keyword">if</span> (collectionView == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        executeCompletionBlocks(<span class="literal">NO</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSArray</span> *toObjects = <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">if</span> (toObjectsBlock != <span class="literal">nil</span>) &#123;</span><br><span class="line">        toObjects = objectsWithDuplicateIdentifiersRemoved(toObjectsBlock());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化数据刷新的闭包</span></span><br><span class="line">    <span class="keyword">void</span> (^executeUpdateBlocks)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateExecutingBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新包括 IGListAdapter 的 sectionController 和 objects 的映射关系等数据</span></span><br><span class="line">        <span class="comment">// 保证执行刷新前，数据已经是最新的</span></span><br><span class="line">        <span class="keyword">if</span> (objectTransitionBlock != <span class="literal">nil</span>) &#123;</span><br><span class="line">            objectTransitionBlock(toObjects);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 触发批量刷新任务的数据更新闭包（包括插入、删除、刷新单个 section 的数据）</span></span><br><span class="line">        <span class="comment">// objectTransitionBlock 之后执行是为了保证 section 级别的刷新在 item 级别刷新之前进行</span></span><br><span class="line">        <span class="keyword">for</span> (IGListItemUpdateBlock itemUpdateBlock <span class="keyword">in</span> batchUpdates.itemUpdateBlocks) &#123;</span><br><span class="line">            itemUpdateBlock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 收集批量刷新完成的回调，后续所有操作完了之后一并处理</span></span><br><span class="line">        [completionBlocks addObjectsFromArray:batchUpdates.itemCompletionBlocks];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateExecutedBatchUpdateBlock;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行全量的数据更新并刷新 UI</span></span><br><span class="line">    <span class="keyword">void</span> (^reloadDataFallback)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        executeUpdateBlocks();</span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        [<span class="keyword">self</span> _performBatchUpdatesItemBlockApplied];</span><br><span class="line">        [collectionView reloadData];</span><br><span class="line">        [collectionView layoutIfNeeded];</span><br><span class="line"></span><br><span class="line">        executeCompletionBlocks(<span class="literal">YES</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果当前 collection 没有显示，跳过差分/分批刷新</span></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">BOOL</span> iOS83OrLater = (<span class="built_in">NSFoundationVersionNumber</span> &gt;= <span class="built_in">NSFoundationVersionNumber_iOS_8_3</span>);</span><br><span class="line">    <span class="keyword">if</span> (iOS83OrLater &amp;&amp; <span class="keyword">self</span>.allowsBackgroundReloading &amp;&amp; collectionView.window == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> _beginPerformBatchUpdatesToObjects:toObjects];</span><br><span class="line">        reloadDataFallback();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 禁止同时执行多个 -performBatchUpdates：</span></span><br><span class="line">    [<span class="keyword">self</span> _beginPerformBatchUpdatesToObjects:toObjects];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> IGListExperiment experiments = <span class="keyword">self</span>.experiments;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算新旧数据源差分部分，算法参考: https://dl.acm.org/citation.cfm?id=359467&amp;dl=ACM&amp;coll=DL</span></span><br><span class="line">    IGListIndexSetResult *(^performDiff)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        <span class="keyword">return</span> IGListDiffExperiment(fromObjects, toObjects, IGListDiffEquality, experiments);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block executed in the first param block of -[UICollectionView performBatchUpdates:completion:]</span></span><br><span class="line">    <span class="keyword">void</span> (^batchUpdatesBlock)(IGListIndexSetResult *result) = ^(IGListIndexSetResult *result)&#123;</span><br><span class="line">        <span class="comment">// 更新数据</span></span><br><span class="line">        executeUpdateBlocks();</span><br><span class="line">        <span class="comment">// 根据整理差分算法结果，过滤相关 section/item 数据，把 item 级别的刷新转换成 section 级别来规避 UICollectionView 的 bug，并调用 collectionView reload/insert/delete/move 操作</span></span><br><span class="line">        <span class="keyword">self</span>.applyingUpdateData = [<span class="keyword">self</span> _flushCollectionView:collectionView</span><br><span class="line">                                              withDiffResult:result</span><br><span class="line">                                                batchUpdates:<span class="keyword">self</span>.batchUpdates</span><br><span class="line">                                                 fromObjects:fromObjects];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 更新相关数据状态, 清空批量更新任务和等待更新的数据</span></span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        [<span class="keyword">self</span> _performBatchUpdatesItemBlockApplied];</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block used as the second param of -[UICollectionView performBatchUpdates:completion:]</span></span><br><span class="line">    <span class="keyword">void</span> (^batchUpdatesCompletionBlock)(<span class="built_in">BOOL</span>) = ^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">        IGListBatchUpdateData *oldApplyingUpdateData = <span class="keyword">self</span>.applyingUpdateData;</span><br><span class="line">        executeCompletionBlocks(finished);</span><br><span class="line"></span><br><span class="line">        [delegate listAdapterUpdater:<span class="keyword">self</span> didPerformBatchUpdates:oldApplyingUpdateData collectionView:collectionView];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// queue another update in case something changed during batch updates. this method will bail next runloop if</span></span><br><span class="line">        <span class="comment">// there are no changes</span></span><br><span class="line">        <span class="comment">// 如果 batch update 任务执行的过程中尤其比那话，则异步在下一个 runloop 周期执行相关更新动作</span></span><br><span class="line">        [<span class="keyword">self</span> _queueUpdateWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block that executes the batch update and exception handling</span></span><br><span class="line">    <span class="keyword">void</span> (^performUpdate)(IGListIndexSetResult *) = ^(IGListIndexSetResult *result)&#123;</span><br><span class="line">        [collectionView layoutIfNeeded];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">@try</span> &#123;</span><br><span class="line">            <span class="comment">// 对外通知即将进行 batch update</span></span><br><span class="line">            [delegate  listAdapterUpdater:<span class="keyword">self</span></span><br><span class="line">willPerformBatchUpdatesWithCollectionView:collectionView</span><br><span class="line">                              fromObjects:fromObjects</span><br><span class="line">                                toObjects:toObjects</span><br><span class="line">                       listIndexSetResult:result];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (collectionView.dataSource == <span class="literal">nil</span>) &#123;</span><br><span class="line">                <span class="comment">// 如果数据源为空则不再刷新的 UICollectionview</span></span><br><span class="line">                batchUpdatesCompletionBlock(<span class="literal">NO</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (result.changeCount &gt; <span class="number">100</span> &amp;&amp; IGListExperimentEnabled(experiments, IGListExperimentReloadDataFallback)) &#123;</span><br><span class="line">                <span class="comment">// 差分变化数量超过100，进行全量刷新</span></span><br><span class="line">                reloadDataFallback();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (animated) &#123;</span><br><span class="line">                <span class="comment">// 执行差分更新的批量动画</span></span><br><span class="line">                [collectionView performBatchUpdates:^&#123;</span><br><span class="line">                    batchUpdatesBlock(result);</span><br><span class="line">                &#125; completion:batchUpdatesCompletionBlock];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                [<span class="built_in">CATransaction</span> begin];</span><br><span class="line">                [<span class="built_in">CATransaction</span> setDisableActions:<span class="literal">YES</span>];</span><br><span class="line">                [collectionView performBatchUpdates:^&#123;</span><br><span class="line">                    batchUpdatesBlock(result);</span><br><span class="line">                &#125; completion:^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">                    [<span class="built_in">CATransaction</span> commit];</span><br><span class="line">                    batchUpdatesCompletionBlock(finished);</span><br><span class="line">                &#125;];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">@catch</span> (<span class="built_in">NSException</span> *exception) &#123;</span><br><span class="line">            <span class="comment">// 异常对外通知</span></span><br><span class="line">            [delegate listAdapterUpdater:<span class="keyword">self</span></span><br><span class="line">                          collectionView:collectionView</span><br><span class="line">                  willCrashWithException:exception</span><br><span class="line">                             fromObjects:fromObjects</span><br><span class="line">                               toObjects:toObjects</span><br><span class="line">                              diffResult:result</span><br><span class="line">                                 updates:(<span class="keyword">id</span>)<span class="keyword">self</span>.applyingUpdateData];</span><br><span class="line">            <span class="keyword">@throw</span> exception;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (IGListExperimentEnabled(experiments, IGListExperimentBackgroundDiffing)) &#123;</span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, <span class="number">0</span>), ^&#123;</span><br><span class="line">            <span class="comment">// 计算完差分部分</span></span><br><span class="line">            IGListIndexSetResult *result = performDiff();</span><br><span class="line">            <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">                <span class="comment">//根据差分结果刷新 UICollectionView</span></span><br><span class="line">                performUpdate(result);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        IGListIndexSetResult *result = performDiff();</span><br><span class="line">        performUpdate(result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br></pre></td><td class="code"><pre><span class="line"> - (<span class="keyword">void</span>)performBatchUpdatesWithCollectionViewBlock:(IGListCollectionViewBlock)collectionViewBlock &#123;</span><br><span class="line">    IGAssertMainThread();</span><br><span class="line">    IGAssert(<span class="keyword">self</span>.state == IGListBatchUpdateStateIdle, <span class="string">@&quot;Should not call batch updates when state isn&#x27;t idle&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建局部变量，以便我们可以立即清除状态，但将这些数据传递到批处理更新任务中</span></span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterUpdaterDelegate&gt; delegate = <span class="keyword">self</span>.delegate;</span><br><span class="line">    <span class="built_in">NSArray</span> *fromObjects = [<span class="keyword">self</span>.fromObjects <span class="keyword">copy</span>];</span><br><span class="line">    IGListToObjectBlock toObjectsBlock = [<span class="keyword">self</span>.toObjectsBlock <span class="keyword">copy</span>];</span><br><span class="line">    <span class="built_in">NSMutableArray</span> *completionBlocks = [<span class="keyword">self</span>.completionBlocks mutableCopy];</span><br><span class="line">    <span class="keyword">void</span> (^objectTransitionBlock)(<span class="built_in">NSArray</span> *) = [<span class="keyword">self</span>.objectTransitionBlock <span class="keyword">copy</span>];</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">BOOL</span> animated = <span class="keyword">self</span>.queuedUpdateIsAnimated;</span><br><span class="line">    IGListBatchUpdates *batchUpdates = <span class="keyword">self</span>.batchUpdates;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 清理所有状态，以便在当前更新进行时可以合并新的更新</span></span><br><span class="line">    [<span class="keyword">self</span> cleanStateBeforeUpdates];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化更新完成之后的回调</span></span><br><span class="line">    <span class="keyword">void</span> (^executeCompletionBlocks)(<span class="built_in">BOOL</span>) = ^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">        <span class="keyword">self</span>.applyingUpdateData = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateIdle;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (IGListUpdatingCompletion block <span class="keyword">in</span> completionBlocks) &#123;</span><br><span class="line">            block(finished);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// collectionView 如果被销毁，则结束更新恢复相关状态</span></span><br><span class="line">    <span class="built_in">UICollectionView</span> *collectionView = collectionViewBlock();</span><br><span class="line">    <span class="keyword">if</span> (collectionView == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        executeCompletionBlocks(<span class="literal">NO</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSArray</span> *toObjects = <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">if</span> (toObjectsBlock != <span class="literal">nil</span>) &#123;</span><br><span class="line">        toObjects = objectsWithDuplicateIdentifiersRemoved(toObjectsBlock());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化数据刷新的闭包</span></span><br><span class="line">    <span class="keyword">void</span> (^executeUpdateBlocks)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateExecutingBatchUpdateBlock;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新包括 IGListAdapter 的 sectionController 和 objects 的映射关系等数据</span></span><br><span class="line">        <span class="comment">// 保证执行刷新前，数据已经是最新的</span></span><br><span class="line">        <span class="keyword">if</span> (objectTransitionBlock != <span class="literal">nil</span>) &#123;</span><br><span class="line">            objectTransitionBlock(toObjects);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 触发批量刷新任务的数据更新闭包（包括插入、删除、刷新单个 section 的数据）</span></span><br><span class="line">        <span class="comment">// objectTransitionBlock 之后执行是为了保证 section 级别的刷新在 item 级别刷新之前进行</span></span><br><span class="line">        <span class="keyword">for</span> (IGListItemUpdateBlock itemUpdateBlock <span class="keyword">in</span> batchUpdates.itemUpdateBlocks) &#123;</span><br><span class="line">            itemUpdateBlock();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 收集批量刷新完成的回调，后续所有操作完了之后一并处理</span></span><br><span class="line">        [completionBlocks addObjectsFromArray:batchUpdates.itemCompletionBlocks];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">self</span>.state = IGListBatchUpdateStateExecutedBatchUpdateBlock;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行全量的数据更新并刷新 UI</span></span><br><span class="line">    <span class="keyword">void</span> (^reloadDataFallback)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        executeUpdateBlocks();</span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        [<span class="keyword">self</span> _performBatchUpdatesItemBlockApplied];</span><br><span class="line">        [collectionView reloadData];</span><br><span class="line">        [collectionView layoutIfNeeded];</span><br><span class="line"></span><br><span class="line">        executeCompletionBlocks(<span class="literal">YES</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果当前 collection 没有显示，跳过差分/分批刷新</span></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">BOOL</span> iOS83OrLater = (<span class="built_in">NSFoundationVersionNumber</span> &gt;= <span class="built_in">NSFoundationVersionNumber_iOS_8_3</span>);</span><br><span class="line">    <span class="keyword">if</span> (iOS83OrLater &amp;&amp; <span class="keyword">self</span>.allowsBackgroundReloading &amp;&amp; collectionView.window == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [<span class="keyword">self</span> _beginPerformBatchUpdatesToObjects:toObjects];</span><br><span class="line">        reloadDataFallback();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 禁止同时执行多个 -performBatchUpdates：</span></span><br><span class="line">    [<span class="keyword">self</span> _beginPerformBatchUpdatesToObjects:toObjects];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> IGListExperiment experiments = <span class="keyword">self</span>.experiments;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算新旧数据源差分部分，算法参考: https://dl.acm.org/citation.cfm?id=359467&amp;dl=ACM&amp;coll=DL</span></span><br><span class="line">    IGListIndexSetResult *(^performDiff)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">        <span class="keyword">return</span> IGListDiffExperiment(fromObjects, toObjects, IGListDiffEquality, experiments);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block executed in the first param block of -[UICollectionView performBatchUpdates:completion:]</span></span><br><span class="line">    <span class="keyword">void</span> (^batchUpdatesBlock)(IGListIndexSetResult *result) = ^(IGListIndexSetResult *result)&#123;</span><br><span class="line">        <span class="comment">// 更新数据</span></span><br><span class="line">        executeUpdateBlocks();</span><br><span class="line">        <span class="comment">// 根据整理差分算法结果，过滤相关 section/item 数据，把 item 级别的刷新转换成 section 级别来规避 UICollectionView 的 bug，并调用 collectionView reload/insert/delete/move 操作</span></span><br><span class="line">        <span class="keyword">self</span>.applyingUpdateData = [<span class="keyword">self</span> _flushCollectionView:collectionView</span><br><span class="line">                                              withDiffResult:result</span><br><span class="line">                                                batchUpdates:<span class="keyword">self</span>.batchUpdates</span><br><span class="line">                                                 fromObjects:fromObjects];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 更新相关数据状态, 清空批量更新任务和等待更新的数据</span></span><br><span class="line">        [<span class="keyword">self</span> _cleanStateAfterUpdates];</span><br><span class="line">        [<span class="keyword">self</span> _performBatchUpdatesItemBlockApplied];</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block used as the second param of -[UICollectionView performBatchUpdates:completion:]</span></span><br><span class="line">    <span class="keyword">void</span> (^batchUpdatesCompletionBlock)(<span class="built_in">BOOL</span>) = ^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">        IGListBatchUpdateData *oldApplyingUpdateData = <span class="keyword">self</span>.applyingUpdateData;</span><br><span class="line">        executeCompletionBlocks(finished);</span><br><span class="line"></span><br><span class="line">        [delegate listAdapterUpdater:<span class="keyword">self</span> didPerformBatchUpdates:oldApplyingUpdateData collectionView:collectionView];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// queue another update in case something changed during batch updates. this method will bail next runloop if</span></span><br><span class="line">        <span class="comment">// there are no changes</span></span><br><span class="line">        <span class="comment">// 如果 batch update 任务执行的过程中尤其比那话，则异步在下一个 runloop 周期执行相关更新动作</span></span><br><span class="line">        [<span class="keyword">self</span> _queueUpdateWithCollectionViewBlock:collectionViewBlock];</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block that executes the batch update and exception handling</span></span><br><span class="line">    <span class="keyword">void</span> (^performUpdate)(IGListIndexSetResult *) = ^(IGListIndexSetResult *result)&#123;</span><br><span class="line">        [collectionView layoutIfNeeded];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">@try</span> &#123;</span><br><span class="line">            <span class="comment">// 对外通知即将进行 batch update</span></span><br><span class="line">            [delegate  listAdapterUpdater:<span class="keyword">self</span></span><br><span class="line">willPerformBatchUpdatesWithCollectionView:collectionView</span><br><span class="line">                              fromObjects:fromObjects</span><br><span class="line">                                toObjects:toObjects</span><br><span class="line">                       listIndexSetResult:result];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (collectionView.dataSource == <span class="literal">nil</span>) &#123;</span><br><span class="line">                <span class="comment">// 如果数据源为空则不再刷新的 UICollectionview</span></span><br><span class="line">                batchUpdatesCompletionBlock(<span class="literal">NO</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (result.changeCount &gt; <span class="number">100</span> &amp;&amp; IGListExperimentEnabled(experiments, IGListExperimentReloadDataFallback)) &#123;</span><br><span class="line">                <span class="comment">// 差分变化数量超过100，进行全量刷新</span></span><br><span class="line">                reloadDataFallback();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (animated) &#123;</span><br><span class="line">                <span class="comment">// 执行差分更新的批量动画</span></span><br><span class="line">                [collectionView performBatchUpdates:^&#123;</span><br><span class="line">                    batchUpdatesBlock(result);</span><br><span class="line">                &#125; completion:batchUpdatesCompletionBlock];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                [<span class="built_in">CATransaction</span> begin];</span><br><span class="line">                [<span class="built_in">CATransaction</span> setDisableActions:<span class="literal">YES</span>];</span><br><span class="line">                [collectionView performBatchUpdates:^&#123;</span><br><span class="line">                    batchUpdatesBlock(result);</span><br><span class="line">                &#125; completion:^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">                    [<span class="built_in">CATransaction</span> commit];</span><br><span class="line">                    batchUpdatesCompletionBlock(finished);</span><br><span class="line">                &#125;];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">@catch</span> (<span class="built_in">NSException</span> *exception) &#123;</span><br><span class="line">            <span class="comment">// 异常对外通知</span></span><br><span class="line">            [delegate listAdapterUpdater:<span class="keyword">self</span></span><br><span class="line">                          collectionView:collectionView</span><br><span class="line">                  willCrashWithException:exception</span><br><span class="line">                             fromObjects:fromObjects</span><br><span class="line">                               toObjects:toObjects</span><br><span class="line">                              diffResult:result</span><br><span class="line">                                 updates:(<span class="keyword">id</span>)<span class="keyword">self</span>.applyingUpdateData];</span><br><span class="line">            <span class="keyword">@throw</span> exception;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (IGListExperimentEnabled(experiments, IGListExperimentBackgroundDiffing)) &#123;</span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, <span class="number">0</span>), ^&#123;</span><br><span class="line">            <span class="comment">// 计算完差分部分</span></span><br><span class="line">            IGListIndexSetResult *result = performDiff();</span><br><span class="line">            <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">                <span class="comment">//根据差分结果刷新 UICollectionView</span></span><br><span class="line">                performUpdate(result);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        IGListIndexSetResult *result = performDiff();</span><br><span class="line">        performUpdate(result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>该数据更新过程调用链大概是:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|---performUpdatesAnimated:completion:</span><br><span class="line">    |---performUpdateWithCollectionViewBlock:fromObjects:toObjectsBlock:animated:objectTransitionBlock:completion:</span><br><span class="line">	    |---_queueUpdateWithCollectionViewBlock:</span><br><span class="line">            |---performBatchUpdatesWithCollectionViewBlock:</span><br></pre></td></tr></table></figure>
+
 <p>整个 performUpdates 的大部分逻辑都是由 <strong>IGListUpdater</strong> 完成，重中之重都几种放 <code>-performBatchUpdatesWithCollectionViewBlock:</code>方法：</p>
 <pre><code>1. 判断 collectionView 是否在显示，若不在屏幕窗口上显示，直接全量刷新数据和视图；反之继续步骤2
  2. 子线程调用 IGListDiffExperiment，计算数据的差分变化，计算完毕之后在主线程触发界面刷新逻辑
  3. 通过代理对外通知即将进行 batch update 批量更新
  4. 如果 collectionView 的 dataSource 为 nil，结束更新过程；反之继续
- 5. 差分变化的数据个数超过100，直接调用 reloadData 全量刷新数据/视图；若变化数据小于100，则调用 `-[UICollectionView performBatchUpdates:completion:]` 批量刷新数据/视图，刷新过程中会调用 `-_flushCollectionView:withDiffResult:batchUpdates:fromObjects:` 将数据源提供的数据和 diff 结果包装成批量更新的数据类型 IGListBatchUpdateData 以便 UICollectionView 进行读取
-</code></pre><h4 id="视图管理-lt-IGListAdapterPerformanceDelegate-gt"><a href="#视图管理-lt-IGListAdapterPerformanceDelegate-gt" class="headerlink" title="视图管理 &lt;IGListAdapterPerformanceDelegate&gt;:"></a>视图管理 <code>&lt;IGListAdapterPerformanceDelegate&gt;</code>:</h4><p>IGListAdapter 会作为 collectionView 属性的默认代理</p>
+ 5. 差分变化的数据个数超过100，直接调用 reloadData 全量刷新数据/视图；若变化数据小于100，则调用 `-[UICollectionView performBatchUpdates:completion:]` 批量刷新数据/视图，刷新过程中会调用 `-_flushCollectionView:withDiffResult:batchUpdates:fromObjects:` 将数据源提供的数据和 diff 结果包装成批量更新的数据类型 IGListBatchUpdateData 以便 UICollectionView 进行读取</code></pre>
+<h4 id="视图管理-lt-IGListAdapterPerformanceDelegate-gt"><a href="#视图管理-lt-IGListAdapterPerformanceDelegate-gt" class="headerlink" title="视图管理 &lt;IGListAdapterPerformanceDelegate&gt;:"></a>视图管理 <code>&lt;IGListAdapterPerformanceDelegate&gt;</code>:</h4><p>IGListAdapter 会作为 collectionView 属性的默认代理</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">IGListCollectionViewDelegateLayout</span> &lt;<span class="title">UICollectionViewDelegateFlowLayout</span>&gt;</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">IGListAdapter</span> (<span class="title">UICollectionView</span>)</span></span><br><span class="line">&lt;</span><br><span class="line"><span class="built_in">UICollectionViewDataSource</span>,</span><br><span class="line">IGListCollectionViewDelegateLayout</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
 <p>IGListAdapter 会实现相关代理方法，进行对 cell 级别的视图管理，包含视图 UICollectionView 滚动，cell 大小、cell 显示等事件，并通过 IGListAdapterPerformanceDelegate 对外通知</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">CGSize</span>)sizeForItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">  <span class="comment">//...略</span></span><br><span class="line">  [performanceDelegate listAdapter:<span class="keyword">self</span> didCallSizeOnSectionController:sectionController atIndex:indexPath.item];</span><br><span class="line">  <span class="comment">//...略</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)scrollViewDidScroll:(<span class="built_in">UIScrollView</span> *)scrollView &#123;</span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterPerformanceDelegate&gt; performanceDelegate = <span class="keyword">self</span>.performanceDelegate;</span><br><span class="line">    [performanceDelegate listAdapterWillCallScroll:<span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//...略</span></span><br><span class="line"></span><br><span class="line">    [performanceDelegate listAdapter:<span class="keyword">self</span> didCallScroll:scrollView];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">UICollectionViewCell</span> *)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView cellForItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">  <span class="keyword">id</span>&lt;IGListAdapterPerformanceDelegate&gt; performanceDelegate = <span class="keyword">self</span>.performanceDelegate;</span><br><span class="line">  [performanceDelegate listAdapterWillCallDequeueCell:<span class="keyword">self</span>];</span><br><span class="line">  <span class="comment">//...略</span></span><br><span class="line">  [performanceDelegate listAdapter:<span class="keyword">self</span> didCallDequeueCell:cell onSectionController:sectionController atIndex:indexPath.item];</span><br><span class="line">  <span class="comment">//...略</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView willDisplayCell:(<span class="built_in">UICollectionViewCell</span> *)cell forItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterPerformanceDelegate&gt; performanceDelegate = <span class="keyword">self</span>.performanceDelegate;</span><br><span class="line">    [performanceDelegate listAdapterWillCallDisplayCell:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// ...略</span></span><br><span class="line">    [performanceDelegate listAdapter:<span class="keyword">self</span> didCallDisplayCell:cell onSectionController:sectionController atIndex:indexPath.item];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView didEndDisplayingCell:(<span class="built_in">UICollectionViewCell</span> *)cell forItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterPerformanceDelegate&gt; performanceDelegate = <span class="keyword">self</span>.performanceDelegate;</span><br><span class="line">    [performanceDelegate listAdapterWillCallEndDisplayCell:<span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...略</span></span><br><span class="line"></span><br><span class="line">    [performanceDelegate listAdapter:<span class="keyword">self</span> didCallEndDisplayCell:cell onSectionController:sectionController atIndex:indexPath.item];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <h4 id="视图交互"><a href="#视图交互" class="headerlink" title="视图交互:"></a>视图交互:</h4><p>cell 的拖动会首先触发 UICollectionView 的代理方法 <code>-collectionView:moveItemAtIndexPath:toIndexPath</code> 。在这个方法中会判断拖动开始/结束位置，根据不同的情况进行数据刷新</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)collectionView:(<span class="built_in">UICollectionView</span> *)collectionView</span><br><span class="line">   moveItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)sourceIndexPath</span><br><span class="line">           toIndexPath:(<span class="built_in">NSIndexPath</span> *)destinationIndexPath &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (@available(iOS <span class="number">9.0</span>, *)) &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">NSInteger</span> sourceSectionIndex = sourceIndexPath.section;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">NSInteger</span> destinationSectionIndex = destinationIndexPath.section;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">NSInteger</span> sourceItemIndex = sourceIndexPath.item;</span><br><span class="line">        <span class="keyword">const</span> <span class="built_in">NSInteger</span> destinationItemIndex = destinationIndexPath.item;</span><br><span class="line"></span><br><span class="line">        IGListSectionController *sourceSectionController = [<span class="keyword">self</span> sectionControllerForSection:sourceSectionIndex];</span><br><span class="line">        IGListSectionController *destinationSectionController = [<span class="keyword">self</span> sectionControllerForSection:destinationSectionIndex];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (sourceSectionController == destinationSectionController) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ([sourceSectionController canMoveItemAtIndex:sourceItemIndex toIndex:destinationItemIndex]) &#123;</span><br><span class="line">                <span class="comment">// 同一个 section 内的挪动</span></span><br><span class="line">                [<span class="keyword">self</span> moveInSectionControllerInteractive:sourceSectionController</span><br><span class="line">                                               fromIndex:sourceItemIndex</span><br><span class="line">                                                 toIndex:destinationItemIndex];</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 撤销修改</span></span><br><span class="line">                [<span class="keyword">self</span> revertInvalidInteractiveMoveFromIndexPath:sourceIndexPath toIndexPath:destinationIndexPath];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 跨 section 移动， 如果 section 的 item 数目为1</span></span><br><span class="line">        <span class="keyword">if</span> ([sourceSectionController numberOfItems] == <span class="number">1</span> &amp;&amp; [destinationSectionController numberOfItems] == <span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">            [<span class="keyword">self</span> moveSectionControllerInteractive:sourceSectionController</span><br><span class="line">                                         fromIndex:sourceSectionIndex</span><br><span class="line">                                           toIndex:destinationSectionIndex];</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 撤销修改</span></span><br><span class="line">        [<span class="keyword">self</span> revertInvalidInteractiveMoveFromIndexPath:sourceIndexPath toIndexPath:destinationIndexPath];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>成功拖动之后会触发 IGListUpdater 的 <code>-moveInSectionControllerInteractive</code> 或者  <code>-moveSectionControllerInteractive:fromIndex:toIndex</code>，在同一个 UICollectionView section 中拖动则触发前者，跨 section 之间则后者</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)moveInSectionControllerInteractive:(IGListSectionController *)sectionController</span><br><span class="line">                                 fromIndex:(<span class="built_in">NSInteger</span>)fromIndex</span><br><span class="line">                                   toIndex:(<span class="built_in">NSInteger</span>)toIndex <span class="built_in">NS_AVAILABLE_IOS</span>(<span class="number">9</span>_0) &#123;</span><br><span class="line">  	<span class="comment">//... 略</span></span><br><span class="line">    [sectionController moveObjectFromIndex:fromIndex toIndex:toIndex];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在同一个 section 中拖动 UICollectionViewCell 比较简单，实现中回去调用对应 sectionController 的 <code>-moveObjectFromIndex:toIndex:</code>，使用者在自定义的 sectionController 中实现该代理方法，进行对应的数据刷新更新即可</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)moveSectionControllerInteractive:(IGListSectionController *)sectionController</span><br><span class="line">                               fromIndex:(<span class="built_in">NSInteger</span>)fromIndex</span><br><span class="line">                                 toIndex:(<span class="built_in">NSInteger</span>)toIndex <span class="built_in">NS_AVAILABLE_IOS</span>(<span class="number">9</span>_0) &#123;</span><br><span class="line">    <span class="comment">// ... 略</span></span><br><span class="line">    <span class="keyword">if</span> (fromIndex != toIndex) &#123;</span><br><span class="line">        <span class="keyword">id</span>&lt;IGListAdapterDataSource&gt; dataSource = <span class="keyword">self</span>.dataSource;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSArray</span> *previousObjects = [<span class="keyword">self</span>.sectionMap objects];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>.isLastInteractiveMoveToLastSectionIndex) &#123;</span><br><span class="line">            <span class="comment">// 如果 item 是被移动到 UICollectionView 最底部</span></span><br><span class="line">            <span class="keyword">self</span>.isLastInteractiveMoveToLastSectionIndex = <span class="literal">NO</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (fromIndex &lt; toIndex) &#123;</span><br><span class="line">            toIndex -= <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSMutableArray</span> *mutObjects = [previousObjects mutableCopy];</span><br><span class="line">        <span class="keyword">id</span> object = [previousObjects objectAtIndex:fromIndex];</span><br><span class="line">        [mutObjects removeObjectAtIndex:fromIndex];</span><br><span class="line">        [mutObjects insertObject:object atIndex:toIndex];</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSArray</span> *objects = [mutObjects <span class="keyword">copy</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// inform the data source to update its model</span></span><br><span class="line">        [<span class="keyword">self</span>.moveDelegate listAdapter:<span class="keyword">self</span> moveObject:object from:previousObjects to:objects];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// update our model based on that provided by the data source</span></span><br><span class="line">        <span class="built_in">NSArray</span>&lt;<span class="keyword">id</span>&lt;IGListDiffable&gt;&gt; *updatedObjects = [dataSource objectsForListAdapter:<span class="keyword">self</span>];</span><br><span class="line">        [<span class="keyword">self</span> _updateObjects:updatedObjects dataSource:dataSource];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 刷新 UI</span></span><br><span class="line">    <span class="comment">// 这里 from index 和 to index 可能是相同的, 但是实际上可能是以 section 的方式向上/下移动了一个 section</span></span><br><span class="line">    [<span class="keyword">self</span>.updater moveSectionInCollectionView:collectionView fromIndex:fromIndex toIndex:toIndex];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>跨 UICollectionView section 间拖动 UICollectionViewCell 需要对原始/目标 section 的位置/ item 数目进行相关判断，最后执行 IGListUpdater 的 <code>-moveSectionInCollectionView:fromIndex:toIndex:</code> 方法</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)moveSectionInCollectionView:(<span class="built_in">UICollectionView</span> *)collectionView</span><br><span class="line">                          fromIndex:(<span class="built_in">NSInteger</span>)fromIndex</span><br><span class="line">                            toIndex:(<span class="built_in">NSInteger</span>)toIndex &#123;</span><br><span class="line">    <span class="comment">// iOS 移动是以 item 为移动单位的拖动</span></span><br><span class="line">    <span class="comment">// 如果 originating section 中的 item 数量是1，将这个 item 拖动到 item 数目同样为1的 target section</span></span><br><span class="line">    <span class="comment">// 拖动之后 target section 的 item 数目为2， originating section 的数目为 0</span></span><br><span class="line">    <span class="comment">// 基于这种情况必须使用 reloadData</span></span><br><span class="line">    [collectionView reloadData];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 似乎在 UICollectionVie 的 -moveItemAtIndexPath 代理方法调用期间调用的 -reloadData 不会按预期重新加载所有单元格，</span></span><br><span class="line">    <span class="comment">// 因此，这里进一步重新加载了所有可见部分，以确保没有任何 item 上的数据与 dataSource 不同步。</span></span><br><span class="line">    <span class="keyword">id</span>&lt;IGListAdapterUpdaterDelegate&gt; delegate = <span class="keyword">self</span>.delegate;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSMutableIndexSet</span> *visibleSections = [<span class="built_in">NSMutableIndexSet</span> new];</span><br><span class="line">    <span class="built_in">NSArray</span> *visibleIndexPaths = [collectionView indexPathsForVisibleItems];</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">NSIndexPath</span> *visibleIndexPath <span class="keyword">in</span> visibleIndexPaths) &#123;</span><br><span class="line">        [visibleSections addIndex:visibleIndexPath.section];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [delegate listAdapterUpdater:<span class="keyword">self</span> willReloadSections:visibleSections collectionView:collectionView];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// prevent double-animation from reloadData + reloadSections</span></span><br><span class="line">    </span><br><span class="line">    [<span class="built_in">CATransaction</span> begin];</span><br><span class="line">    [<span class="built_in">CATransaction</span> setDisableActions:<span class="literal">YES</span>];</span><br><span class="line">    [collectionView performBatchUpdates:^&#123;</span><br><span class="line">        [collectionView reloadSections:visibleSections];</span><br><span class="line">    &#125; completion:^(<span class="built_in">BOOL</span> finished) &#123;</span><br><span class="line">        [<span class="built_in">CATransaction</span> commit];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在 <code>-moveSectionInCollectionView:fromIndex:toIndex:</code> 方法会现调用 <code>-[UICollectionView reloadDate]</code> 来规避 origin section item 数目为0的情况，之后还会对应当前屏幕显示区域进行 batch update 来规避 UICollectionView 不能及时刷新的 bug。</p>
 <p>整个 UICollectionViewCell 拖动的调用栈大概为：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">|---collectionView:moveItemAtIndexPath:toIndexPath:</span><br><span class="line">		|---moveInSectionControllerInteractive:fromIndex:toIndex: # section 内拖动</span><br><span class="line">				|---moveObjectFromIndex:toIndex:</span><br><span class="line">		|---moveSectionControllerInteractive:fromIndex:toIndex: # section 间拖动</span><br><span class="line">				|---_updateObjects:dataSource</span><br><span class="line">				|---moveSectionInCollectionView:fromIndex:toIndex # updater</span><br><span class="line">						|---performBatchUpdates:completion: # UICollectionView</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
 <p>总结来说，整个 IGListKit 结构可以用下图来概括:</p>
 <p><img src="/2019/11/05/IGListKit/image-20191105162410295.png" alt="image-20191105170804580"></p>
 <p>可以看出来，IGListAdapter 负责不同功能的属性都是通过面向协议来进行开发，不同的功能模块粒度都比较小，避免模块之间的循环依赖，实现数据跟视图的有效解耦。</p>
@@ -510,6 +313,7 @@
 <p><strong>NSCountedSet</strong></p>
 <p>插入 NSCountedSet 对象的每个不同的对象都有一个与之相关的计数器，同一个对象每加入一次 NSCountedSet 集合中，对应的 count 就会加1</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)_willDisplayReusableView:(<span class="built_in">UICollectionReusableView</span> *)view</span><br><span class="line">                 forListAdapter:(IGListAdapter *)listAdapter</span><br><span class="line">              sectionController:(IGListSectionController *)sectionController</span><br><span class="line">                         object:(<span class="keyword">id</span>)object</span><br><span class="line">                      indexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">    IGParameterAssert(view != <span class="literal">nil</span>);</span><br><span class="line">    IGParameterAssert(listAdapter != <span class="literal">nil</span>);</span><br><span class="line">    IGParameterAssert(object != <span class="literal">nil</span>);</span><br><span class="line">    IGParameterAssert(indexPath != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">self</span>.visibleViewObjectMap setObject:object forKey:view];</span><br><span class="line">    <span class="built_in">NSCountedSet</span> *visibleListSections = <span class="keyword">self</span>.visibleListSections;</span><br><span class="line">    <span class="keyword">if</span> ([visibleListSections countForObject:sectionController] == <span class="number">0</span>) &#123;</span><br><span class="line">        [sectionController.displayDelegate listAdapter:listAdapter willDisplaySectionController:sectionController];</span><br><span class="line">        [listAdapter.delegate listAdapter:listAdapter willDisplayObject:object atIndex:indexPath.section];</span><br><span class="line">    &#125;</span><br><span class="line">    [visibleListSections addObject:sectionController];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>IGListKit 中的 IGListDisplayHandler 利用 NSCountedSet 记录 UICollectionView section 的显示状态，旨在通知外部每个 section 的显示/消失事件。</p>
 <p><strong>prefetchingEnabled</strong></p>
 <p>当调用 <code>collectionView:didEndDisplayingCell:forItemAtIndexPath:</code> 后，cell 不会立刻进入复用队列，系统会<strong>keeps it around for a bit</strong>。相当于会缓存该 cell 一小段时间，在这段时间内如果该 cell 再次回到屏幕中，便不会重新调用 <code>cellForItemAtIndexPath:</code>，而是直接显示。</p>
@@ -519,352 +323,168 @@
 <p>当改变 UICollectionView item 的时候，通过调用 <code>-invalidateLayout</code> 方法让 UICollectionView 布局失效，通过 Invalidation Context 声明了在布局失效时布局的哪些部分需要被更新，布局对象就可以根据该信息减小重新计算的数据量。</p>
 <p>IGListKit 提供了自定义的 IGListCollectionViewLayout 类来优化 UICollectionView 的刷新，IGListCollectionViewLayout 实现和 UICollectionViewLayoutInvalidationContext 相关的方法</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">IGListCollectionViewLayoutInvalidationContext</span> : <span class="title">UICollectionViewLayoutInvalidationContext</span></span></span><br><span class="line"><span class="comment">// 追加视图</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> ig_invalidateSupplementaryAttributes;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> ig_invalidateAllAttributes;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
 <p>IGListCollectionViewLayoutInvalidationContext 类继承了 UICollectionViewLayoutInvalidationContext，用于记录刷新布局相关逻辑</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -[UICollectionView setFrame:] / -[UICollectionView setBounds:] 会触发</span></span><br><span class="line">- (<span class="built_in">UICollectionViewLayoutInvalidationContext</span> *)invalidationContextForBoundsChange:(<span class="built_in">CGRect</span>)newBounds &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">CGRect</span> oldBounds = <span class="keyword">self</span>.collectionView.bounds;</span><br><span class="line">    </span><br><span class="line">    IGListCollectionViewLayoutInvalidationContext *context =</span><br><span class="line">    (IGListCollectionViewLayoutInvalidationContext *)[<span class="keyword">super</span> invalidationContextForBoundsChange:newBounds];</span><br><span class="line">  	<span class="comment">// 每次都需要刷新 追加视图</span></span><br><span class="line">    context.ig_invalidateSupplementaryAttributes = <span class="literal">YES</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">CGSizeEqualToSize</span>(oldBounds.size, newBounds.size)) &#123;</span><br><span class="line">      	<span class="comment">// size 改变之后，必须进行全量刷新</span></span><br><span class="line">        context.ig_invalidateAllAttributes = <span class="literal">YES</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> context;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-invalidationContextForBoundsChange:</code>  当 UICollectionView 发生变化的时候（比如视图 frame 发生改变），在进行视图刷新之前，会触发该方法返回 UICollectionViewLayoutInvalidationContext 对象来告诉UICollectionView 布局刷新的相关信息。</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据 context 中的信息重新计算布局改变的部分。</span></span><br><span class="line"><span class="comment">// -[UICollectionView setDataSource:] / -[UICollectionView setFrame:] 会触发该方法</span></span><br><span class="line"><span class="comment">// 也可以主动调用，强制刷新</span></span><br><span class="line">- (<span class="keyword">void</span>)invalidateLayoutWithContext:(IGListCollectionViewLayoutInvalidationContext *)context &#123;</span><br><span class="line">    <span class="built_in">BOOL</span> hasInvalidatedItemIndexPaths = <span class="literal">NO</span>;</span><br><span class="line">    <span class="keyword">if</span> ([context respondsToSelector:<span class="keyword">@selector</span>(invalidatedItemIndexPaths)]) &#123;</span><br><span class="line">        hasInvalidatedItemIndexPaths = [context invalidatedItemIndexPaths].count &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">  	<span class="comment">// _minimumInvalidatedSection 用来记录指定从哪个 section 开始的布局失效，需要重新布局</span></span><br><span class="line">    <span class="keyword">if</span> (hasInvalidatedItemIndexPaths</span><br><span class="line">        || [context invalidateEverything]</span><br><span class="line">        || context.ig_invalidateAllAttributes) &#123;</span><br><span class="line">        <span class="comment">// invalidates all</span></span><br><span class="line">        _minimumInvalidatedSection = <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([context invalidateDataSourceCounts] &amp;&amp; _minimumInvalidatedSection == <span class="built_in">NSNotFound</span>) &#123;</span><br><span class="line">      	<span class="comment">// invalidateDataSourceCounts 标记 layout 需要重新从 UICollectionView 查询 section 和 item 数目</span></span><br><span class="line">      	<span class="comment">// UICollectionView 调用 -reloadData 或者插入/删除 item 的时候 invalidateDataSourceCounts = YES</span></span><br><span class="line">      	<span class="comment">// 如果 layout 需要重新 UICollectionView 的信息或者没有找到重新刷新的 section 启动，则刷新起点 section 默认为0</span></span><br><span class="line">        _minimumInvalidatedSection = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (context.ig_invalidateSupplementaryAttributes) &#123;</span><br><span class="line">      	<span class="comment">// 清空追加视图的布局信息缓存</span></span><br><span class="line">        [<span class="keyword">self</span> _resetSupplementaryAttributesCache];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">super</span> invalidateLayoutWithContext:context];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-invalidateLayoutWithContext:</code> 方法在 UICollectionView 布局信息发生变化会被系统调用，IGListCollectionViewLayout 实现了该方法，在调用的过程中会对一些布局缓存进行更新（主要是缓存 UICollectionViewLayoutAttributes 对象），具体细节不再展开。</p>
 <p>除此之外，UICollectionViewLayoutInvalidationContext 本身提供了几个方法，用户可以主动调用来进行局部 UI 刷新</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用此方法以标识布局中需要更新的特定单元格。 </span></span><br><span class="line"><span class="comment">// 指定的更新的所有 indexPath 对象将添加到属性 invalidatedItemIndexPaths 中。</span></span><br><span class="line">- (<span class="keyword">void</span>)invalidateItemsAtIndexPaths:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSIndexPath</span> *&gt; *)indexPaths API_AVAILABLE(ios(<span class="number">8.0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新计算一个或者多个追加视图的布局</span></span><br><span class="line">- (<span class="keyword">void</span>)invalidateSupplementaryElementsOfKind:(<span class="built_in">NSString</span> *)elementKind atIndexPaths:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSIndexPath</span> *&gt; *)indexPaths API_AVAILABLE(ios(<span class="number">8.0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新计算一个或者多个装饰视图的布局</span></span><br><span class="line">- (<span class="keyword">void</span>)invalidateDecorationElementsOfKind:(<span class="built_in">NSString</span> *)elementKind atIndexPaths:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSIndexPath</span> *&gt; *)indexPaths API_AVAILABLE(ios(<span class="number">8.0</span>));</span><br></pre></td></tr></table></figure>
 
-      
+
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/07/13/hook-objc-MsgSend/" rel="next" title="从汇编角度分析objc_msgSend的hook过程">
-                <i class="fa fa-chevron-left"></i> 从汇编角度分析objc_msgSend的hook过程
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/05/19/urlsession-cache/" rel="prev" title="URLSession HTTP 缓存机制初探">
-                URLSession HTTP 缓存机制初探 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/13/hook-objc-MsgSend/" rel="prev" title="从汇编角度分析objc_msgSend的hook过程">
+      <i class="fa fa-chevron-left"></i> 从汇编角度分析objc_msgSend的hook过程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/19/urlsession-cache/" rel="next" title="URLSession HTTP 缓存机制初探">
+      URLSession HTTP 缓存机制初探 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IGListAdapter"><span class="nav-number">1.</span> <span class="nav-text">IGListAdapter</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化"><span class="nav-number">1.0.1.</span> <span class="nav-text">初始化:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据源"><span class="nav-number">1.0.2.</span> <span class="nav-text">数据源:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据源更新-lt-IGListUpdatingDelegate-gt"><span class="nav-number">1.0.3.</span> <span class="nav-text">数据源更新 &lt;IGListUpdatingDelegate&gt;:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视图管理-lt-IGListAdapterPerformanceDelegate-gt"><span class="nav-number">1.0.4.</span> <span class="nav-text">视图管理 &lt;IGListAdapterPerformanceDelegate&gt;:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视图交互"><span class="nav-number">1.0.5.</span> <span class="nav-text">视图交互:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-number">1.1.</span> <span class="nav-text">其他</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IGListAdapter"><span class="nav-number">1.</span> <span class="nav-text">IGListAdapter</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.0.1.</span> <span class="nav-text">初始化:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-number">1.0.2.</span> <span class="nav-text">数据源:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%BA%90%E6%9B%B4%E6%96%B0-lt-IGListUpdatingDelegate-gt"><span class="nav-number">1.0.3.</span> <span class="nav-text">数据源更新 &lt;IGListUpdatingDelegate&gt;:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E7%AE%A1%E7%90%86-lt-IGListAdapterPerformanceDelegate-gt"><span class="nav-number">1.0.4.</span> <span class="nav-text">视图管理 &lt;IGListAdapterPerformanceDelegate&gt;:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E4%BA%A4%E4%BA%92"><span class="nav-number">1.0.5.</span> <span class="nav-text">视图交互:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">1.1.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -873,98 +493,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 

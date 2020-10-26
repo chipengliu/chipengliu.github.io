@@ -1,130 +1,50 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
   <meta name="description" content="objc_msgSend 是基于汇编实现的，hook objc_msgSend 和我们平时 hook OC 方法不一样，在 github 上有开源的项目通过 hook objc_msgSend 来监控每个函数的耗时情况。这篇文章对其 hook 逻辑的主要代码进行分析记录。阅读前建议先了解开源库 fishhook 的源码。">
-<meta name="keywords" content="汇编">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从汇编角度分析objc_msgSend的hook过程">
 <meta property="og:url" content="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
 <meta property="og:description" content="objc_msgSend 是基于汇编实现的，hook objc_msgSend 和我们平时 hook OC 方法不一样，在 github 上有开源的项目通过 hook objc_msgSend 来监控每个函数的耗时情况。这篇文章对其 hook 逻辑的主要代码进行分析记录。阅读前建议先了解开源库 fishhook 的源码。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/adrp_add.png">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.857Z">
+<meta property="article:published_time" content="2019-07-13T07:24:15.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.857Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="汇编">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="从汇编角度分析objc_msgSend的hook过程">
-<meta name="twitter:description" content="objc_msgSend 是基于汇编实现的，hook objc_msgSend 和我们平时 hook OC 方法不一样，在 github 上有开源的项目通过 hook objc_msgSend 来监控每个函数的耗时情况。这篇文章对其 hook 逻辑的主要代码进行分析记录。阅读前建议先了解开源库 fishhook 的源码。">
 <meta name="twitter:image" content="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/adrp_add.png">
 
+<link rel="canonical" href="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/">
 
 
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -136,25 +56,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -163,9 +66,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -177,131 +79,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -309,127 +141,70 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/07/13/hook-objc-MsgSend/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">从汇编角度分析objc_msgSend的hook过程
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          从汇编角度分析objc_msgSend的hook过程
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-07-13 15:24:15" itemprop="dateCreated datePublished" datetime="2019-07-13T15:24:15+08:00">2019-07-13</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/计算机基础/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -437,24 +212,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        <p><code>objc_msgSend</code> 是基于汇编实现的，hook <code>objc_msgSend</code> 和我们平时 hook OC 方法不一样，在 github 上有开源的<a href="https://github.com/ming1016/GCDFetchFeed/blob/master/GCDFetchFeed/GCDFetchFeed/Lib/SMLagMonitor/SMCallTraceCore.c" target="_blank" rel="noopener">项目</a>通过 hook <code>objc_msgSend</code> 来监控每个函数的耗时情况。这篇文章对其 hook 逻辑的主要代码进行分析记录。阅读前建议先了解开源库 fishhook 的源码。</p>
+        <p><code>objc_msgSend</code> 是基于汇编实现的，hook <code>objc_msgSend</code> 和我们平时 hook OC 方法不一样，在 github 上有开源的<a target="_blank" rel="noopener" href="https://github.com/ming1016/GCDFetchFeed/blob/master/GCDFetchFeed/GCDFetchFeed/Lib/SMLagMonitor/SMCallTraceCore.c">项目</a>通过 hook <code>objc_msgSend</code> 来监控每个函数的耗时情况。这篇文章对其 hook 逻辑的主要代码进行分析记录。阅读前建议先了解开源库 fishhook 的源码。</p>
 <a id="more"></a>
-<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><p>先看开源 <a href="https://github.com/ming1016/GCDFetchFeed/blob/master/GCDFetchFeed/GCDFetchFeed/Lib/SMLagMonitor/SMCallTraceCore.c" target="_blank" rel="noopener">项目</a> 主要代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">#define call(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, x9, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value)); \</span><br><span class="line">__asm volatile (&quot;ldp x8, x9, [sp], #16\n&quot;); \</span><br><span class="line">__asm volatile (#b &quot; x12\n&quot;);</span><br><span class="line"></span><br><span class="line">#define save() \</span><br><span class="line">__asm volatile ( \</span><br><span class="line">&quot;stp x8, x9, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x6, x7, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x4, x5, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x2, x3, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x0, x1, [sp, #-16]!\n&quot;);</span><br><span class="line"></span><br><span class="line">#define load() \</span><br><span class="line">__asm volatile ( \</span><br><span class="line">&quot;ldp x0, x1, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x2, x3, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x4, x5, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x6, x7, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x8, x9, [sp], #16\n&quot; );</span><br><span class="line"></span><br><span class="line">#define link(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, lr, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;sub sp, sp, #16\n&quot;); \</span><br><span class="line">call(b, value); \</span><br><span class="line">__asm volatile (&quot;add sp, sp, #16\n&quot;); \</span><br><span class="line">__asm volatile (&quot;ldp x8, lr, [sp], #16\n&quot;);</span><br><span class="line"></span><br><span class="line">#define ret() __asm volatile (&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line">__attribute__((__naked__))</span><br><span class="line">static void hook_Objc_msgSend() &#123;</span><br><span class="line">    // Save parameters.</span><br><span class="line">    /// Step 1</span><br><span class="line">    save()</span><br><span class="line">    </span><br><span class="line">    /// Step 2</span><br><span class="line">    __asm volatile (&quot;mov x2, lr\n&quot;);</span><br><span class="line">    __asm volatile (&quot;mov x3, x4\n&quot;);</span><br><span class="line">    </span><br><span class="line">    // Call our before_objc_msgSend.</span><br><span class="line">    /// Step 3</span><br><span class="line">    call(blr, &amp;before_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    // Load parameters.</span><br><span class="line">    /// Step 4</span><br><span class="line">    load()</span><br><span class="line">    </span><br><span class="line">    // Call through to the original objc_msgSend.</span><br><span class="line">    /// Step 5</span><br><span class="line">    call(blr, orig_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    // Save original objc_msgSend return value.</span><br><span class="line">    /// Step 6</span><br><span class="line">    save()</span><br><span class="line">    </span><br><span class="line">    // Call our after_objc_msgSend.</span><br><span class="line">    /// Step 7</span><br><span class="line">    call(blr, &amp;after_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    // restore lr</span><br><span class="line">    /// Step 8</span><br><span class="line">    __asm volatile (&quot;mov lr, x0\n&quot;);</span><br><span class="line">    </span><br><span class="line">    // Load original objc_msgSend return value.</span><br><span class="line">    /// Step 9</span><br><span class="line">    load()</span><br><span class="line">    </span><br><span class="line">    // return</span><br><span class="line">    /// Step 10</span><br><span class="line">    ret()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><p>先看开源 <a target="_blank" rel="noopener" href="https://github.com/ming1016/GCDFetchFeed/blob/master/GCDFetchFeed/GCDFetchFeed/Lib/SMLagMonitor/SMCallTraceCore.c">项目</a> 主要代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">#define call(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, x9, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value)); \</span><br><span class="line">__asm volatile (&quot;ldp x8, x9, [sp], #16\n&quot;); \</span><br><span class="line">__asm volatile (#b &quot; x12\n&quot;);</span><br><span class="line"></span><br><span class="line">#define save() \</span><br><span class="line">__asm volatile ( \</span><br><span class="line">&quot;stp x8, x9, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x6, x7, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x4, x5, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x2, x3, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x0, x1, [sp, #-16]!\n&quot;);</span><br><span class="line"></span><br><span class="line">#define load() \</span><br><span class="line">__asm volatile ( \</span><br><span class="line">&quot;ldp x0, x1, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x2, x3, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x4, x5, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x6, x7, [sp], #16\n&quot; \</span><br><span class="line">&quot;ldp x8, x9, [sp], #16\n&quot; );</span><br><span class="line"></span><br><span class="line">#define link(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, lr, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;sub sp, sp, #16\n&quot;); \</span><br><span class="line">call(b, value); \</span><br><span class="line">__asm volatile (&quot;add sp, sp, #16\n&quot;); \</span><br><span class="line">__asm volatile (&quot;ldp x8, lr, [sp], #16\n&quot;);</span><br><span class="line"></span><br><span class="line">#define ret() __asm volatile (&quot;ret\n&quot;);</span><br><span class="line"></span><br><span class="line">__attribute__((__naked__))</span><br><span class="line">static void hook_Objc_msgSend() &#123;</span><br><span class="line">    &#x2F;&#x2F; Save parameters.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 1</span><br><span class="line">    save()</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 2</span><br><span class="line">    __asm volatile (&quot;mov x2, lr\n&quot;);</span><br><span class="line">    __asm volatile (&quot;mov x3, x4\n&quot;);</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Call our before_objc_msgSend.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 3</span><br><span class="line">    call(blr, &amp;before_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Load parameters.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 4</span><br><span class="line">    load()</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Call through to the original objc_msgSend.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 5</span><br><span class="line">    call(blr, orig_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Save original objc_msgSend return value.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 6</span><br><span class="line">    save()</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Call our after_objc_msgSend.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 7</span><br><span class="line">    call(blr, &amp;after_objc_msgSend)</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; restore lr</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 8</span><br><span class="line">    __asm volatile (&quot;mov lr, x0\n&quot;);</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Load original objc_msgSend return value.</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 9</span><br><span class="line">    load()</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; return</span><br><span class="line">    &#x2F;&#x2F;&#x2F; Step 10</span><br><span class="line">    ret()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <p>对以上代码我们分步骤来看</p>
 <ol>
 <li><p><code>save()</code> 保存函数入参(x0-x8)到栈内存，因为接下来你的函数调用修改原有参数。这里源码里面看到 x9 的值也被保存了，这里的原因是因为栈指针移动必须满足 <code>SP Mod 16 = 0</code> 的条件，而在 x8 寄存器只占用8个字节，剩余8个字节控件由 x9 来填充</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#define save() \</span><br><span class="line">__asm volatile ( \</span><br><span class="line">&quot;stp x8, x9, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x6, x7, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x4, x5, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x2, x3, [sp, #-16]!\n&quot; \</span><br><span class="line">&quot;stp x0, x1, [sp, #-16]!\n&quot;);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>保存 lr 到 x2，以便 <code>call(blr, &amp;before_objc_msgSend)</code> 的调用，保存到 x2 是因为 <code>before_objc_msgSend</code> 函数第三个参数需要传入 lr，方便后续返回；<code>blr</code> 指令会改变 lr 寄存器的值，所以调用前先保存 lr</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#define call(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, x9, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value)); \</span><br><span class="line">__asm volatile (&quot;ldp x8, x9, [sp], #16\n&quot;); \</span><br><span class="line">__asm volatile (#b &quot; x12\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">void before_objc_msgSend(id self, SEL _cmd, uintptr_t lr) &#123;</span><br><span class="line">    push_call_record(self, object_getClass(self), _cmd, lr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static inline void push_call_record(id _self, Class _cls, SEL _cmd, uintptr_t lr) &#123;</span><br><span class="line">    thread_call_stack *cs = get_thread_call_stack();</span><br><span class="line">    if (cs) &#123;</span><br><span class="line">        int nextIndex = (++cs-&gt;index);</span><br><span class="line">        if (nextIndex &gt;= cs-&gt;allocated_length) &#123;</span><br><span class="line">            cs-&gt;allocated_length += 64;</span><br><span class="line">            cs-&gt;stack = (thread_call_record *)realloc(cs-&gt;stack, cs-&gt;allocated_length * sizeof(thread_call_record));</span><br><span class="line">        &#125;</span><br><span class="line">        thread_call_record *newRecord = &amp;cs-&gt;stack[nextIndex];</span><br><span class="line">        newRecord-&gt;self = _self;</span><br><span class="line">        newRecord-&gt;cls = _cls;</span><br><span class="line">        newRecord-&gt;cmd = _cmd;</span><br><span class="line">        newRecord-&gt;lr = lr;</span><br><span class="line">        if (cs-&gt;is_main_thread &amp;&amp; _call_record_enabled) &#123;</span><br><span class="line">            struct timeval now;</span><br><span class="line">            gettimeofday(&amp;now, NULL);</span><br><span class="line">            newRecord-&gt;time = (now.tv_sec % 100) * 1000000 + now.tv_usec;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#define call(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, x9, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value)); \</span><br><span class="line">__asm volatile (&quot;ldp x8, x9, [sp], #16\n&quot;); \</span><br><span class="line">__asm volatile (#b &quot; x12\n&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">void before_objc_msgSend(id self, SEL _cmd, uintptr_t lr) &#123;</span><br><span class="line">    push_call_record(self, object_getClass(self), _cmd, lr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static inline void push_call_record(id _self, Class _cls, SEL _cmd, uintptr_t lr) &#123;</span><br><span class="line">    thread_call_stack *cs &#x3D; get_thread_call_stack();</span><br><span class="line">    if (cs) &#123;</span><br><span class="line">        int nextIndex &#x3D; (++cs-&gt;index);</span><br><span class="line">        if (nextIndex &gt;&#x3D; cs-&gt;allocated_length) &#123;</span><br><span class="line">            cs-&gt;allocated_length +&#x3D; 64;</span><br><span class="line">            cs-&gt;stack &#x3D; (thread_call_record *)realloc(cs-&gt;stack, cs-&gt;allocated_length * sizeof(thread_call_record));</span><br><span class="line">        &#125;</span><br><span class="line">        thread_call_record *newRecord &#x3D; &amp;cs-&gt;stack[nextIndex];</span><br><span class="line">        newRecord-&gt;self &#x3D; _self;</span><br><span class="line">        newRecord-&gt;cls &#x3D; _cls;</span><br><span class="line">        newRecord-&gt;cmd &#x3D; _cmd;</span><br><span class="line">        newRecord-&gt;lr &#x3D; lr;</span><br><span class="line">        if (cs-&gt;is_main_thread &amp;&amp; _call_record_enabled) &#123;</span><br><span class="line">            struct timeval now;</span><br><span class="line">            gettimeofday(&amp;now, NULL);</span><br><span class="line">            newRecord-&gt;time &#x3D; (now.tv_sec % 100) * 1000000 + now.tv_usec;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>__asm volatile (&quot;mov x3, x4\n&quot;);</code> 目前个人认为是冗余代码，在整个流程中貌似并没有实际作用。</p>
 </li>
 <li><p>通过 <code>blr</code> 指令 跳转执行 <code>before_objc_msgSend</code> 函数。这里会先保存 x8、x9 寄存器的值，原因是<code>__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value))</code> 执行命令过程中会通过 x8 来保存函数地址，再进行跳转，所以这里会先要保存 x8，和步骤1相同，栈指针移动必须满足 <code>SP Mod 16 = 0</code> 的条件，所以 x9 也被保存。执行完之后 x8、x9 恢复。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#define call(b, value) \</span><br><span class="line">__asm volatile (&quot;stp x8, x9, [sp, #-16]!\n&quot;); \</span><br><span class="line">__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value)); \</span><br><span class="line">__asm volatile (&quot;ldp x8, x9, [sp], #16\n&quot;); \</span><br><span class="line">__asm volatile (#b &quot; x12\n&quot;);</span><br></pre></td></tr></table></figure>
+
 <p>在 <code>__asm volatile (&quot;mov x12, %0\n&quot; :: &quot;r&quot;(value))</code> 下断点可以看到 cpu 是通过 <code>adrp</code> + <code>add</code> 2个指令结合寻址到函数的地址并执行，过程中改变了 x8 的值</p>
 <p><img src="/2019/07/13/hook-objc-MsgSend/adrp_add.png" alt="image-20190713185417531"></p>
 </li>
@@ -463,7 +243,7 @@
 <li><p>Step 4 到 Step 6，恢复原有入参，执行原函数，然后保存入参</p>
 </li>
 <li><p><code>call(blr, &amp;after_objc_msgSend)</code> 和步骤3相似，执行 hook 收尾的函数，主要是通过 TSD 返回步骤3保存的原来 lr 寄存器保存的内容，也就是hook前的 lr 寄存器值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">static inline uintptr_t pop_call_record() &#123;</span><br><span class="line">    thread_call_stack *cs = get_thread_call_stack();</span><br><span class="line">    int curIndex = cs-&gt;index;</span><br><span class="line">    int nextIndex = cs-&gt;index--;</span><br><span class="line">    thread_call_record *pRecord = &amp;cs-&gt;stack[nextIndex];</span><br><span class="line">    </span><br><span class="line">    if (cs-&gt;is_main_thread &amp;&amp; _call_record_enabled) &#123;</span><br><span class="line">        struct timeval now;</span><br><span class="line">        gettimeofday(&amp;now, NULL);</span><br><span class="line">        uint64_t time = (now.tv_sec % 100) * 1000000 + now.tv_usec;</span><br><span class="line">        if (time &lt; pRecord-&gt;time) &#123;</span><br><span class="line">            time += 100 * 1000000;</span><br><span class="line">        &#125;</span><br><span class="line">        uint64_t cost = time - pRecord-&gt;time;</span><br><span class="line">        if (cost &gt; _min_time_cost &amp;&amp; cs-&gt;index &lt; _max_call_depth) &#123;</span><br><span class="line">            if (!_smCallRecords) &#123;</span><br><span class="line">                _smRecordAlloc = 1024;</span><br><span class="line">                _smCallRecords = malloc(sizeof(smCallRecord) * _smRecordAlloc);</span><br><span class="line">            &#125;</span><br><span class="line">            _smRecordNum++;</span><br><span class="line">            if (_smRecordNum &gt;= _smRecordAlloc) &#123;</span><br><span class="line">                _smRecordAlloc += 1024;</span><br><span class="line">                _smCallRecords = realloc(_smCallRecords, sizeof(smCallRecord) * _smRecordAlloc);</span><br><span class="line">            &#125;</span><br><span class="line">            smCallRecord *log = &amp;_smCallRecords[_smRecordNum - 1];</span><br><span class="line">            log-&gt;cls = pRecord-&gt;cls;</span><br><span class="line">            log-&gt;depth = curIndex;</span><br><span class="line">            log-&gt;sel = pRecord-&gt;cmd;</span><br><span class="line">            log-&gt;time = cost;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pRecord-&gt;lr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">static inline uintptr_t pop_call_record() &#123;</span><br><span class="line">    thread_call_stack *cs &#x3D; get_thread_call_stack();</span><br><span class="line">    int curIndex &#x3D; cs-&gt;index;</span><br><span class="line">    int nextIndex &#x3D; cs-&gt;index--;</span><br><span class="line">    thread_call_record *pRecord &#x3D; &amp;cs-&gt;stack[nextIndex];</span><br><span class="line">    </span><br><span class="line">    if (cs-&gt;is_main_thread &amp;&amp; _call_record_enabled) &#123;</span><br><span class="line">        struct timeval now;</span><br><span class="line">        gettimeofday(&amp;now, NULL);</span><br><span class="line">        uint64_t time &#x3D; (now.tv_sec % 100) * 1000000 + now.tv_usec;</span><br><span class="line">        if (time &lt; pRecord-&gt;time) &#123;</span><br><span class="line">            time +&#x3D; 100 * 1000000;</span><br><span class="line">        &#125;</span><br><span class="line">        uint64_t cost &#x3D; time - pRecord-&gt;time;</span><br><span class="line">        if (cost &gt; _min_time_cost &amp;&amp; cs-&gt;index &lt; _max_call_depth) &#123;</span><br><span class="line">            if (!_smCallRecords) &#123;</span><br><span class="line">                _smRecordAlloc &#x3D; 1024;</span><br><span class="line">                _smCallRecords &#x3D; malloc(sizeof(smCallRecord) * _smRecordAlloc);</span><br><span class="line">            &#125;</span><br><span class="line">            _smRecordNum++;</span><br><span class="line">            if (_smRecordNum &gt;&#x3D; _smRecordAlloc) &#123;</span><br><span class="line">                _smRecordAlloc +&#x3D; 1024;</span><br><span class="line">                _smCallRecords &#x3D; realloc(_smCallRecords, sizeof(smCallRecord) * _smRecordAlloc);</span><br><span class="line">            &#125;</span><br><span class="line">            smCallRecord *log &#x3D; &amp;_smCallRecords[_smRecordNum - 1];</span><br><span class="line">            log-&gt;cls &#x3D; pRecord-&gt;cls;</span><br><span class="line">            log-&gt;depth &#x3D; curIndex;</span><br><span class="line">            log-&gt;sel &#x3D; pRecord-&gt;cmd;</span><br><span class="line">            log-&gt;time &#x3D; cost;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return pRecord-&gt;lr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>__asm volatile (&quot;mov lr, x0\n&quot;);</code> 将步骤5返回的值(原来lr的初始值)到lr寄存器</p>
 </li>
@@ -475,346 +255,158 @@
 <li><code>__asm volatile (&quot;mov x3, x4\n&quot;);</code> 这行代码是否属于冗余代码呢？</li>
 </ol>
 <p>参考文章：</p>
-<p><a href="https://juejin.im/post/5d14623ef265da1bb47d7635" target="_blank" rel="noopener">arm64程序调用规则</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/post/5d14623ef265da1bb47d7635">arm64程序调用规则</a></p>
 
-      
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/汇编/" rel="tag"># 汇编</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/06/02/objc-msgSend-forward/" rel="next" title="深入了解Objective-C消息发送与转发过程">
-                <i class="fa fa-chevron-left"></i> 深入了解Objective-C消息发送与转发过程
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B1%87%E7%BC%96/" rel="tag"># 汇编</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/11/05/IGListKit/" rel="prev" title="IGListKit 源码解析">
-                IGListKit 源码解析 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/06/02/objc-msgSend-forward/" rel="prev" title="深入了解Objective-C消息发送与转发过程">
+      <i class="fa fa-chevron-left"></i> 深入了解Objective-C消息发送与转发过程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/05/IGListKit/" rel="next" title="IGListKit 源码解析">
+      IGListKit 源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#主流程"><span class="nav-number">1.</span> <span class="nav-text">主流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遗留问题："><span class="nav-number">2.</span> <span class="nav-text">遗留问题：</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">主流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">遗留问题：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -823,98 +415,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 

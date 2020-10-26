@@ -1,133 +1,54 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
   <meta name="description" content="ReactiveX 中将信号分为冷信号和热信号，本文结合 ReactiveCocoa 分析其中的冷、热信号的异同。">
-<meta name="keywords" content="ReactiveCocoa,iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ReactiveCocoa的冷信号与热信号">
 <meta property="og:url" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
 <meta property="og:description" content="ReactiveX 中将信号分为冷信号和热信号，本文结合 ReactiveCocoa 分析其中的冷、热信号的异同。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/cold.png">
 <meta property="og:image" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/hot.png">
 <meta property="og:image" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/RACBehaviorSubject.png">
 <meta property="og:image" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/RACReplaySubject.png">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.846Z">
+<meta property="article:published_time" content="2019-03-12T04:05:13.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.846Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="ReactiveCocoa">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReactiveCocoa的冷信号与热信号">
-<meta name="twitter:description" content="ReactiveX 中将信号分为冷信号和热信号，本文结合 ReactiveCocoa 分析其中的冷、热信号的异同。">
 <meta name="twitter:image" content="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/cold.png">
 
+<link rel="canonical" href="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/">
 
 
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -139,25 +60,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -166,9 +70,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -180,131 +83,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -312,127 +145,70 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/03/12/ReactiveCocoa-cold-hot/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">ReactiveCocoa的冷信号与热信号
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          ReactiveCocoa的冷信号与热信号
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-03-12 12:05:13" itemprop="dateCreated datePublished" datetime="2019-03-12T12:05:13+08:00">2019-03-12</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -440,11 +216,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
         <p>ReactiveX 中将信号分为冷信号和热信号，本文结合 ReactiveCocoa 分析其中的冷、热信号的异同。</p>
 <a id="more"></a>
+
+
+
 <h2 id="冷、热信号的区别"><a href="#冷、热信号的区别" class="headerlink" title="冷、热信号的区别"></a>冷、热信号的区别</h2><p>ReactiveX 文档中是这样描述冷、热信号的：</p>
 <blockquote>
 <p>When does an Observable begin emitting its sequence of items? It depends on the Observable. A “hot” Observable may begin emitting items as soon as it is created, and so any observer who later subscribes to that Observable may start observing the sequence somewhere in the middle. A “cold” Observable, on the other hand, waits until an observer subscribes to it before it begins to emit items, and so such an observer is guaranteed to see the whole sequence from the beginning.</p>
@@ -466,6 +242,7 @@
 <li>RACBehaviorSubject</li>
 </ol>
 <h3 id="RACSubject-底层实现"><a href="#RACSubject-底层实现" class="headerlink" title="RACSubject 底层实现"></a>RACSubject 底层实现</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)subscribe:(<span class="keyword">id</span>&lt;RACSubscriber&gt;)subscriber &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(subscriber != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// STEP 1</span></span><br><span class="line">	RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];</span><br><span class="line">	subscriber = [[RACPassthroughSubscriber alloc] initWithSubscriber:subscriber signal:<span class="keyword">self</span> disposable:disposable];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// STEP 2</span></span><br><span class="line">	<span class="built_in">NSMutableArray</span> *subscribers = <span class="keyword">self</span>.subscribers;</span><br><span class="line">	<span class="keyword">@synchronized</span> (subscribers) &#123;</span><br><span class="line">		[subscribers addObject:subscriber];</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// STEP 3</span></span><br><span class="line">	[disposable addDisposable:[RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">		<span class="keyword">@synchronized</span> (subscribers) &#123;</span><br><span class="line">			<span class="comment">// Since newer subscribers are generally shorter-lived, search</span></span><br><span class="line">			<span class="comment">// starting from the end of the list.</span></span><br><span class="line">			<span class="built_in">NSUInteger</span> index = [subscribers indexOfObjectWithOptions:<span class="built_in">NSEnumerationReverse</span> passingTest:^ <span class="built_in">BOOL</span> (<span class="keyword">id</span>&lt;RACSubscriber&gt; obj, <span class="built_in">NSUInteger</span> index, <span class="built_in">BOOL</span> *stop) &#123;</span><br><span class="line">				<span class="keyword">return</span> obj == subscriber;</span><br><span class="line">			&#125;];</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (index != <span class="built_in">NSNotFound</span>) [subscribers removeObjectAtIndex:index];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> disposable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>RACSubject 重写了父类的 <code>-subscribe:</code> 方法：</p>
 <ol>
 <li>利用 RACPassthroughSubscriber 将原始订阅者 subscriber 和自身的 disposable 关联，包装成新的 subscriber，当原始订阅者订阅取消之后会触发 disposable 的 dispose 动作</li>
@@ -474,18 +251,23 @@
 </ol>
 <p>RACSubject 能够发送信号是因为其实现了 <code>RACSubscriber</code> 协议：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)sendNext:(<span class="keyword">id</span>)value &#123;</span><br><span class="line">	[<span class="keyword">self</span> enumerateSubscribersUsingBlock:^(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">		[subscriber sendNext:value];</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sendError:(<span class="built_in">NSError</span> *)error &#123;</span><br><span class="line">	[<span class="keyword">self</span>.disposable dispose];</span><br><span class="line">	</span><br><span class="line">	[<span class="keyword">self</span> enumerateSubscribersUsingBlock:^(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">		[subscriber sendError:error];</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)sendCompleted &#123;</span><br><span class="line">	[<span class="keyword">self</span>.disposable dispose];</span><br><span class="line">	</span><br><span class="line">	[<span class="keyword">self</span> enumerateSubscribersUsingBlock:^(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">		[subscriber sendCompleted];</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>sendNext/sendError/sendCompleted 都会对数组 subscribers 进行遍历，然后将信号事件透传给订阅者</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)enumerateSubscribersUsingBlock:(<span class="keyword">void</span> (^)(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber))block &#123;</span><br><span class="line">	<span class="built_in">NSArray</span> *subscribers;</span><br><span class="line">	<span class="keyword">@synchronized</span> (<span class="keyword">self</span>.subscribers) &#123;</span><br><span class="line">		subscribers = [<span class="keyword">self</span>.subscribers <span class="keyword">copy</span>];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber <span class="keyword">in</span> subscribers) &#123;</span><br><span class="line">		block(subscriber);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-enumerateSubscribersUsingBlock:</code> 中是通过 @synchronized 包装数据的线程安全</p>
 <h2 id="RACBehaviorSubject"><a href="#RACBehaviorSubject" class="headerlink" title="RACBehaviorSubject"></a>RACBehaviorSubject</h2><p>RACBehaviorSubject 每次被订阅的时候会向订阅者发送最新的信号</p>
 <p>初始化的时候，可以设置第一个最新信号</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)behaviorSubjectWithDefaultValue:(<span class="keyword">id</span>)value &#123;</span><br><span class="line">	RACBehaviorSubject *subject = [<span class="keyword">self</span> subject];</span><br><span class="line">	subject.currentValue = value;</span><br><span class="line">	<span class="keyword">return</span> subject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>currentValue 属性保存着最新的信号值</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)subscribe:(<span class="keyword">id</span>&lt;RACSubscriber&gt;)subscriber &#123;</span><br><span class="line">	RACDisposable *subscriptionDisposable = [<span class="keyword">super</span> subscribe:subscriber];</span><br><span class="line"></span><br><span class="line">	RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^&#123;</span><br><span class="line">		<span class="keyword">@synchronized</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">			[subscriber sendNext:<span class="keyword">self</span>.currentValue];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;];</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">		[subscriptionDisposable dispose];</span><br><span class="line">		[schedulingDisposable dispose];</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>可以看到 RACBehaviorSubject 被订阅的时候，先执行了父类的方法，然后给订阅者发送 currentValue</p>
 <p><img src="/2019/03/12/ReactiveCocoa-cold-hot/RACBehaviorSubject.png" alt="RACBehaviorSubject"></p>
 <h2 id="RACReplaySubject"><a href="#RACReplaySubject" class="headerlink" title="RACReplaySubject"></a>RACReplaySubject</h2><p>RACReplaySubject 可以看做是 RACBehaviorSubject 的升级版，不过细节上略有差别</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RACReplaySubject</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>, <span class="keyword">readonly</span>) <span class="built_in">NSUInteger</span> capacity;</span><br><span class="line"></span><br><span class="line"><span class="comment">// These properties should only be modified while synchronized on self.</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="built_in">NSMutableArray</span> *valuesReceived;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> hasCompleted;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">BOOL</span> hasError;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSError</span> *error;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>capacity: 确定保存最近发送过的信号值个数</li>
 <li>valuesReceived: 保存最近发送过的信号值</li>
@@ -494,20 +276,25 @@
 <li>error: 保存之前发送的 NSError</li>
 </ul>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)sendNext:(<span class="keyword">id</span>)value &#123;</span><br><span class="line">	<span class="keyword">@synchronized</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">		[<span class="keyword">self</span>.valuesReceived addObject:value ?: RACTupleNil.tupleNil];</span><br><span class="line">		[<span class="keyword">super</span> sendNext:value];</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">self</span>.capacity != RACReplaySubjectUnlimitedCapacity &amp;&amp; <span class="keyword">self</span>.valuesReceived.count &gt; <span class="keyword">self</span>.capacity) &#123;</span><br><span class="line">			[<span class="keyword">self</span>.valuesReceived removeObjectsInRange:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>, <span class="keyword">self</span>.valuesReceived.count - <span class="keyword">self</span>.capacity)];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>发送信号值，先用 @synchronized 进行加锁，然后把信号值 value 保存在 valuesReceived 数组中，如果 value == nil，则用 RACTupleNil.tupleNil 替代并加入到数组中。</p>
 <p>当 capacity 不等于 RACReplaySubjectUnlimitedCapacity，数组长度大于 capacity 的时候，会弹出数组中前几个元素，类似栈结构的 pop 动作</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)subscribe:(<span class="keyword">id</span>&lt;RACSubscriber&gt;)subscriber &#123;</span><br><span class="line">	RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];</span><br><span class="line"></span><br><span class="line">	RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^&#123;</span><br><span class="line">		<span class="keyword">@synchronized</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">id</span> value <span class="keyword">in</span> <span class="keyword">self</span>.valuesReceived) &#123;</span><br><span class="line">				<span class="keyword">if</span> (compoundDisposable.disposed) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">				[subscriber sendNext:(value == RACTupleNil.tupleNil ? <span class="literal">nil</span> : value)];</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (compoundDisposable.disposed) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (<span class="keyword">self</span>.hasCompleted) &#123;</span><br><span class="line">				[subscriber sendCompleted];</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">self</span>.hasError) &#123;</span><br><span class="line">				[subscriber sendError:<span class="keyword">self</span>.error];</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				RACDisposable *subscriptionDisposable = [<span class="keyword">super</span> subscribe:subscriber];</span><br><span class="line">				[compoundDisposable addDisposable:subscriptionDisposable];</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;];</span><br><span class="line"></span><br><span class="line">	[compoundDisposable addDisposable:schedulingDisposable];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> compoundDisposable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>订阅的逻辑大体上和 RACBehaviorSubject 相似，每次订阅的时候，同样通过 @synchronized 加锁，然后将数组的所有元素逐一发送给订阅者，如果之前发送过 sendCompleted/sendError，则给订阅者发送对应的sendCompleted/sendError</p>
 <p>需要注意的是，不指定 RACReplaySubject 的 capacity，订阅者订阅之后都会获取到完整的信号序列（类似订阅冷信号）</p>
 <p><img src="/2019/03/12/ReactiveCocoa-cold-hot/RACReplaySubject.png" alt="RACReplaySubject"></p>
-<h2 id="RACGroupedSignal"><a href="#RACGroupedSignal" class="headerlink" title="RACGroupedSignal"></a>RACGroupedSignal</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RACGroupedSignal</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="keyword">id</span>&lt;<span class="built_in">NSCopying</span>&gt; key;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">RACGroupedSignal</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark API</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)signalWithKey:(<span class="keyword">id</span>&lt;<span class="built_in">NSCopying</span>&gt;)key &#123;</span><br><span class="line">	RACGroupedSignal *subject = [<span class="keyword">self</span> subject];</span><br><span class="line">	subject.key = key;</span><br><span class="line">	<span class="keyword">return</span> subject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="RACGroupedSignal"><a href="#RACGroupedSignal" class="headerlink" title="RACGroupedSignal"></a>RACGroupedSignal</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RACGroupedSignal</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="keyword">id</span>&lt;<span class="built_in">NSCopying</span>&gt; key;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">RACGroupedSignal</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> mark API</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)signalWithKey:(<span class="keyword">id</span>&lt;<span class="built_in">NSCopying</span>&gt;)key &#123;</span><br><span class="line">	RACGroupedSignal *subject = [<span class="keyword">self</span> subject];</span><br><span class="line">	subject.key = key;</span><br><span class="line">	<span class="keyword">return</span> subject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>RACGroupedSignal 相对于 RACSubject 对存储了一个 key 值</p>
 <p>在 RACSignal 的 <code>groupBy:transform:</code> 方法中使用了 RACGroupedSignal，具体细节参考<a href="https://chipengliu.github.io/2019/02/23/RACSignal-Operations-3/">文章</a></p>
 <h2 id="冷信号转换成热信号"><a href="#冷信号转换成热信号" class="headerlink" title="冷信号转换成热信号"></a>冷信号转换成热信号</h2><p>冷信号和热信号本质区别在于是否保持状态，冷信号本身不保持多次订阅发送信号过程的状态，所以每次订阅冷信号就会收到完整的信号序列；相反热信号维持多次订阅的状态，订阅者订阅热信号只会收到订阅动作之后发送的信号值。</p>
 <p>基于上面的区别，很容易会想到一种方法将 ReactiveCocoa 中的冷信号（RACSignal）转化成热信号：订阅冷信号，将收到的信号值通过 RACSubject 转发，订阅者通过订阅 RACSubject 来获取热信号</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">    [subscriber sendNext:@<span class="number">0</span>];</span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">1.5</span> schedule:^&#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        [subscriber sendCompleted];</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">RACSubject *subject = [RACSubject subject];</span><br><span class="line">[coldSignal subscribe:subject];</span><br><span class="line"></span><br><span class="line">[subject subscribeNext:^(<span class="keyword">id</span>  _Nullable x) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"value = %@"</span>, x);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">    [subscriber sendNext:@<span class="number">0</span>];</span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">1.5</span> schedule:^&#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        [subscriber sendCompleted];</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">RACSubject *subject = [RACSubject subject];</span><br><span class="line">[coldSignal subscribe:subject];</span><br><span class="line"></span><br><span class="line">[subject subscribeNext:^(<span class="keyword">id</span>  _Nullable x) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;value = %@&quot;</span>, x);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+
 <p>输出：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">value = 1</span><br><span class="line">value = 2</span><br></pre></td></tr></table></figure>
+
 <p>这个方法存在一个问题：如果 <code>subject</code> 的订阅者提前终止了订阅，而 <code>subject</code> 并不能终止对 <code>coldSignal</code> 的订阅。</p>
 <p>ReactiveCocoa 框架中提供了一下几个方法将冷信号转化成热信号:</p>
 <ol>
@@ -518,390 +305,218 @@
 <li><code>- (RACSignal&lt;ValueType&gt; *)replayLazily</code></li>
 </ol>
 <p>其中 <code>- (RACMulticastConnection&lt;ValueType&gt; *)multicast:(RACSubject&lt;ValueType&gt; *)subject</code> 是另外几个方法的实现基础，所以先分析次方法的实现</p>
-<h3 id="multicast"><a href="#multicast" class="headerlink" title="multicast:"></a>multicast:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (RACMulticastConnection *)multicast:(RACSubject *)subject &#123;</span><br><span class="line">	[subject setNameWithFormat:<span class="string">@"[%@] -multicast: %@"</span>, <span class="keyword">self</span>.name, subject.name];</span><br><span class="line">	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:<span class="keyword">self</span> subject:subject];</span><br><span class="line">	<span class="keyword">return</span> connection;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="multicast"><a href="#multicast" class="headerlink" title="multicast:"></a>multicast:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (RACMulticastConnection *)multicast:(RACSubject *)subject &#123;</span><br><span class="line">	[subject setNameWithFormat:<span class="string">@&quot;[%@] -multicast: %@&quot;</span>, <span class="keyword">self</span>.name, subject.name];</span><br><span class="line">	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:<span class="keyword">self</span> subject:subject];</span><br><span class="line">	<span class="keyword">return</span> connection;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-multicast:</code> 是通过初始化一个 RACMulticastConnection 对象实现</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// RACMulticastConnection.m</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithSourceSignal:(RACSignal *)source subject:(RACSubject *)subject &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(source != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(subject != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line">	_sourceSignal = source;</span><br><span class="line">	_serialDisposable = [[RACSerialDisposable alloc] init];</span><br><span class="line">	_signal = subject;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#pragma mark Connecting</span></span><br><span class="line"></span><br><span class="line">- (RACDisposable *)connect &#123;</span><br><span class="line">	<span class="built_in">BOOL</span> shouldConnect = OSAtomicCompareAndSwap32Barrier(<span class="number">0</span>, <span class="number">1</span>, &amp;_hasConnected);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (shouldConnect) &#123;</span><br><span class="line">		<span class="keyword">self</span>.serialDisposable.disposable = [<span class="keyword">self</span>.sourceSignal subscribe:_signal];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>.serialDisposable;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACSignal *)autoconnect &#123;</span><br><span class="line">	__block <span class="keyword">volatile</span> int32_t subscriberCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> [[RACSignal</span><br><span class="line">		createSignal:^(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">			OSAtomicIncrement32Barrier(&amp;subscriberCount);</span><br><span class="line"></span><br><span class="line">			RACDisposable *subscriptionDisposable = [<span class="keyword">self</span>.signal subscribe:subscriber];</span><br><span class="line">			RACDisposable *connectionDisposable = [<span class="keyword">self</span> connect];</span><br><span class="line"></span><br><span class="line">			<span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">				[subscriptionDisposable dispose];</span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (OSAtomicDecrement32Barrier(&amp;subscriberCount) == <span class="number">0</span>) &#123;</span><br><span class="line">					[connectionDisposable dispose];</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;];</span><br><span class="line">		&#125;]</span><br><span class="line">		setNameWithFormat:<span class="string">@"[%@] -autoconnect"</span>, <span class="keyword">self</span>.signal.name];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// RACMulticastConnection.m</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithSourceSignal:(RACSignal *)source subject:(RACSubject *)subject &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(source != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(subject != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line"></span><br><span class="line">	_sourceSignal = source;</span><br><span class="line">	_serialDisposable = [[RACSerialDisposable alloc] init];</span><br><span class="line">	_signal = subject;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> mark Connecting</span></span><br><span class="line"></span><br><span class="line">- (RACDisposable *)connect &#123;</span><br><span class="line">	<span class="built_in">BOOL</span> shouldConnect = OSAtomicCompareAndSwap32Barrier(<span class="number">0</span>, <span class="number">1</span>, &amp;_hasConnected);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (shouldConnect) &#123;</span><br><span class="line">		<span class="keyword">self</span>.serialDisposable.disposable = [<span class="keyword">self</span>.sourceSignal subscribe:_signal];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>.serialDisposable;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACSignal *)autoconnect &#123;</span><br><span class="line">	__block <span class="keyword">volatile</span> int32_t subscriberCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> [[RACSignal</span><br><span class="line">		createSignal:^(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">			OSAtomicIncrement32Barrier(&amp;subscriberCount);</span><br><span class="line"></span><br><span class="line">			RACDisposable *subscriptionDisposable = [<span class="keyword">self</span>.signal subscribe:subscriber];</span><br><span class="line">			RACDisposable *connectionDisposable = [<span class="keyword">self</span> connect];</span><br><span class="line"></span><br><span class="line">			<span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">				[subscriptionDisposable dispose];</span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (OSAtomicDecrement32Barrier(&amp;subscriberCount) == <span class="number">0</span>) &#123;</span><br><span class="line">					[connectionDisposable dispose];</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;];</span><br><span class="line">		&#125;]</span><br><span class="line">		setNameWithFormat:<span class="string">@&quot;[%@] -autoconnect&quot;</span>, <span class="keyword">self</span>.signal.name];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>RACMulticastConnection 初始化的时候将原信号（冷信号）保存在为属性 sourceSignal，signal 属性保存着传入的 RACSubject。serialDisposable 用于需要订阅的清理操作</li>
 <li>RACMulticastConnection 提供2个方法进行信号转换，首先是 <code>-connect</code>，改方法中先通过实例变量 hasConnected 判断是否已经执行过 <code>-connect</code>，值得注意的是这里是通过原子性运算 <code>OSAtomicCompareAndSwap32Barrier</code> 来进行判断，如果 hasConnected == 0，则返回 YES，然后将 hasConnected 赋值为 1。如果之前没有执行过，就以 _signal（RACSubject） 作为订阅者对原信号进行订阅</li>
 <li>connect 之后 RACMulticastConnection 对象的 _signal 也就是一个热信号，对外部来说 <code>signal</code> 是一个只读属性</li>
 <li>如果要确保热信号 signal 的第一次订阅能收到 <code>sourceSignal</code> 的完整信号序列，可以调用另一个转换方法 <code>-autoConnect</code>。改函数中通过创建返回一个新的 RACSignal，当其被订阅首先会先订阅 <code>signal</code> 属性，然后再执行 <code>-connect</code>，因此第一次对 <code>signal</code> 进行订阅的时候，会收到  <code>sourceSignal</code> 的所有信号值</li>
 </ol>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testConnection &#123;</span><br><span class="line">    RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">3</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        &#125;];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">5</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSubject *subject = [RACSubject subject];    </span><br><span class="line">    RACMulticastConnection *multicastConnection = [coldSignal multicast:subject];</span><br><span class="line">    RACSignal *hotSignal = multicastConnection.signal;</span><br><span class="line">    </span><br><span class="line">    [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Subscribe 1 recieve value:%@."</span>, x);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    [multicastConnection connect];</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"Subscribe 2 recieve value:%@."</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testConnection &#123;</span><br><span class="line">    RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">3</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        &#125;];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">5</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSubject *subject = [RACSubject subject];    </span><br><span class="line">    RACMulticastConnection *multicastConnection = [coldSignal multicast:subject];</span><br><span class="line">    RACSignal *hotSignal = multicastConnection.signal;</span><br><span class="line">    </span><br><span class="line">    [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;Subscribe 1 recieve value:%@.&quot;</span>, x);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    [multicastConnection connect];</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@&quot;Subscribe 2 recieve value:%@.&quot;</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>输出：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Subscribe 1 recieve value:1.</span><br><span class="line">Subscribe 1 recieve value:2.</span><br><span class="line">Subscribe 2 recieve value:2.</span><br></pre></td></tr></table></figure>
+
 <p>通过输出结果可以看得出来，multicastConnection.signal 是一个热信号，订阅者只收到订阅动作之后发送的信号值。</p>
 <p>同样可以通过 <code>-autoConnect</code> 实现一样的效果</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testAutoConnection &#123;</span><br><span class="line">    RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">3</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        &#125;];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">5</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSubject *subject = [RACSubject subject];</span><br><span class="line">    RACMulticastConnection *multicastConnection = [coldSignal multicast:subject];</span><br><span class="line">    RACSignal *hotSignal = multicastConnection.autoconnect;</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"Subscribe 1 recieve value:%@."</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"Subscribe 2 recieve value:%@."</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="publish"><a href="#publish" class="headerlink" title="publish"></a>publish</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (RACMulticastConnection *)publish &#123;</span><br><span class="line">	RACSubject *subject = [[RACSubject subject] setNameWithFormat:<span class="string">@"[%@] -publish"</span>, <span class="keyword">self</span>.name];</span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	<span class="keyword">return</span> connection;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testAutoConnection &#123;</span><br><span class="line">    RACSignal *coldSignal = [RACSignal createSignal:^RACDisposable *(<span class="keyword">id</span>&lt;RACSubscriber&gt; subscriber) &#123;</span><br><span class="line">        [subscriber sendNext:@<span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">3</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendNext:@<span class="number">2</span>];</span><br><span class="line">        &#125;];</span><br><span class="line">        </span><br><span class="line">        [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">5</span> schedule:^&#123;</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSubject *subject = [RACSubject subject];</span><br><span class="line">    RACMulticastConnection *multicastConnection = [coldSignal multicast:subject];</span><br><span class="line">    RACSignal *hotSignal = multicastConnection.autoconnect;</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@&quot;Subscribe 1 recieve value:%@.&quot;</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    [[RACScheduler mainThreadScheduler] afterDelay:<span class="number">2</span> schedule:^&#123;</span><br><span class="line">        [hotSignal subscribeNext:^(<span class="keyword">id</span> x) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@&quot;Subscribe 2 recieve value:%@.&quot;</span>, x);</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="publish"><a href="#publish" class="headerlink" title="publish"></a>publish</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (RACMulticastConnection *)publish &#123;</span><br><span class="line">	RACSubject *subject = [[RACSubject subject] setNameWithFormat:<span class="string">@&quot;[%@] -publish&quot;</span>, <span class="keyword">self</span>.name];</span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	<span class="keyword">return</span> connection;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-publish</code> 本质上就是调用了 <code>-multicast</code> 并返回了对应的 RACMulticastConnection 对象</p>
-<h3 id="replay"><a href="#replay" class="headerlink" title="replay"></a>replay</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replay &#123;</span><br><span class="line">	RACReplaySubject *subject = [[RACReplaySubject subject] setNameWithFormat:<span class="string">@"[%@] -replay"</span>, <span class="keyword">self</span>.name];</span><br><span class="line"></span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	[connection connect];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> connection.signal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="replay"><a href="#replay" class="headerlink" title="replay"></a>replay</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replay &#123;</span><br><span class="line">	RACReplaySubject *subject = [[RACReplaySubject subject] setNameWithFormat:<span class="string">@&quot;[%@] -replay&quot;</span>, <span class="keyword">self</span>.name];</span><br><span class="line"></span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	[connection connect];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> connection.signal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-replay</code> 是用 RACReplaySubject 替代 RACSubject，并且还执行了 <code>-connect</code> 方法，订阅者订阅热信号之后会收到最后发送的信号值序列</p>
-<h3 id="replayLast"><a href="#replayLast" class="headerlink" title="replayLast"></a>replayLast</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replayLast &#123;</span><br><span class="line">	RACReplaySubject *subject = [[RACReplaySubject replaySubjectWithCapacity:<span class="number">1</span>] setNameWithFormat:<span class="string">@"[%@] -replayLast"</span>, <span class="keyword">self</span>.name];</span><br><span class="line"></span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	[connection connect];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> connection.signal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="replayLast"><a href="#replayLast" class="headerlink" title="replayLast"></a>replayLast</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replayLast &#123;</span><br><span class="line">	RACReplaySubject *subject = [[RACReplaySubject replaySubjectWithCapacity:<span class="number">1</span>] setNameWithFormat:<span class="string">@&quot;[%@] -replayLast&quot;</span>, <span class="keyword">self</span>.name];</span><br><span class="line"></span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:subject];</span><br><span class="line">	[connection connect];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> connection.signal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-replayLast</code> 在 <code>-replay</code> 基础上用把 RACReplaySubject 的 capacity 赋值为1，订阅者订阅热信号之后之前发送过最新的一个信号值</p>
-<h3 id="replayLazily"><a href="#replayLazily" class="headerlink" title="replayLazily"></a>replayLazily</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replayLazily &#123;</span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:[RACReplaySubject subject]];</span><br><span class="line">	<span class="keyword">return</span> [[RACSignal</span><br><span class="line">		defer:^&#123;</span><br><span class="line">			[connection connect];</span><br><span class="line">			<span class="keyword">return</span> connection.signal;</span><br><span class="line">		&#125;]</span><br><span class="line">		setNameWithFormat:<span class="string">@"[%@] -replayLazily"</span>, <span class="keyword">self</span>.name];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="replayLazily"><a href="#replayLazily" class="headerlink" title="replayLazily"></a>replayLazily</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)replayLazily &#123;</span><br><span class="line">	RACMulticastConnection *connection = [<span class="keyword">self</span> multicast:[RACReplaySubject subject]];</span><br><span class="line">	<span class="keyword">return</span> [[RACSignal</span><br><span class="line">		defer:^&#123;</span><br><span class="line">			[connection connect];</span><br><span class="line">			<span class="keyword">return</span> connection.signal;</span><br><span class="line">		&#125;]</span><br><span class="line">		setNameWithFormat:<span class="string">@&quot;[%@] -replayLazily&quot;</span>, <span class="keyword">self</span>.name];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-replayLazily</code> 返回的信号只有被订阅的时候才会进行 connect 操作，也就是这时候才去订阅 sourceSignal，效果跟直接订阅冷信号相似</p>
 <h2 id="为什么需要热信号"><a href="#为什么需要热信号" class="headerlink" title="为什么需要热信号"></a>为什么需要热信号</h2><p>先来看一个例子</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testSideEffect &#123;</span><br><span class="line">    AFHTTPSessionManager *mgr = [AFHTTPSessionManager manager];</span><br><span class="line">    mgr.requestSerializer = [AFJSONRequestSerializer serializer];</span><br><span class="line">    mgr.responseSerializer = [AFJSONResponseSerializer serializer];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *url = <span class="string">@"https://apis.map.qq.com/ws/place/v1/search"</span>;</span><br><span class="line">    <span class="built_in">NSDictionary</span> *params = @&#123;</span><br><span class="line">                             <span class="string">@"boundary"</span>:<span class="string">@"nearby(22.54046907,113.93455082,1000)"</span>,</span><br><span class="line">                             <span class="string">@"key"</span>:<span class="string">@"XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"</span>,</span><br><span class="line">                             <span class="string">@"keyword"</span>:<span class="string">@"深大"</span>,</span><br><span class="line">                             <span class="string">@"page_index"</span>:@<span class="number">1</span>,</span><br><span class="line">                             <span class="string">@"page_size"</span>:@<span class="number">10</span>,</span><br><span class="line">                             &#125;;</span><br><span class="line">    </span><br><span class="line">    RACSignal *fetchWebservice = [RACSignal createSignal:^RACDisposable * _Nullable(<span class="keyword">id</span>&lt;RACSubscriber&gt;  _Nonnull subscriber) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"fetch begin"</span>);</span><br><span class="line">        <span class="built_in">NSURLSessionDataTask</span> *task = [mgr GET:url parameters:params progress:<span class="literal">nil</span> success:^(<span class="built_in">NSURLSessionDataTask</span> * _Nonnull task, <span class="keyword">id</span>  _Nullable responseObject) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"fetch success"</span>);</span><br><span class="line">            [subscriber sendNext:responseObject];</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125; failure:^(<span class="built_in">NSURLSessionDataTask</span> * _Nullable task, <span class="built_in">NSError</span> * _Nonnull error) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"fetch error"</span>);</span><br><span class="line">            [subscriber sendError:error];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">            <span class="keyword">if</span> (task.state != <span class="built_in">NSURLSessionTaskStateCompleted</span>) &#123;</span><br><span class="line">                [task cancel];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *requestId = [fetchWebservice flattenMap:^__kindof RACSignal * _Nullable(<span class="built_in">NSDictionary</span> *responseObject) &#123;</span><br><span class="line">        <span class="keyword">id</span> requestId = responseObject[<span class="string">@"request_id"</span>];</span><br><span class="line">        <span class="keyword">if</span> ([requestId isKindOfClass:<span class="built_in">NSString</span>.class]) &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:requestId];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal error:[<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"error"</span> code:<span class="number">400</span> userInfo:@&#123;<span class="string">@"responseObject"</span>: responseObject&#125;]];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *count = [fetchWebservice flattenMap:^__kindof RACSignal * _Nullable(<span class="built_in">NSDictionary</span> *responseObject) &#123;</span><br><span class="line">        <span class="keyword">id</span> count = responseObject[<span class="string">@"count"</span>];</span><br><span class="line">        <span class="keyword">if</span> ([count isKindOfClass:<span class="built_in">NSNumber</span>.class]) &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:count];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal error:[<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"error"</span> code:<span class="number">400</span> userInfo:@&#123;<span class="string">@"responseObject"</span>: responseObject&#125;]];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *requestIdCatchSig = [[requestId catchTo:[RACSignal <span class="keyword">return</span>:<span class="string">@"Error"</span>]]  startWith:<span class="string">@"Loading..."</span>];</span><br><span class="line">    [requestIdCatchSig setName:<span class="string">@"requestIdCatchSig"</span>];</span><br><span class="line">    RAC(<span class="keyword">self</span>, requestId) = requestIdCatchSig;</span><br><span class="line">    </span><br><span class="line">    RACSignal *countSig = [[count catchTo:[RACSignal <span class="keyword">return</span>:<span class="string">@"Error"</span>]] startWith:<span class="string">@"Loading..."</span>];</span><br><span class="line">    [countSig setName:<span class="string">@"countCatchSig"</span>];</span><br><span class="line">    RAC(<span class="keyword">self</span>, countStr) = countSig;</span><br><span class="line">    </span><br><span class="line">    [[RACSignal merge:@[requestId, count]] subscribeError:^(<span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">        <span class="built_in">UIAlertView</span> *alertView = [[<span class="built_in">UIAlertView</span> alloc] initWithTitle:<span class="string">@"Error"</span> message:error.domain delegate:<span class="literal">nil</span> cancelButtonTitle:<span class="string">@"OK"</span> otherButtonTitles:<span class="literal">nil</span>];</span><br><span class="line">        [alertView show];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testSideEffect &#123;</span><br><span class="line">    AFHTTPSessionManager *mgr = [AFHTTPSessionManager manager];</span><br><span class="line">    mgr.requestSerializer = [AFJSONRequestSerializer serializer];</span><br><span class="line">    mgr.responseSerializer = [AFJSONResponseSerializer serializer];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *url = <span class="string">@&quot;https://apis.map.qq.com/ws/place/v1/search&quot;</span>;</span><br><span class="line">    <span class="built_in">NSDictionary</span> *params = @&#123;</span><br><span class="line">                             <span class="string">@&quot;boundary&quot;</span>:<span class="string">@&quot;nearby(22.54046907,113.93455082,1000)&quot;</span>,</span><br><span class="line">                             <span class="string">@&quot;key&quot;</span>:<span class="string">@&quot;XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX&quot;</span>,</span><br><span class="line">                             <span class="string">@&quot;keyword&quot;</span>:<span class="string">@&quot;深大&quot;</span>,</span><br><span class="line">                             <span class="string">@&quot;page_index&quot;</span>:@<span class="number">1</span>,</span><br><span class="line">                             <span class="string">@&quot;page_size&quot;</span>:@<span class="number">10</span>,</span><br><span class="line">                             &#125;;</span><br><span class="line">    </span><br><span class="line">    RACSignal *fetchWebservice = [RACSignal createSignal:^RACDisposable * _Nullable(<span class="keyword">id</span>&lt;RACSubscriber&gt;  _Nonnull subscriber) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;fetch begin&quot;</span>);</span><br><span class="line">        <span class="built_in">NSURLSessionDataTask</span> *task = [mgr GET:url parameters:params progress:<span class="literal">nil</span> success:^(<span class="built_in">NSURLSessionDataTask</span> * _Nonnull task, <span class="keyword">id</span>  _Nullable responseObject) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@&quot;fetch success&quot;</span>);</span><br><span class="line">            [subscriber sendNext:responseObject];</span><br><span class="line">            [subscriber sendCompleted];</span><br><span class="line">        &#125; failure:^(<span class="built_in">NSURLSessionDataTask</span> * _Nullable task, <span class="built_in">NSError</span> * _Nonnull error) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@&quot;fetch error&quot;</span>);</span><br><span class="line">            [subscriber sendError:error];</span><br><span class="line">        &#125;];</span><br><span class="line">        <span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">            <span class="keyword">if</span> (task.state != <span class="built_in">NSURLSessionTaskStateCompleted</span>) &#123;</span><br><span class="line">                [task cancel];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *requestId = [fetchWebservice flattenMap:^__kindof RACSignal * _Nullable(<span class="built_in">NSDictionary</span> *responseObject) &#123;</span><br><span class="line">        <span class="keyword">id</span> requestId = responseObject[<span class="string">@&quot;request_id&quot;</span>];</span><br><span class="line">        <span class="keyword">if</span> ([requestId isKindOfClass:<span class="built_in">NSString</span>.class]) &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:requestId];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal error:[<span class="built_in">NSError</span> errorWithDomain:<span class="string">@&quot;error&quot;</span> code:<span class="number">400</span> userInfo:@&#123;<span class="string">@&quot;responseObject&quot;</span>: responseObject&#125;]];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *count = [fetchWebservice flattenMap:^__kindof RACSignal * _Nullable(<span class="built_in">NSDictionary</span> *responseObject) &#123;</span><br><span class="line">        <span class="keyword">id</span> count = responseObject[<span class="string">@&quot;count&quot;</span>];</span><br><span class="line">        <span class="keyword">if</span> ([count isKindOfClass:<span class="built_in">NSNumber</span>.class]) &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal <span class="keyword">return</span>:count];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> [RACSignal error:[<span class="built_in">NSError</span> errorWithDomain:<span class="string">@&quot;error&quot;</span> code:<span class="number">400</span> userInfo:@&#123;<span class="string">@&quot;responseObject&quot;</span>: responseObject&#125;]];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    RACSignal *requestIdCatchSig = [[requestId catchTo:[RACSignal <span class="keyword">return</span>:<span class="string">@&quot;Error&quot;</span>]]  startWith:<span class="string">@&quot;Loading...&quot;</span>];</span><br><span class="line">    [requestIdCatchSig setName:<span class="string">@&quot;requestIdCatchSig&quot;</span>];</span><br><span class="line">    RAC(<span class="keyword">self</span>, requestId) = requestIdCatchSig;</span><br><span class="line">    </span><br><span class="line">    RACSignal *countSig = [[count catchTo:[RACSignal <span class="keyword">return</span>:<span class="string">@&quot;Error&quot;</span>]] startWith:<span class="string">@&quot;Loading...&quot;</span>];</span><br><span class="line">    [countSig setName:<span class="string">@&quot;countCatchSig&quot;</span>];</span><br><span class="line">    RAC(<span class="keyword">self</span>, countStr) = countSig;</span><br><span class="line">    </span><br><span class="line">    [[RACSignal merge:@[requestId, count]] subscribeError:^(<span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">        <span class="built_in">UIAlertView</span> *alertView = [[<span class="built_in">UIAlertView</span> alloc] initWithTitle:<span class="string">@&quot;Error&quot;</span> message:error.domain delegate:<span class="literal">nil</span> cancelButtonTitle:<span class="string">@&quot;OK&quot;</span> otherButtonTitles:<span class="literal">nil</span>];</span><br><span class="line">        [alertView show];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>我们经常会遇到请求数据，然后再把数据处理解析返回需要的具体返回，但是以上代码会触发4次的网络请求，在打印的日志可以看到</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fetch begin</span><br><span class="line">fetch begin</span><br><span class="line">fetch begin</span><br><span class="line">fetch begin</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
 <p>之前分析 RACSignal 常用方法的时候，发现 ReactiveCocoa 中信号常用的方法是先订阅原信号，然后返回新的 RACSignal，而 RACSignal 被订阅的时候会马上执行一次初始化保存的 didSubscribe 闭包。</p>
 <p>首先这里用宏把信号和属性进行绑定 <code>RAC(self, requestId) = requestIdCatchSig</code>，宏 <code>RAC</code> 内部会初始化 RACSubscriptingAssignmentTrampoline </p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#define RAC(TARGET, ...) \</span></span><br><span class="line">    metamacro_if_eq(<span class="number">1</span>, metamacro_argcount(__VA_ARGS__)) \</span><br><span class="line">        (RAC_(TARGET, __VA_ARGS__, <span class="literal">nil</span>)) \</span><br><span class="line">        (RAC_(TARGET, __VA_ARGS__))</span><br><span class="line"></span><br><span class="line"><span class="meta">#define RAC_(TARGET, KEYPATH, NILVALUE) \</span></span><br><span class="line">    [[RACSubscriptingAssignmentTrampoline alloc] initWithTarget:(TARGET) nilValue:(NILVALUE)][@keypath(TARGET, KEYPATH)]</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> RAC(TARGET, ...) \</span></span><br><span class="line">    metamacro_if_eq(<span class="number">1</span>, metamacro_argcount(__VA_ARGS__)) \</span><br><span class="line">        (RAC_(TARGET, __VA_ARGS__, <span class="literal">nil</span>)) \</span><br><span class="line">        (RAC_(TARGET, __VA_ARGS__))</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> RAC_(TARGET, KEYPATH, NILVALUE) \</span></span><br><span class="line">    [[RACSubscriptingAssignmentTrampoline alloc] initWithTarget:(TARGET) nilValue:(NILVALUE)][@keypath(TARGET, KEYPATH)]</span><br></pre></td></tr></table></figure>
+
 <p>内部会对 requestIdCatchSig 进行订阅，requestIdCatchSig 被订阅的时候 requestId 也会被订阅一次，requestId 是 fetchWebservice 通过 <code>-flatten:</code> 方法转换，最后 fetchWebservice 也因此被订阅，触发了一次网络请求</p>
 <p>同理 <code>RAC(self, countStr) = countSig;</code> 也会触发一次网络请求，到此会引起2次网络请求。</p>
 <p>很容易看出剩余的2次是因为 <code>+merge:</code> 方法导致，在改方法中内部会将传入的 requestId，count 都会进行一次 flattenMap 操作，导致 fetchWebservice 被订阅2次。</p>
-<p>可以看出，在 ReactiveCocoa 中信号转换即是对原有的信号进行订阅从而产生新的信号，而冷信号 RACSignal 每次被订阅都会执行一次订阅时间，产生了<a href="https://en.wikipedia.org/wiki/Side_effect_%28computer_science%29" target="_blank" rel="noopener">副作用</a></p>
+<p>可以看出，在 ReactiveCocoa 中信号转换即是对原有的信号进行订阅从而产生新的信号，而冷信号 RACSignal 每次被订阅都会执行一次订阅时间，产生了<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Side_effect_%28computer_science%29">副作用</a></p>
 <p>改进：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RACMulticastConnection *connection = [fetchWebservice publish];</span><br><span class="line">RACSignal *hotFetchWebservice = connection.signal;</span><br><span class="line">[connection connect];</span><br></pre></td></tr></table></figure>
+
 <p>这时候我们利用热信号的特性，将 fetchWebservice 转化成功对应的热信号 hotFetchWebservice，后面的处理都以 hotFetchWebservice 原信号进行转换就能避免冷信号转化过程中产生的副作用。</p>
 <p>参考文章：</p>
 <ol>
-<li><a href="http://reactivex.io/documentation/observable.html" target="_blank" rel="noopener">ReactiveX文档</a></li>
-<li><a href="https://draveness.me/racsubject" target="_blank" rel="noopener">『可变』的热信号 RACSubject</a></li>
-<li><a href="https://tech.meituan.com/2015/11/03/talk-about-reactivecocoas-cold-signal-and-hot-signal-part-3.html" target="_blank" rel="noopener">细说ReactiveCocoa的冷信号与热信号（三）：怎么处理冷信号与热信号</a></li>
+<li><a target="_blank" rel="noopener" href="http://reactivex.io/documentation/observable.html">ReactiveX文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/racsubject">『可变』的热信号 RACSubject</a></li>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2015/11/03/talk-about-reactivecocoas-cold-signal-and-hot-signal-part-3.html">细说ReactiveCocoa的冷信号与热信号（三）：怎么处理冷信号与热信号</a></li>
 </ol>
 
-      
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/ReactiveCocoa/" rel="tag"># ReactiveCocoa</a>
-          
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/03/04/RACSignal-Operations-4/" rel="next" title="RACSignal常用方法深入分析(终)">
-                <i class="fa fa-chevron-left"></i> RACSignal常用方法深入分析(终)
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/ReactiveCocoa/" rel="tag"># ReactiveCocoa</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/23/ReactiveCocoa-RACCommand/" rel="prev" title="ReactiveCocoa-RACCommand原理分析">
-                ReactiveCocoa-RACCommand原理分析 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/04/RACSignal-Operations-4/" rel="prev" title="RACSignal常用方法深入分析(终)">
+      <i class="fa fa-chevron-left"></i> RACSignal常用方法深入分析(终)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/23/ReactiveCocoa-RACCommand/" rel="next" title="ReactiveCocoa-RACCommand原理分析">
+      ReactiveCocoa-RACCommand原理分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#冷、热信号的区别"><span class="nav-number">1.</span> <span class="nav-text">冷、热信号的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACSubject"><span class="nav-number">2.</span> <span class="nav-text">RACSubject</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RACSubject-底层实现"><span class="nav-number">2.1.</span> <span class="nav-text">RACSubject 底层实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACBehaviorSubject"><span class="nav-number">3.</span> <span class="nav-text">RACBehaviorSubject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACReplaySubject"><span class="nav-number">4.</span> <span class="nav-text">RACReplaySubject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACGroupedSignal"><span class="nav-number">5.</span> <span class="nav-text">RACGroupedSignal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冷信号转换成热信号"><span class="nav-number">6.</span> <span class="nav-text">冷信号转换成热信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#multicast"><span class="nav-number">6.1.</span> <span class="nav-text">multicast:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#publish"><span class="nav-number">6.2.</span> <span class="nav-text">publish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replay"><span class="nav-number">6.3.</span> <span class="nav-text">replay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replayLast"><span class="nav-number">6.4.</span> <span class="nav-text">replayLast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replayLazily"><span class="nav-number">6.5.</span> <span class="nav-text">replayLazily</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么需要热信号"><span class="nav-number">7.</span> <span class="nav-text">为什么需要热信号</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B7%E3%80%81%E7%83%AD%E4%BF%A1%E5%8F%B7%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">冷、热信号的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACSubject"><span class="nav-number">2.</span> <span class="nav-text">RACSubject</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RACSubject-%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">RACSubject 底层实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACBehaviorSubject"><span class="nav-number">3.</span> <span class="nav-text">RACBehaviorSubject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACReplaySubject"><span class="nav-number">4.</span> <span class="nav-text">RACReplaySubject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACGroupedSignal"><span class="nav-number">5.</span> <span class="nav-text">RACGroupedSignal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B7%E4%BF%A1%E5%8F%B7%E8%BD%AC%E6%8D%A2%E6%88%90%E7%83%AD%E4%BF%A1%E5%8F%B7"><span class="nav-number">6.</span> <span class="nav-text">冷信号转换成热信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#multicast"><span class="nav-number">6.1.</span> <span class="nav-text">multicast:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#publish"><span class="nav-number">6.2.</span> <span class="nav-text">publish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replay"><span class="nav-number">6.3.</span> <span class="nav-text">replay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replayLast"><span class="nav-number">6.4.</span> <span class="nav-text">replayLast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replayLazily"><span class="nav-number">6.5.</span> <span class="nav-text">replayLazily</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%83%AD%E4%BF%A1%E5%8F%B7"><span class="nav-number">7.</span> <span class="nav-text">为什么需要热信号</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -910,98 +525,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 

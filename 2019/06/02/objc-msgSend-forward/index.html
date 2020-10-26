@@ -1,128 +1,49 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
-
-  <meta name="description" content="在 Objective-C 语言中，对象/类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息:  objc_msgSend(receiver, @selector(message))  如果 reveiver 中没有找到对应方法 message, 则会开始消息转发的过程，也就是过程：  动态方法解析 Method Resolution 快速转发 Fast Rorwarding 完整消息转">
-<meta name="keywords" content="iOS,Objective-C">
+  <meta name="description" content="在 Objective-C 语言中，对象&#x2F;类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息:  objc_msgSend(receiver, @selector(message))  如果 reveiver 中没有找到对应方法 message, 则会开始消息转发的过程，也就是过程：  动态方法解析 Method Resolution 快速转发 Fast Rorwarding 完整消息转">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入了解Objective-C消息发送与转发过程">
 <meta property="og:url" content="https://chipengliu.github.io/2019/06/02/objc-msgSend-forward/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
-<meta property="og:description" content="在 Objective-C 语言中，对象/类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息:  objc_msgSend(receiver, @selector(message))  如果 reveiver 中没有找到对应方法 message, 则会开始消息转发的过程，也就是过程：  动态方法解析 Method Resolution 快速转发 Fast Rorwarding 完整消息转">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.864Z">
+<meta property="og:description" content="在 Objective-C 语言中，对象&#x2F;类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息:  objc_msgSend(receiver, @selector(message))  如果 reveiver 中没有找到对应方法 message, 则会开始消息转发的过程，也就是过程：  动态方法解析 Method Resolution 快速转发 Fast Rorwarding 完整消息转">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-06-02T09:35:34.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.864Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Objective-C">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="深入了解Objective-C消息发送与转发过程">
-<meta name="twitter:description" content="在 Objective-C 语言中，对象/类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息:  objc_msgSend(receiver, @selector(message))  如果 reveiver 中没有找到对应方法 message, 则会开始消息转发的过程，也就是过程：  动态方法解析 Method Resolution 快速转发 Fast Rorwarding 完整消息转">
+
+<link rel="canonical" href="https://chipengliu.github.io/2019/06/02/objc-msgSend-forward/">
 
 
-
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2019/06/02/objc-msgSend-forward/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -134,25 +55,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -161,9 +65,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -175,131 +78,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -307,135 +140,75 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/06/02/objc-msgSend-forward/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">深入了解Objective-C消息发送与转发过程
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          深入了解Objective-C消息发送与转发过程
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-06-02 17:35:34" itemprop="dateCreated datePublished" datetime="2019-06-02T17:35:34+08:00">2019-06-02</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-      
 
       
         <p>在 Objective-C 语言中，对象/类(其实类也是一个对象) 执行方法最后会转化成给对象发送消息: </p>
@@ -448,6 +221,9 @@
 </ol>
 <p>接下来通过OC的源码来分析以上几个步骤具体的调用过程</p>
 <a id="more"></a>
+
+
+
 <h2 id="消息发送"><a href="#消息发送" class="headerlink" title="消息发送"></a>消息发送</h2><p>当在 OC 中给对象执行方法，如 <code>[object foo]</code>，会被翻译为 <code>objc_msgSend(object, @selector(foo))</code>，<code>@seletor</code> 会将 foo 方法生成对应的选择子(SEL)，选择子只跟方法名有关系，不同的类之间可以存在相同的方法选择子，但是同一个类(及类的继承体系)中，不能存在2个同名的方法，即使参数类型不同也不行，也就是说 OC 中不支持像 C++ 那样的函数重载。</p>
 <blockquote>
 <p><em>当编译器遇到一个方法调用时，它会将方法的调用翻译成以下函数中的一个</em> <code>objc_msgSend</code><em>、</em><code>objc_msgSend_stret</code><em>、</em><code>objc_msgSendSuper</code> <em>和</em> <code>objc_msgSendSuper_stret</code><em>。 发送给对象的父类的消息会使用</em> <code>objc_msgSendSuper</code> <em>有数据结构作为返回值的方法会使用</em> <code>objc_msgSendSuper_stret</code> <em>或</em> <code>objc_msgSend_stret</code> <em>其它的消息都是使用</em> <code>objc_msgSend</code> <em>发送的</em></p>
@@ -455,8 +231,10 @@
 <p><code>objc_msgSend</code> 的具体实现是由汇编语言编写的，其中具体过程细节可以参考我另一篇文章<a href="https://chipengliu.github.io/2019/04/07/objc-msg-armd64/">objc-msg-arm64源码深入分析</a></p>
 <p><code>objc_msgSend</code> 函数执行过程中，如果根据 SEL 在接受者(object)方法列表的 cache 缓存中没有查找到对应的方法 IMP，会执行 C 语言函数 <code>__class_lookupMethodAndLoadCache3</code></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">IMP _class_lookupMethodAndLoadCache3(id obj, SEL sel, Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> lookUpImpOrForward(cls, sel, obj, </span><br><span class="line">                              YES<span class="comment">/*initialize*/</span>, NO<span class="comment">/*cache*/</span>, YES<span class="comment">/*resolver*/</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这个方法只允许被 <code>_objc_msgSend</code> 内部调度，其他方式应该使用 <code>lookUpImp</code> 此函数将忽略缓存查询，因为执行此函数之前能确保已经查询过对应的内存</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">IMP <span class="title">lookUpImpOrForward</span><span class="params">(Class cls, SEL sel, id inst, </span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="keyword">bool</span> initialize, <span class="keyword">bool</span> cache, <span class="keyword">bool</span> resolver)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Class curClass;</span><br><span class="line">    IMP imp = nil;</span><br><span class="line">    Method meth;</span><br><span class="line">    <span class="keyword">bool</span> triedResolver = NO;</span><br><span class="line"></span><br><span class="line">    runtimeLock.assertUnlocked();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Optimistic cache lookup</span></span><br><span class="line">    <span class="comment">// 这里传入cache==false，因为objc_msgSend汇编阶段已经查找过缓存，故直接跳过</span></span><br><span class="line">    <span class="keyword">if</span> (cache) &#123;</span><br><span class="line">        imp = cache_getImp(cls, sel);</span><br><span class="line">        <span class="keyword">if</span> (imp) <span class="keyword">return</span> imp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现对应的类，设置父类、元类等等相关信息，分配可读写结构体 class_rw_t 的空间</span></span><br><span class="line">    <span class="keyword">if</span> (!cls-&gt;isRealized()) &#123;</span><br><span class="line">        <span class="keyword">rwlock_writer_t</span> lock(runtimeLock);</span><br><span class="line">        realizeClass(cls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// 判断类别是否已经初始化过，初始化过程会触发+initialize</span></span><br><span class="line">    <span class="keyword">if</span> (initialize  &amp;&amp;  !cls-&gt;isInitialized()) &#123;</span><br><span class="line">        _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里加锁是因为OC在运行时能动态添加方法，</span></span><br><span class="line">  	<span class="comment">// 比方说分类 category 添加方法是在运行时期添加</span></span><br><span class="line">  	<span class="comment">// 如果此时不添加锁进行原子读操作，很可能因为新方法添加导致缓存被冲洗（flush）</span></span><br><span class="line"> retry:</span><br><span class="line">    runtimeLock.read();<span class="comment">//加读锁</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 支持GC的环境需要对一些方法进行忽略，比如retain、release...等等</span></span><br><span class="line">    <span class="keyword">if</span> (ignoreSelector(sel)) &#123;</span><br><span class="line">        imp = _objc_ignored_method;</span><br><span class="line">        cache_fill(cls, sel, imp, inst);</span><br><span class="line">        <span class="keyword">goto</span> done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class's cache.</span></span><br><span class="line">    <span class="comment">// 再次查询缓存</span></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> 这里为什么会再次查询缓存列表？一开始cache==NO直接忽略了缓存查询，为什么加锁之后却要重新从缓存查询</span></span><br><span class="line">    <span class="comment">// 结合加锁的逻辑，是否因为调度的时候是并列的，但是读的时候是原子，很可能加锁之后因为上一次查找过程中重新更新了方法列表缓存？</span></span><br><span class="line">    imp = cache_getImp(cls, sel);</span><br><span class="line">    <span class="keyword">if</span> (imp) <span class="keyword">goto</span> done;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class's method lists.</span></span><br><span class="line">    <span class="comment">// 缓存没有查到，到方法列表中查询</span></span><br><span class="line">    meth = getMethodNoSuper_nolock(cls, sel);</span><br><span class="line">    <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">        <span class="comment">// 查到就更新缓存列表</span></span><br><span class="line">        log_and_fill_cache(cls, meth-&gt;imp, sel, inst, cls);</span><br><span class="line">        imp = meth-&gt;imp;</span><br><span class="line">        <span class="keyword">goto</span> done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 开始在父类中进行查找</span></span><br><span class="line">    curClass = cls;</span><br><span class="line">    <span class="keyword">while</span> ((curClass = curClass-&gt;superclass)) &#123;</span><br><span class="line">        <span class="comment">// 从父类缓存中查询</span></span><br><span class="line">        imp = cache_getImp(curClass, sel);</span><br><span class="line">        <span class="keyword">if</span> (imp) &#123;</span><br><span class="line">            <span class="comment">// 如果是 _objc_msgForward_impcache 则不进行缓存</span></span><br><span class="line">            <span class="keyword">if</span> (imp != (IMP)_objc_msgForward_impcache) &#123;</span><br><span class="line">                <span class="comment">// 在父类查询到也存在本类的缓存中</span></span><br><span class="line">                log_and_fill_cache(cls, imp, sel, inst, curClass);</span><br><span class="line">                <span class="keyword">goto</span> done;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">              	<span class="comment">// 如果查找到的 IMP 为 _objc_msgForward_impcache 直接结束查找</span></span><br><span class="line">              	<span class="comment">// 并执行 -resolveInstanceMethod: / +resolveClassMethod:</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从父类方法列表中查</span></span><br><span class="line">        meth = getMethodNoSuper_nolock(curClass, sel);</span><br><span class="line">        <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">            log_and_fill_cache(cls, meth-&gt;imp, sel, inst, curClass);</span><br><span class="line">            imp = meth-&gt;imp;</span><br><span class="line">            <span class="keyword">goto</span> done;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 父类中也没有找到方法</span></span><br><span class="line">    <span class="keyword">if</span> (resolver  &amp;&amp;  !triedResolver) &#123;</span><br><span class="line">        runtimeLock.unlockRead();</span><br><span class="line">        <span class="comment">// 进行 -resolveInstanceMethod: / +resolveClassMethod: 动态添加方法 </span></span><br><span class="line">        _class_resolveMethod(cls, sel, inst);</span><br><span class="line">        <span class="comment">// 动态实现完了之后，因为之前锁已经解锁，方法列表可能已经更新了，所以会从新进行一轮方法查找</span></span><br><span class="line">        triedResolver = YES;</span><br><span class="line">        <span class="keyword">goto</span> retry;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No implementation found, and method resolver didn't help. </span></span><br><span class="line">    <span class="comment">// Use forwarding.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行方法转发并对其结果进行缓存</span></span><br><span class="line">    imp = (IMP)_objc_msgForward_impcache;</span><br><span class="line">    cache_fill(cls, sel, imp, inst);</span><br><span class="line"></span><br><span class="line"> done:</span><br><span class="line">    runtimeLock.unlockRead();</span><br><span class="line"></span><br><span class="line">    assert(!(ignoreSelector(sel)  &amp;&amp;  imp != (IMP)&amp;_objc_ignored_method));</span><br><span class="line"></span><br><span class="line">    assert(imp != _objc_msgSend_uncached_impcache);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> imp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">IMP <span class="title">lookUpImpOrForward</span><span class="params">(Class cls, SEL sel, id inst, </span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="keyword">bool</span> initialize, <span class="keyword">bool</span> cache, <span class="keyword">bool</span> resolver)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Class curClass;</span><br><span class="line">    IMP imp = nil;</span><br><span class="line">    Method meth;</span><br><span class="line">    <span class="keyword">bool</span> triedResolver = NO;</span><br><span class="line"></span><br><span class="line">    runtimeLock.assertUnlocked();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Optimistic cache lookup</span></span><br><span class="line">    <span class="comment">// 这里传入cache==false，因为objc_msgSend汇编阶段已经查找过缓存，故直接跳过</span></span><br><span class="line">    <span class="keyword">if</span> (cache) &#123;</span><br><span class="line">        imp = cache_getImp(cls, sel);</span><br><span class="line">        <span class="keyword">if</span> (imp) <span class="keyword">return</span> imp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现对应的类，设置父类、元类等等相关信息，分配可读写结构体 class_rw_t 的空间</span></span><br><span class="line">    <span class="keyword">if</span> (!cls-&gt;isRealized()) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">rwlock_writer_t</span> <span class="title">lock</span><span class="params">(runtimeLock)</span></span>;</span><br><span class="line">        realizeClass(cls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// 判断类别是否已经初始化过，初始化过程会触发+initialize</span></span><br><span class="line">    <span class="keyword">if</span> (initialize  &amp;&amp;  !cls-&gt;isInitialized()) &#123;</span><br><span class="line">        _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里加锁是因为OC在运行时能动态添加方法，</span></span><br><span class="line">  	<span class="comment">// 比方说分类 category 添加方法是在运行时期添加</span></span><br><span class="line">  	<span class="comment">// 如果此时不添加锁进行原子读操作，很可能因为新方法添加导致缓存被冲洗（flush）</span></span><br><span class="line"> retry:</span><br><span class="line">    runtimeLock.read();<span class="comment">//加读锁</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 支持GC的环境需要对一些方法进行忽略，比如retain、release...等等</span></span><br><span class="line">    <span class="keyword">if</span> (ignoreSelector(sel)) &#123;</span><br><span class="line">        imp = _objc_ignored_method;</span><br><span class="line">        cache_fill(cls, sel, imp, inst);</span><br><span class="line">        <span class="keyword">goto</span> done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class&#x27;s cache.</span></span><br><span class="line">    <span class="comment">// 再次查询缓存</span></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> 这里为什么会再次查询缓存列表？一开始cache==NO直接忽略了缓存查询，为什么加锁之后却要重新从缓存查询</span></span><br><span class="line">    <span class="comment">// 结合加锁的逻辑，是否因为调度的时候是并列的，但是读的时候是原子，很可能加锁之后因为上一次查找过程中重新更新了方法列表缓存？</span></span><br><span class="line">    imp = cache_getImp(cls, sel);</span><br><span class="line">    <span class="keyword">if</span> (imp) <span class="keyword">goto</span> done;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class&#x27;s method lists.</span></span><br><span class="line">    <span class="comment">// 缓存没有查到，到方法列表中查询</span></span><br><span class="line">    meth = getMethodNoSuper_nolock(cls, sel);</span><br><span class="line">    <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">        <span class="comment">// 查到就更新缓存列表</span></span><br><span class="line">        log_and_fill_cache(cls, meth-&gt;imp, sel, inst, cls);</span><br><span class="line">        imp = meth-&gt;imp;</span><br><span class="line">        <span class="keyword">goto</span> done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 开始在父类中进行查找</span></span><br><span class="line">    curClass = cls;</span><br><span class="line">    <span class="keyword">while</span> ((curClass = curClass-&gt;superclass)) &#123;</span><br><span class="line">        <span class="comment">// 从父类缓存中查询</span></span><br><span class="line">        imp = cache_getImp(curClass, sel);</span><br><span class="line">        <span class="keyword">if</span> (imp) &#123;</span><br><span class="line">            <span class="comment">// 如果是 _objc_msgForward_impcache 则不进行缓存</span></span><br><span class="line">            <span class="keyword">if</span> (imp != (IMP)_objc_msgForward_impcache) &#123;</span><br><span class="line">                <span class="comment">// 在父类查询到也存在本类的缓存中</span></span><br><span class="line">                log_and_fill_cache(cls, imp, sel, inst, curClass);</span><br><span class="line">                <span class="keyword">goto</span> done;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">              	<span class="comment">// 如果查找到的 IMP 为 _objc_msgForward_impcache 直接结束查找</span></span><br><span class="line">              	<span class="comment">// 并执行 -resolveInstanceMethod: / +resolveClassMethod:</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从父类方法列表中查</span></span><br><span class="line">        meth = getMethodNoSuper_nolock(curClass, sel);</span><br><span class="line">        <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">            log_and_fill_cache(cls, meth-&gt;imp, sel, inst, curClass);</span><br><span class="line">            imp = meth-&gt;imp;</span><br><span class="line">            <span class="keyword">goto</span> done;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 父类中也没有找到方法</span></span><br><span class="line">    <span class="keyword">if</span> (resolver  &amp;&amp;  !triedResolver) &#123;</span><br><span class="line">        runtimeLock.unlockRead();</span><br><span class="line">        <span class="comment">// 进行 -resolveInstanceMethod: / +resolveClassMethod: 动态添加方法 </span></span><br><span class="line">        _class_resolveMethod(cls, sel, inst);</span><br><span class="line">        <span class="comment">// 动态实现完了之后，因为之前锁已经解锁，方法列表可能已经更新了，所以会从新进行一轮方法查找</span></span><br><span class="line">        triedResolver = YES;</span><br><span class="line">        <span class="keyword">goto</span> retry;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No implementation found, and method resolver didn&#x27;t help. </span></span><br><span class="line">    <span class="comment">// Use forwarding.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行方法转发并对其结果进行缓存</span></span><br><span class="line">    imp = (IMP)_objc_msgForward_impcache;</span><br><span class="line">    cache_fill(cls, sel, imp, inst);</span><br><span class="line"></span><br><span class="line"> done:</span><br><span class="line">    runtimeLock.unlockRead();</span><br><span class="line"></span><br><span class="line">    assert(!(ignoreSelector(sel)  &amp;&amp;  imp != (IMP)&amp;_objc_ignored_method));</span><br><span class="line"></span><br><span class="line">    assert(imp != _objc_msgSend_uncached_impcache);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> imp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>整个方法查找的过程，可以简单的概括为以下几个步骤</p>
 <ol>
 <li>实现、初始化对应的类</li>
@@ -470,12 +248,15 @@
 <h2 id="动态方法解析"><a href="#动态方法解析" class="headerlink" title="动态方法解析"></a>动态方法解析</h2><p>消息发送的过程中，如果没有找到先进行 <code>_class_resolveMethod</code> 允许开发者动态的根据 SEL 实现对应的 IMP，实现前先执行 <code>runtimeLock.unlockRead()</code> 打开了读锁，所以开发者在此动态实现的过程添加了方法实现，故不需要缓存方法；</p>
 <p> <code>_class_resolveMethod</code> 调用过程又是非原子性的，执行完的时候方法列表可能已经更新了，所以执行完了之后需要重复一轮查询方法的过程</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _class_resolveMethod(Class cls, SEL sel, <span class="keyword">id</span> inst)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (! cls-&gt;isMetaClass()) &#123;</span><br><span class="line">        <span class="comment">// try [cls resolveInstanceMethod:sel]</span></span><br><span class="line">        _class_resolveInstanceMethod(cls, sel, inst);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// try [nonMetaClass resolveClassMethod:sel]</span></span><br><span class="line">        <span class="comment">// and [cls resolveInstanceMethod:sel]</span></span><br><span class="line">        _class_resolveClassMethod(cls, sel, inst);</span><br><span class="line">        <span class="keyword">if</span> (!lookUpImpOrNil(cls, sel, inst, </span><br><span class="line">                            <span class="literal">NO</span><span class="comment">/*initialize*/</span>, <span class="literal">YES</span><span class="comment">/*cache*/</span>, <span class="literal">NO</span><span class="comment">/*resolver*/</span>)) </span><br><span class="line">        &#123;</span><br><span class="line">            _class_resolveInstanceMethod(cls, sel, inst);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>如果 cls 不是元类，则执行 <code>_class_resolveInstanceMethod</code> 函数；否则 cls 属于元类则会调用 <code>_class_resolveClassMethod</code> ，然后执行 <code>lookUpImpOrNil</code></p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">IMP lookUpImpOrNil(Class cls, SEL sel, <span class="keyword">id</span> inst, </span><br><span class="line">                   <span class="keyword">bool</span> initialize, <span class="keyword">bool</span> cache, <span class="keyword">bool</span> resolver)</span><br><span class="line">&#123;</span><br><span class="line">    IMP imp = lookUpImpOrForward(cls, sel, inst, initialize, cache, resolver);</span><br><span class="line">    <span class="keyword">if</span> (imp == _objc_msgForward_impcache) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> imp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>lookUpImpOrNil</code> 和 <code>lookUpImpOrForward</code> 类似，前者内部是先调用后者函数，判断返回 imp 结果是否和 _objc_msgForward_impcache 相同，如果相同返回 nil，反之返回 imp。</p>
 <p>需要注意的是在 <code>lookUpImpOrNil</code> 中并不会对 cls 进行初始化(initialize)或者是方法动态实现过程(resolver)，若 <code>lookUpImpOrNil</code> 返回了nil，则会调用 <code>_class_resolveInstanceMethod</code></p>
 <p>这里以非元类来分析</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> _class_resolveInstanceMethod(Class cls, SEL sel, <span class="keyword">id</span> inst)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 如果类没有实现 +resolveInstanceMethod 方法则返回nil</span></span><br><span class="line">    <span class="keyword">if</span> (! lookUpImpOrNil(cls-&gt;ISA(), SEL_resolveInstanceMethod, cls, </span><br><span class="line">                         <span class="literal">NO</span><span class="comment">/*initialize*/</span>, <span class="literal">YES</span><span class="comment">/*cache*/</span>, <span class="literal">NO</span><span class="comment">/*resolver*/</span>)) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过 objc_msgSend 来执行  resolveInstanceMethod 方法</span></span><br><span class="line">    <span class="built_in">BOOL</span> (*msg)(Class, SEL, SEL) = (<span class="keyword">typeof</span>(msg))objc_msgSend;</span><br><span class="line">    <span class="keyword">bool</span> resolved = msg(cls, SEL_resolveInstanceMethod, sel);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// resolveInstanceMethod 执行过程中肯能会动态添加方法， lookUpImpOrNil 会缓存最新的imp(不管是否是开发者动态实现)，</span></span><br><span class="line">  	<span class="comment">// 这样做可以下次方法调用的时候，不会再次执行动态方法解析的过程</span></span><br><span class="line">    IMP imp = lookUpImpOrNil(cls, sel, inst, </span><br><span class="line">                             <span class="literal">NO</span><span class="comment">/*initialize*/</span>, <span class="literal">YES</span><span class="comment">/*cache*/</span>, <span class="literal">NO</span><span class="comment">/*resolver*/</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ......忽略相关日志代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>到此，消息转发前的逻辑已经全部走完，简单总结一下各个函数调用的顺序作用：</p>
 <ol>
 <li>汇编入口 <code>_objc_msgSend</code> 为消息发送的入口</li>
@@ -489,11 +270,13 @@
 <h2 id="消息转发"><a href="#消息转发" class="headerlink" title="消息转发"></a>消息转发</h2><p>在第一次执行 <code>lookUpImpOrForward</code> 过程中，动态解析方法完了之后，还没有找到方法，则放回 <code>_objc_msgForward_impcache</code></p>
 <p><code>__objc_msgSend_uncached_impcache</code> 汇编代码会利用 br 指令跳转到 <code>_objc_msgForward_impcache</code> ，后者内部是通过 b 指令跳转到 <code>__objc_msgForward</code>，最后会调用 <code>_objc_forward_handler</code> 函数(objc-runtime.h)</p>
 <p><code>_objc_msgSend_uncached_impcache</code> 的默认实现为 <code>objc_defaultForwardHandler</code> </p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">__attribute__((noreturn)) <span class="keyword">void</span> </span><br><span class="line">objc_defaultForwardHandler(<span class="keyword">id</span> <span class="keyword">self</span>, SEL sel)</span><br><span class="line">&#123;</span><br><span class="line">    _objc_fatal(<span class="string">"%c[%s %s]: unrecognized selector sent to instance %p "</span></span><br><span class="line">                <span class="string">"(no message forward handler is installed)"</span>, </span><br><span class="line">                class_isMetaClass(object_getClass(<span class="keyword">self</span>)) ? <span class="string">'+'</span> : <span class="string">'-'</span>, </span><br><span class="line">                object_getClassName(<span class="keyword">self</span>), sel_getName(sel), <span class="keyword">self</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> *_objc_forward_handler = (<span class="keyword">void</span>*)objc_defaultForwardHandler;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">__attribute__((noreturn)) <span class="keyword">void</span> </span><br><span class="line">objc_defaultForwardHandler(<span class="keyword">id</span> <span class="keyword">self</span>, SEL sel)</span><br><span class="line">&#123;</span><br><span class="line">    _objc_fatal(<span class="string">&quot;%c[%s %s]: unrecognized selector sent to instance %p &quot;</span></span><br><span class="line">                <span class="string">&quot;(no message forward handler is installed)&quot;</span>, </span><br><span class="line">                class_isMetaClass(object_getClass(<span class="keyword">self</span>)) ? <span class="string">&#x27;+&#x27;</span> : <span class="string">&#x27;-&#x27;</span>, </span><br><span class="line">                object_getClassName(<span class="keyword">self</span>), sel_getName(sel), <span class="keyword">self</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> *_objc_forward_handler = (<span class="keyword">void</span>*)objc_defaultForwardHandler;</span><br></pre></td></tr></table></figure>
+
 <p>从代码实现中可以看到熟悉的报错日志：<strong>unrecognized selector sent to instance</strong></p>
 <p>要自定义转发过程则需要通过 <code>objc_setForwardHandler</code> 来重写 <code>objc_defaultForwardHandler</code></p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> objc_setForwardHandler(<span class="keyword">void</span> *fwd, <span class="keyword">void</span> *fwd_stret)</span><br><span class="line">&#123;</span><br><span class="line">    _objc_forward_handler = fwd;</span><br><span class="line"><span class="meta">#if SUPPORT_STRET</span></span><br><span class="line">    _objc_forward_stret_handler = fwd_stret;</span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p> <code>objc_setForwardHandler</code> 的调用是在 <strong>Core Foundation</strong> 中实现，但在其开源代码中，苹果删除了件 <code>__CFInitialize()</code> 中调用 <code>objc_setForwardHandler</code> 的代码。具体可以参考文章<a href="http://yulingtianxia.com/blog/2016/06/15/Objective-C-Message-Sending-and-Forwarding/" target="_blank" rel="noopener">Objective-C 消息发送与转发机制原理</a></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> objc_setForwardHandler(<span class="keyword">void</span> *fwd, <span class="keyword">void</span> *fwd_stret)</span><br><span class="line">&#123;</span><br><span class="line">    _objc_forward_handler = fwd;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SUPPORT_STRET</span></span><br><span class="line">    _objc_forward_stret_handler = fwd_stret;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> <code>objc_setForwardHandler</code> 的调用是在 <strong>Core Foundation</strong> 中实现，但在其开源代码中，苹果删除了件 <code>__CFInitialize()</code> 中调用 <code>objc_setForwardHandler</code> 的代码。具体可以参考文章<a target="_blank" rel="noopener" href="http://yulingtianxia.com/blog/2016/06/15/Objective-C-Message-Sending-and-Forwarding/">Objective-C 消息发送与转发机制原理</a></p>
 <p>消息转发的过程大概可以分为以下几步:</p>
 <ol>
 <li>快速转发：开发者通过重写 <code>forwardingTargetForSelector:</code> 方法提供新的接受者(forwardingTarget)来重新执行 seletor；如果 forwardingTarget 和旧的接受者相同或者为nil，则进入下一步</li>
@@ -501,356 +284,174 @@
 <li>若步骤2没有完成转发则会调用 <code>doesNotRecognizeSelector</code> 方法，抛出异常</li>
 </ol>
 <h2 id="消息转发特性能做什么？"><a href="#消息转发特性能做什么？" class="headerlink" title="消息转发特性能做什么？"></a>消息转发特性能做什么？</h2><p>了解过消息转发的过程，那我们能利用这特性解决什么问题呢？</p>
-<h3 id="1-AOP"><a href="#1-AOP" class="headerlink" title="1. AOP"></a>1. AOP</h3><p>既然能接管消息转发的过程，很容易联想到通过消息转发在原有方法执行的过程中插入需要的代码逻辑，从而实现切面编程，具体可以参考<a href="https://halfrost.com/objc_runtime_objc_msgsend/#forwardinvocation" target="_blank" rel="noopener">forwardInvocation的例子</a></p>
+<h3 id="1-AOP"><a href="#1-AOP" class="headerlink" title="1. AOP"></a>1. AOP</h3><p>既然能接管消息转发的过程，很容易联想到通过消息转发在原有方法执行的过程中插入需要的代码逻辑，从而实现切面编程，具体可以参考<a target="_blank" rel="noopener" href="https://halfrost.com/objc_runtime_objc_msgsend/#forwardinvocation">forwardInvocation的例子</a></p>
 <h3 id="2-解决NSTimer强引用Target导致循环引用"><a href="#2-解决NSTimer强引用Target导致循环引用" class="headerlink" title="2.解决NSTimer强引用Target导致循环引用"></a>2.解决NSTimer强引用Target导致循环引用</h3><p>跟第一个例子相似，也是通过 NSProxy 进行消息转发，在原有 NSTimer 和target 之间加入一层proxy解决循环引用问题</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">id</span>)forwardingTargetForSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">return</span> _weakObject;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)forwardInvocation:(<span class="built_in">NSInvocation</span> *)invocation &#123;</span><br><span class="line">    <span class="keyword">void</span> *null = <span class="literal">NULL</span>;</span><br><span class="line">    [invocation setReturnValue:&amp;null];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)respondsToSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">return</span> [_weakObject respondsToSelector:aSelector];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
 <p>参考文章:</p>
 <ol>
-<li><a href="https://juejin.im/post/5ae96e8c6fb9a07ac85a3860" target="_blank" rel="noopener">iOS开发·runtime原理与实践: 消息转发篇(Message Forwarding)</a></li>
-<li><a href="https://draveness.me/message" target="_blank" rel="noopener">从源代码看 ObjC 中消息的发送</a></li>
-<li><a href="http://yulingtianxia.com/blog/2016/06/15/Objective-C-Message-Sending-and-Forwarding/" target="_blank" rel="noopener">Objective-C 消息发送与转发机制原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5ae96e8c6fb9a07ac85a3860">iOS开发·runtime原理与实践: 消息转发篇(Message Forwarding)</a></li>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/message">从源代码看 ObjC 中消息的发送</a></li>
+<li><a target="_blank" rel="noopener" href="http://yulingtianxia.com/blog/2016/06/15/Objective-C-Message-Sending-and-Forwarding/">Objective-C 消息发送与转发机制原理</a></li>
 </ol>
 
-      
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
-          
-            <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/04/07/objc-msg-armd64/" rel="next" title="objc-msg-arm64源码深入分析">
-                <i class="fa fa-chevron-left"></i> objc-msg-arm64源码深入分析
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/07/13/hook-objc-MsgSend/" rel="prev" title="从汇编角度分析objc_msgSend的hook过程">
-                从汇编角度分析objc_msgSend的hook过程 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/07/objc-msg-armd64/" rel="prev" title="objc-msg-arm64源码深入分析">
+      <i class="fa fa-chevron-left"></i> objc-msg-arm64源码深入分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/13/hook-objc-MsgSend/" rel="next" title="从汇编角度分析objc_msgSend的hook过程">
+      从汇编角度分析objc_msgSend的hook过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#消息发送"><span class="nav-number">1.</span> <span class="nav-text">消息发送</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态方法解析"><span class="nav-number">2.</span> <span class="nav-text">动态方法解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息转发"><span class="nav-number">3.</span> <span class="nav-text">消息转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息转发特性能做什么？"><span class="nav-number">4.</span> <span class="nav-text">消息转发特性能做什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-AOP"><span class="nav-number">4.1.</span> <span class="nav-text">1. AOP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-解决NSTimer强引用Target导致循环引用"><span class="nav-number">4.2.</span> <span class="nav-text">2.解决NSTimer强引用Target导致循环引用</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81"><span class="nav-number">1.</span> <span class="nav-text">消息发送</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">动态方法解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91"><span class="nav-number">3.</span> <span class="nav-text">消息转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E7%89%B9%E6%80%A7%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">消息转发特性能做什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-AOP"><span class="nav-number">4.1.</span> <span class="nav-text">1. AOP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%A3%E5%86%B3NSTimer%E5%BC%BA%E5%BC%95%E7%94%A8Target%E5%AF%BC%E8%87%B4%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">2.解决NSTimer强引用Target导致循环引用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -859,98 +460,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 

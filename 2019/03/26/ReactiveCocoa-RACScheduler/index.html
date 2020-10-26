@@ -1,128 +1,49 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
   <meta name="description" content="RACScheduler ReactiveCocoa 框架中的调度器，ReactiveCocoa 中的信号可以在 RACScheduler 上执行任务、发送结果； RACScheduler 的实现主要是基于 GCD 封装，提供了 GCD 不具备的特性。">
-<meta name="keywords" content="ReactiveCocoa,iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ReactiveCocoa-RACScheduler底层实现分析">
 <meta property="og:url" content="https://chipengliu.github.io/2019/03/26/ReactiveCocoa-RACScheduler/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
 <meta property="og:description" content="RACScheduler ReactiveCocoa 框架中的调度器，ReactiveCocoa 中的信号可以在 RACScheduler 上执行任务、发送结果； RACScheduler 的实现主要是基于 GCD 封装，提供了 GCD 不具备的特性。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.845Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-03-26T07:40:58.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.845Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="ReactiveCocoa">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReactiveCocoa-RACScheduler底层实现分析">
-<meta name="twitter:description" content="RACScheduler ReactiveCocoa 框架中的调度器，ReactiveCocoa 中的信号可以在 RACScheduler 上执行任务、发送结果； RACScheduler 的实现主要是基于 GCD 封装，提供了 GCD 不具备的特性。">
+
+<link rel="canonical" href="https://chipengliu.github.io/2019/03/26/ReactiveCocoa-RACScheduler/">
 
 
-
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2019/03/26/ReactiveCocoa-RACScheduler/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -134,25 +55,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -161,9 +65,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -175,131 +78,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -307,127 +140,70 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2019/03/26/ReactiveCocoa-RACScheduler/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">ReactiveCocoa-RACScheduler底层实现分析
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          ReactiveCocoa-RACScheduler底层实现分析
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-03-26 15:40:58" itemprop="dateCreated datePublished" datetime="2019-03-26T15:40:58+08:00">2019-03-26</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -435,11 +211,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
         <p><code>RACScheduler</code> ReactiveCocoa 框架中的调度器，ReactiveCocoa 中的信号可以在 <code>RACScheduler</code> 上执行任务、发送结果； <code>RACScheduler</code> 的实现主要是基于 GCD 封装，提供了 GCD 不具备的特性。</p>
 <a id="more"></a>
+
+
+
 <p>RACScheduler 有 4 个子类:</p>
 <ul>
 <li><p>RACTestScheduler</p>
@@ -454,23 +230,34 @@
 <p>接下来会分析平时使用中常接触到的 RACImmediateScheduler、RACQueueScheduler 和 RACSubscriptionScheduler 3个子类</p>
 <h2 id="RACScheduler"><a href="#RACScheduler" class="headerlink" title="RACScheduler"></a>RACScheduler</h2><p>基类提供了5个构造方法：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority name:(<span class="keyword">nullable</span> <span class="built_in">NSString</span> *)name;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)scheduler;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">nullable</span> RACScheduler *)currentScheduler;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)immediateScheduler;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)mainThreadScheduler;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p><code>+schedulerWithPriority:name:</code>、<code>+schedulerWithPriority:</code>、<code>+scheduler</code> 三个方法细线逻辑相差不大</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority name:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">	<span class="keyword">return</span> [[RACTargetQueueScheduler alloc] initWithName:name targetQueue:dispatch_get_global_queue(priority, <span class="number">0</span>)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority &#123;</span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">self</span> schedulerWithPriority:priority name:<span class="string">@"org.reactivecocoa.ReactiveObjC.RACScheduler.backgroundScheduler"</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)scheduler &#123;</span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">self</span> schedulerWithPriority:RACSchedulerPriorityDefault];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority name:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">	<span class="keyword">return</span> [[RACTargetQueueScheduler alloc] initWithName:name targetQueue:dispatch_get_global_queue(priority, <span class="number">0</span>)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)schedulerWithPriority:(RACSchedulerPriority)priority &#123;</span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">self</span> schedulerWithPriority:priority name:<span class="string">@&quot;org.reactivecocoa.ReactiveObjC.RACScheduler.backgroundScheduler&quot;</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (RACScheduler *)scheduler &#123;</span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">self</span> schedulerWithPriority:RACSchedulerPriorityDefault];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li><code>+schedulerWithPriority:name:</code>: 指定线程的优先级和名称，返回的 RACTargetQueueScheduler 对象，RACTargetQueueScheduler 是 RACQueueScheduler 的子类</li>
 <li><code>+schedulerWithPriority:</code>: 指定线程的优先级，线程名称设置为 org.reactivecocoa.ReactiveObjC.RACScheduler.backgroundScheduler</li>
 <li><code>+scheduler</code>: 线程的优先级设置为 RACSchedulerPriorityDefault，线程名称设置为 org.reactivecocoa.ReactiveObjC.RACScheduler.backgroundScheduler</li>
 </ol>
 <h3 id="currentScheduler："><a href="#currentScheduler：" class="headerlink" title="+currentScheduler："></a>+currentScheduler：</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)currentScheduler &#123;</span><br><span class="line">	RACScheduler *scheduler = <span class="built_in">NSThread</span>.currentThread.threadDictionary[RACSchedulerCurrentSchedulerKey];</span><br><span class="line">	<span class="keyword">if</span> (scheduler != <span class="literal">nil</span>) <span class="keyword">return</span> scheduler;</span><br><span class="line">	<span class="keyword">if</span> ([<span class="keyword">self</span>.class isOnMainThread]) <span class="keyword">return</span> RACScheduler.mainThreadScheduler;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="built_in">BOOL</span>)isOnMainThread &#123;</span><br><span class="line">	<span class="keyword">return</span> [<span class="built_in">NSOperationQueue</span>.currentQueue isEqual:<span class="built_in">NSOperationQueue</span>.mainQueue] || [<span class="built_in">NSThread</span> isMainThread];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>该方法是从当前线程的线程字典获取对应的 RACScheduler 对象，如果为 nil 则判断当前线程是否为主线程，如果是在主线程上，就返回 mainThreadScheduler。如果既不在主线程上，则返回 nil。</p>
 <h3 id="immediateScheduler"><a href="#immediateScheduler" class="headerlink" title="+immediateScheduler:"></a>+immediateScheduler:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)immediateScheduler &#123;</span><br><span class="line">	<span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line">	<span class="keyword">static</span> RACScheduler *immediateScheduler;</span><br><span class="line">	<span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">		immediateScheduler = [[RACImmediateScheduler alloc] init];</span><br><span class="line">	&#125;);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> immediateScheduler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这是一个单例方法，返回了 RACImmediateScheduler 对象</p>
-<h3 id="mainThreadScheduler"><a href="#mainThreadScheduler" class="headerlink" title="+mainThreadScheduler"></a>+mainThreadScheduler</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)mainThreadScheduler &#123;</span><br><span class="line">	<span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line">	<span class="keyword">static</span> RACScheduler *mainThreadScheduler;</span><br><span class="line">	<span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">		mainThreadScheduler = [[RACTargetQueueScheduler alloc] initWithName:<span class="string">@"org.reactivecocoa.ReactiveObjC.RACScheduler.mainThreadScheduler"</span> targetQueue:dispatch_get_main_queue()];</span><br><span class="line">	&#125;);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> mainThreadScheduler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="mainThreadScheduler"><a href="#mainThreadScheduler" class="headerlink" title="+mainThreadScheduler"></a>+mainThreadScheduler</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)mainThreadScheduler &#123;</span><br><span class="line">	<span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line">	<span class="keyword">static</span> RACScheduler *mainThreadScheduler;</span><br><span class="line">	<span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">		mainThreadScheduler = [[RACTargetQueueScheduler alloc] initWithName:<span class="string">@&quot;org.reactivecocoa.ReactiveObjC.RACScheduler.mainThreadScheduler&quot;</span> targetQueue:dispatch_get_main_queue()];</span><br><span class="line">	&#125;);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> mainThreadScheduler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>同样是一个单例方法，返回的是 RACTargetQueueScheduler 对象，并将其名称赋值为 org.reactivecocoa.ReactiveObjC.RACScheduler.mainThreadScheduler</p>
 <h3 id="subscriptionScheduler"><a href="#subscriptionScheduler" class="headerlink" title="+subscriptionScheduler"></a>+subscriptionScheduler</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ (RACScheduler *)subscriptionScheduler &#123;</span><br><span class="line">	<span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line">	<span class="keyword">static</span> RACScheduler *subscriptionScheduler;</span><br><span class="line">	<span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">		subscriptionScheduler = [[RACSubscriptionScheduler alloc] init];</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> subscriptionScheduler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>也是一个单例方法，返回了 RACSubscriptionScheduler 对象。</p>
 <p>RACScheduler 还提供了5个实例方法：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">nullable</span> RACDisposable *)schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> RACDisposable *)after:(<span class="built_in">NSDate</span> *)date schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> RACDisposable *)afterDelay:(<span class="built_in">NSTimeInterval</span>)delay schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> RACDisposable *)after:(<span class="built_in">NSDate</span> *)date repeatingEvery:(<span class="built_in">NSTimeInterval</span>)interval withLeeway:(<span class="built_in">NSTimeInterval</span>)leeway schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> RACDisposable *)scheduleRecursiveBlock:(RACSchedulerRecursiveBlock)recursiveBlock;</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li><p><code>schedule:</code>: 传入 block 并根据相关条件来触发 block</p>
 </li>
@@ -484,15 +271,18 @@
 </li>
 </ol>
 <p>上面5个方法除了 <code>-scheduleRecursiveBlock:addingToDisposable:</code> 都是由子类进行具体实现</p>
-<h3 id="scheduleRecursiveBlock-addingToDisposable"><a href="#scheduleRecursiveBlock-addingToDisposable" class="headerlink" title="-scheduleRecursiveBlock:addingToDisposable:"></a>-scheduleRecursiveBlock:addingToDisposable:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)scheduleRecursiveBlock:(RACSchedulerRecursiveBlock)recursiveBlock addingToDisposable:(RACCompoundDisposable *)disposable &#123;</span><br><span class="line">	<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">		RACCompoundDisposable *selfDisposable = [RACCompoundDisposable compoundDisposable];</span><br><span class="line">		[disposable addDisposable:selfDisposable];</span><br><span class="line"></span><br><span class="line">		__<span class="keyword">weak</span> RACDisposable *weakSelfDisposable = selfDisposable;</span><br><span class="line"></span><br><span class="line">		RACDisposable *schedulingDisposable = [<span class="keyword">self</span> schedule:^&#123;</span><br><span class="line">			<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="comment">// 已经触发之后，weakSelfDisposable 已经没有作用，故移除</span></span><br><span class="line">				[disposable removeDisposable:weakSelfDisposable];</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">void</span> (^reallyReschedule)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">				<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line">				[<span class="keyword">self</span> scheduleRecursiveBlock:recursiveBlock addingToDisposable:disposable];</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// Protects the variables below.</span></span><br><span class="line">			<span class="comment">//</span></span><br><span class="line">			<span class="comment">// This doesn't actually need to be __block qualified, but Clang</span></span><br><span class="line">			<span class="comment">// complains otherwise. :C</span></span><br><span class="line">			__block <span class="built_in">NSLock</span> *lock = [[<span class="built_in">NSLock</span> alloc] init];</span><br><span class="line">			lock.name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@ %s"</span>, <span class="keyword">self</span>, sel_getName(_cmd)];</span><br><span class="line"></span><br><span class="line">			__block <span class="built_in">NSUInteger</span> rescheduleCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 同步操作执行完后会赋值为YES，然后执行reallyReschedule闭包</span></span><br><span class="line">			__block <span class="built_in">BOOL</span> rescheduleImmediately = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">				recursiveBlock(^&#123;</span><br><span class="line">					[lock lock];</span><br><span class="line">					<span class="built_in">BOOL</span> immediate = rescheduleImmediately;</span><br><span class="line">					<span class="keyword">if</span> (!immediate) ++rescheduleCount;</span><br><span class="line">					[lock unlock];</span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (immediate) reallyReschedule();</span><br><span class="line">				&#125;);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			[lock lock];</span><br><span class="line">			<span class="built_in">NSUInteger</span> synchronousCount = rescheduleCount;</span><br><span class="line">			rescheduleImmediately = <span class="literal">YES</span>;</span><br><span class="line">			[lock unlock];</span><br><span class="line"></span><br><span class="line">			<span class="keyword">for</span> (<span class="built_in">NSUInteger</span> i = <span class="number">0</span>; i &lt; synchronousCount; i++) &#123;</span><br><span class="line">				reallyReschedule();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;];</span><br><span class="line"></span><br><span class="line">		[selfDisposable addDisposable:schedulingDisposable];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="scheduleRecursiveBlock-addingToDisposable"><a href="#scheduleRecursiveBlock-addingToDisposable" class="headerlink" title="-scheduleRecursiveBlock:addingToDisposable:"></a>-scheduleRecursiveBlock:addingToDisposable:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)scheduleRecursiveBlock:(RACSchedulerRecursiveBlock)recursiveBlock addingToDisposable:(RACCompoundDisposable *)disposable &#123;</span><br><span class="line">	<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">		RACCompoundDisposable *selfDisposable = [RACCompoundDisposable compoundDisposable];</span><br><span class="line">		[disposable addDisposable:selfDisposable];</span><br><span class="line"></span><br><span class="line">		__<span class="keyword">weak</span> RACDisposable *weakSelfDisposable = selfDisposable;</span><br><span class="line"></span><br><span class="line">		RACDisposable *schedulingDisposable = [<span class="keyword">self</span> schedule:^&#123;</span><br><span class="line">			<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="comment">// 已经触发之后，weakSelfDisposable 已经没有作用，故移除</span></span><br><span class="line">				[disposable removeDisposable:weakSelfDisposable];</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">void</span> (^reallyReschedule)(<span class="keyword">void</span>) = ^&#123;</span><br><span class="line">				<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line">				[<span class="keyword">self</span> scheduleRecursiveBlock:recursiveBlock addingToDisposable:disposable];</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// Protects the variables below.</span></span><br><span class="line">			<span class="comment">//</span></span><br><span class="line">			<span class="comment">// This doesn&#x27;t actually need to be __block qualified, but Clang</span></span><br><span class="line">			<span class="comment">// complains otherwise. :C</span></span><br><span class="line">			__block <span class="built_in">NSLock</span> *lock = [[<span class="built_in">NSLock</span> alloc] init];</span><br><span class="line">			lock.name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;%@ %s&quot;</span>, <span class="keyword">self</span>, sel_getName(_cmd)];</span><br><span class="line"></span><br><span class="line">			__block <span class="built_in">NSUInteger</span> rescheduleCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 同步操作执行完后会赋值为YES，然后执行reallyReschedule闭包</span></span><br><span class="line">			__block <span class="built_in">BOOL</span> rescheduleImmediately = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">				recursiveBlock(^&#123;</span><br><span class="line">					[lock lock];</span><br><span class="line">					<span class="built_in">BOOL</span> immediate = rescheduleImmediately;</span><br><span class="line">					<span class="keyword">if</span> (!immediate) ++rescheduleCount;</span><br><span class="line">					[lock unlock];</span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (immediate) reallyReschedule();</span><br><span class="line">				&#125;);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			[lock lock];</span><br><span class="line">			<span class="built_in">NSUInteger</span> synchronousCount = rescheduleCount;</span><br><span class="line">			rescheduleImmediately = <span class="literal">YES</span>;</span><br><span class="line">			[lock unlock];</span><br><span class="line"></span><br><span class="line">			<span class="keyword">for</span> (<span class="built_in">NSUInteger</span> i = <span class="number">0</span>; i &lt; synchronousCount; i++) &#123;</span><br><span class="line">				reallyReschedule();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;];</span><br><span class="line"></span><br><span class="line">		[selfDisposable addDisposable:schedulingDisposable];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>上面这段函数实现中有几个关键的变量/参数：</p>
 <ul>
-<li>reallyReschedule：递归执行函数的闭包</li>
+<li><p>reallyReschedule：递归执行函数的闭包</p>
+</li>
 <li><p>recursiveBlock：函数传参，该闭包的参数也是一个闭包(block)，recursiveBlock 执行完之后会触发传入的闭包 block</p>
 </li>
 <li><p>rescheduleCount：递归的次数</p>
 </li>
-<li>rescheduleImmediately：是否立即执行递归闭包 reallyReschedule</li>
+<li><p>rescheduleImmediately：是否立即执行递归闭包 reallyReschedule</p>
+</li>
 </ul>
 <p>主要流程:</p>
 <ol>
@@ -500,13 +290,15 @@
 <li>recursiveBlock 执行完后 rescheduleImmediately 赋值为 YES</li>
 <li>递归执行 reallyReschedule 闭包 rescheduleCount 次</li>
 </ol>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)performAsCurrentScheduler:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If we're using a concurrent queue, we could end up in here concurrently,</span></span><br><span class="line">	<span class="comment">// in which case we *don't* want to clear the current scheduler immediately</span></span><br><span class="line">	<span class="comment">// after our block is done executing, but only *after* all our concurrent</span></span><br><span class="line">	<span class="comment">// invocations are done.</span></span><br><span class="line"></span><br><span class="line">	RACScheduler *previousScheduler = RACScheduler.currentScheduler;</span><br><span class="line">	<span class="built_in">NSThread</span>.currentThread.threadDictionary[RACSchedulerCurrentSchedulerKey] = <span class="keyword">self</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">		block();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (previousScheduler != <span class="literal">nil</span>) &#123;</span><br><span class="line">		<span class="built_in">NSThread</span>.currentThread.threadDictionary[RACSchedulerCurrentSchedulerKey] = previousScheduler;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		[<span class="built_in">NSThread</span>.currentThread.threadDictionary removeObjectForKey:RACSchedulerCurrentSchedulerKey];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)performAsCurrentScheduler:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If we&#x27;re using a concurrent queue, we could end up in here concurrently,</span></span><br><span class="line">	<span class="comment">// in which case we *don&#x27;t* want to clear the current scheduler immediately</span></span><br><span class="line">	<span class="comment">// after our block is done executing, but only *after* all our concurrent</span></span><br><span class="line">	<span class="comment">// invocations are done.</span></span><br><span class="line"></span><br><span class="line">	RACScheduler *previousScheduler = RACScheduler.currentScheduler;</span><br><span class="line">	<span class="built_in">NSThread</span>.currentThread.threadDictionary[RACSchedulerCurrentSchedulerKey] = <span class="keyword">self</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">		block();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (previousScheduler != <span class="literal">nil</span>) &#123;</span><br><span class="line">		<span class="built_in">NSThread</span>.currentThread.threadDictionary[RACSchedulerCurrentSchedulerKey] = previousScheduler;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		[<span class="built_in">NSThread</span>.currentThread.threadDictionary removeObjectForKey:RACSchedulerCurrentSchedulerKey];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>执行 block 之前将当前线程的 scheduler 保存下来为 previousScheduler，然后设置自己为新的 scheduler</li>
 <li>执行完 block 之后恢复现场，如果 previousScheduler 不为空，则重新复制为当前线程的 scheduler，否则从 threadDictionary 移除 RACSchedulerCurrentSchedulerKey 对应的对象，也就是当前 scheduler</li>
 </ol>
 <h2 id="RACImmediateScheduler"><a href="#RACImmediateScheduler" class="headerlink" title="RACImmediateScheduler"></a>RACImmediateScheduler</h2><p>RACImmediateScheduler 是一个私有类，主要特点是将加入的 block 立即(Immediate)进行调度</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	block();</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(date != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	[<span class="built_in">NSThread</span> sleepUntilDate:date];</span><br><span class="line">	block();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date repeatingEvery:(<span class="built_in">NSTimeInterval</span>)interval withLeeway:(<span class="built_in">NSTimeInterval</span>)leeway schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCAssert</span>(<span class="literal">NO</span>, <span class="string">@"+[RACScheduler immediateScheduler] does not support %@."</span>, <span class="built_in">NSStringFromSelector</span>(_cmd));</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)scheduleRecursiveBlock:(RACSchedulerRecursiveBlock)recursiveBlock &#123;</span><br><span class="line">	<span class="keyword">for</span> (__block <span class="built_in">NSUInteger</span> remaining = <span class="number">1</span>; remaining &gt; <span class="number">0</span>; remaining--) &#123;</span><br><span class="line">		recursiveBlock(^&#123;</span><br><span class="line">			remaining++;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	block();</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(date != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	[<span class="built_in">NSThread</span> sleepUntilDate:date];</span><br><span class="line">	block();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date repeatingEvery:(<span class="built_in">NSTimeInterval</span>)interval withLeeway:(<span class="built_in">NSTimeInterval</span>)leeway schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCAssert</span>(<span class="literal">NO</span>, <span class="string">@&quot;+[RACScheduler immediateScheduler] does not support %@.&quot;</span>, <span class="built_in">NSStringFromSelector</span>(_cmd));</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)scheduleRecursiveBlock:(RACSchedulerRecursiveBlock)recursiveBlock &#123;</span><br><span class="line">	<span class="keyword">for</span> (__block <span class="built_in">NSUInteger</span> remaining = <span class="number">1</span>; remaining &gt; <span class="number">0</span>; remaining--) &#123;</span><br><span class="line">		recursiveBlock(^&#123;</span><br><span class="line">			remaining++;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>-schedule</code> 方法会立即触发传入的 block；</li>
 <li><code>-after:schedule:</code> 方法会将当前线程休眠到指定时间后执行 block；</li>
@@ -514,375 +306,203 @@
 <li><code>-scheduleRecursiveBlock:</code> 循环不断执行传入的 block</li>
 </ul>
 <h2 id="RACQueueScheduler"><a href="#RACQueueScheduler" class="headerlink" title="RACQueueScheduler"></a>RACQueueScheduler</h2><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	RACDisposable *disposable = [[RACDisposable alloc] init];</span><br><span class="line"></span><br><span class="line">	<span class="built_in">dispatch_async</span>(<span class="keyword">self</span>.queue, ^&#123;</span><br><span class="line">		<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line">		[<span class="keyword">self</span> performAsCurrentScheduler:block];</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> disposable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>-schedule</code> 在 self.queue 队列中异步调用了 <code>-performAsCurrentScheduler</code></p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(date != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	RACDisposable *disposable = [[RACDisposable alloc] init];</span><br><span class="line"></span><br><span class="line">	dispatch_after([<span class="keyword">self</span>.class wallTimeWithDate:date], <span class="keyword">self</span>.queue, ^&#123;</span><br><span class="line">		<span class="keyword">if</span> (disposable.disposed) <span class="keyword">return</span>;</span><br><span class="line">		[<span class="keyword">self</span> performAsCurrentScheduler:block];</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> disposable;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (dispatch_time_t)wallTimeWithDate:(<span class="built_in">NSDate</span> *)date &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(date != <span class="literal">nil</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">double</span> seconds = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">double</span> frac = modf(date.timeIntervalSince1970, &amp;seconds);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> timespec walltime = &#123;</span><br><span class="line">		.tv_sec = (time_t)fmin(fmax(seconds, LONG_MIN), LONG_MAX),</span><br><span class="line">		.tv_nsec = (<span class="keyword">long</span>)fmin(fmax(frac * <span class="built_in">NSEC_PER_SEC</span>, LONG_MIN), LONG_MAX)</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> dispatch_walltime(&amp;walltime, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>调用 wallTimeWithDate 方法将 NSDate 转化成 dispatch_time_t</li>
 <li>调用 dispatch_after 将 block 放进队列 self.queue 中延迟执行</li>
 <li>block 执行过程中是通过 <code>-performAsCurrentScheduler:</code> 方法触发，触发前判断 disposable 是否被取消，取消则直接返回</li>
 </ol>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date repeatingEvery:(<span class="built_in">NSTimeInterval</span>)interval withLeeway:(<span class="built_in">NSTimeInterval</span>)leeway schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(date != <span class="literal">nil</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(interval &gt; <span class="number">0.0</span> &amp;&amp; interval &lt; INT64_MAX / <span class="built_in">NSEC_PER_SEC</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(leeway &gt;= <span class="number">0.0</span> &amp;&amp; leeway &lt; INT64_MAX / <span class="built_in">NSEC_PER_SEC</span>);</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	uint64_t intervalInNanoSecs = (uint64_t)(interval * <span class="built_in">NSEC_PER_SEC</span>);</span><br><span class="line">	uint64_t leewayInNanoSecs = (uint64_t)(leeway * <span class="built_in">NSEC_PER_SEC</span>);</span><br><span class="line"></span><br><span class="line">	dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, <span class="number">0</span>, <span class="number">0</span>, <span class="keyword">self</span>.queue);</span><br><span class="line">	dispatch_source_set_timer(timer, [<span class="keyword">self</span>.class wallTimeWithDate:date], intervalInNanoSecs, leewayInNanoSecs);</span><br><span class="line">	dispatch_source_set_event_handler(timer, block);</span><br><span class="line">	dispatch_resume(timer);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> [RACDisposable disposableWithBlock:^&#123;</span><br><span class="line">		dispatch_source_cancel(timer);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>该方法是通过 GCD 创建定时任务，然后通过 dispatch_source_set_event_handler 把参数 block 和 计时器关联起来，任务被取消的时候取消对应的定时器</p>
 <h2 id="RACTargetQueueScheduler"><a href="#RACTargetQueueScheduler" class="headerlink" title="RACTargetQueueScheduler"></a>RACTargetQueueScheduler</h2><p>RACTargetQueueScheduler 继承于 RACQueueScheduler，提供了一新的初始化方法：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name targetQueue:(<span class="built_in">dispatch_queue_t</span>)targetQueue &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(targetQueue != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (name == <span class="literal">nil</span>) &#123;</span><br><span class="line">		name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"org.reactivecocoa.ReactiveObjC.RACTargetQueueScheduler(%s)"</span>, dispatch_queue_get_label(targetQueue)];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(name.UTF8String, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">	<span class="keyword">if</span> (queue == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">	dispatch_set_target_queue(queue, targetQueue);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">super</span> initWithName:name queue:queue];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)initWithName:(<span class="built_in">NSString</span> *)name targetQueue:(<span class="built_in">dispatch_queue_t</span>)targetQueue &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(targetQueue != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (name == <span class="literal">nil</span>) &#123;</span><br><span class="line">		name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;org.reactivecocoa.ReactiveObjC.RACTargetQueueScheduler(%s)&quot;</span>, dispatch_queue_get_label(targetQueue)];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(name.UTF8String, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">	<span class="keyword">if</span> (queue == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">	dispatch_set_target_queue(queue, targetQueue);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> [<span class="keyword">super</span> initWithName:name queue:queue];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>在初始化方法创建了串行队列 queue，然后通过 dispatch_set_target_queue 把 targetQueue 和 queue 关联起来</p>
 <p>dispatch_set_target_queue 有2个作用:</p>
 <ol>
 <li><p>初始化方法内 queue 是通过 dispatch_queue_create 创建，无法设置优先级，dispatch_set_target_queue 可以将 queue 优先级设置为 targetQueue 的优先级</p>
 </li>
 <li><p>设置队列的层次体系，可以理解为 queue 中的任务会派发给 targetQueue；比如如果 targetQueue 是 DISPATCH_QUEUE_SERIAL 串行队列，则 queue 中的任务也是串行执行；如果多个 queue 都指定同一个 targetQueue 串行队列，那么多个 queue 的任务是同步执行的</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testSetTarget &#123;</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> targetQueue = dispatch_queue_create(<span class="string">"targetQueue"</span>, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> queue1 = dispatch_queue_create(<span class="string">"queue1"</span>, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> queue2 = dispatch_queue_create(<span class="string">"queue2"</span>, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line">    </span><br><span class="line">    dispatch_set_target_queue(queue1, targetQueue);</span><br><span class="line">    dispatch_set_target_queue(queue2, targetQueue);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue1, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"1. queue1 excute"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue1, ^&#123;</span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">1.</span>f];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"2. queue1 excute"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue2, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"1. queue2 excute"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue2, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"2. queue2 excute"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(targetQueue, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"target queue"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)testSetTarget &#123;</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> targetQueue = dispatch_queue_create(<span class="string">&quot;targetQueue&quot;</span>, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> queue1 = dispatch_queue_create(<span class="string">&quot;queue1&quot;</span>, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> queue2 = dispatch_queue_create(<span class="string">&quot;queue2&quot;</span>, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line">    </span><br><span class="line">    dispatch_set_target_queue(queue1, targetQueue);</span><br><span class="line">    dispatch_set_target_queue(queue2, targetQueue);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue1, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;1. queue1 excute&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue1, ^&#123;</span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">1.</span>f];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;2. queue1 excute&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue2, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;1. queue2 excute&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(queue2, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;2. queue2 excute&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(targetQueue, ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;target queue&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>输出：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2019-03-31 19:47:32.441322+0800 AppTest[42843:1630586] 1. queue1 excute</span><br><span class="line">2019-03-31 19:47:33.446694+0800 AppTest[42843:1630586] 2. queue1 excute</span><br><span class="line">2019-03-31 19:47:33.446917+0800 AppTest[42843:1630586] 1. queue2 excute</span><br><span class="line">2019-03-31 19:47:33.447003+0800 AppTest[42843:1630586] 2. queue2 excute</span><br><span class="line">2019-03-31 19:47:33.447095+0800 AppTest[42843:1630586] target queue</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 </li>
 </ol>
 <h2 id="RACSubscriptionScheduler"><a href="#RACSubscriptionScheduler" class="headerlink" title="RACSubscriptionScheduler"></a>RACSubscriptionScheduler</h2><p>相对于父类，主要添加了一个私有的属性:</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) RACScheduler *backgroundScheduler;</span><br></pre></td></tr></table></figure>
+
 <p>在其初始化的时候会创建 backgroundScheduler</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)init &#123;</span><br><span class="line">	<span class="keyword">self</span> = [<span class="keyword">super</span> initWithName:<span class="string">@"org.reactivecocoa.ReactiveObjC.RACScheduler.subscriptionScheduler"</span>];</span><br><span class="line"></span><br><span class="line">	_backgroundScheduler = [RACScheduler scheduler];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">instancetype</span>)init &#123;</span><br><span class="line">	<span class="keyword">self</span> = [<span class="keyword">super</span> initWithName:<span class="string">@&quot;org.reactivecocoa.ReactiveObjC.RACScheduler.subscriptionScheduler&quot;</span>];</span><br><span class="line"></span><br><span class="line">	_backgroundScheduler = [RACScheduler scheduler];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (RACDisposable *)schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	<span class="built_in">NSCParameterAssert</span>(block != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (RACScheduler.currentScheduler == <span class="literal">nil</span>) <span class="keyword">return</span> [<span class="keyword">self</span>.backgroundScheduler schedule:block];</span><br><span class="line"></span><br><span class="line">	block();</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	RACScheduler *scheduler = RACScheduler.currentScheduler ?: <span class="keyword">self</span>.backgroundScheduler;</span><br><span class="line">	<span class="keyword">return</span> [scheduler after:date schedule:block];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (RACDisposable *)after:(<span class="built_in">NSDate</span> *)date repeatingEvery:(<span class="built_in">NSTimeInterval</span>)interval withLeeway:(<span class="built_in">NSTimeInterval</span>)leeway schedule:(<span class="keyword">void</span> (^)(<span class="keyword">void</span>))block &#123;</span><br><span class="line">	RACScheduler *scheduler = RACScheduler.currentScheduler ?: <span class="keyword">self</span>.backgroundScheduler;</span><br><span class="line">	<span class="keyword">return</span> [scheduler after:date repeatingEvery:interval withLeeway:leeway schedule:block];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <p>其他的方法大体逻辑都是判断当前线程有没有对应的 RACScheduler，如果有任务则在当前线程对应的 RACScheduler 执行，若没有则在 backgroundScheduler 上执行</p>
 
-      
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/ReactiveCocoa/" rel="tag"># ReactiveCocoa</a>
-          
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/03/23/ReactiveCocoa-RACCommand/" rel="next" title="ReactiveCocoa-RACCommand原理分析">
-                <i class="fa fa-chevron-left"></i> ReactiveCocoa-RACCommand原理分析
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/ReactiveCocoa/" rel="tag"># ReactiveCocoa</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/01/ReactiveCocoa-RACChannel/" rel="prev" title="ReactiveCocoa-RACChannel">
-                ReactiveCocoa-RACChannel <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/23/ReactiveCocoa-RACCommand/" rel="prev" title="ReactiveCocoa-RACCommand原理分析">
+      <i class="fa fa-chevron-left"></i> ReactiveCocoa-RACCommand原理分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/04/01/ReactiveCocoa-RACChannel/" rel="next" title="ReactiveCocoa-RACChannel">
+      ReactiveCocoa-RACChannel <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RACScheduler"><span class="nav-number">1.</span> <span class="nav-text">RACScheduler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#currentScheduler："><span class="nav-number">1.1.</span> <span class="nav-text">+currentScheduler：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#immediateScheduler"><span class="nav-number">1.2.</span> <span class="nav-text">+immediateScheduler:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mainThreadScheduler"><span class="nav-number">1.3.</span> <span class="nav-text">+mainThreadScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subscriptionScheduler"><span class="nav-number">1.4.</span> <span class="nav-text">+subscriptionScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduleRecursiveBlock-addingToDisposable"><span class="nav-number">1.5.</span> <span class="nav-text">-scheduleRecursiveBlock:addingToDisposable:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACImmediateScheduler"><span class="nav-number">2.</span> <span class="nav-text">RACImmediateScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACQueueScheduler"><span class="nav-number">3.</span> <span class="nav-text">RACQueueScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACTargetQueueScheduler"><span class="nav-number">4.</span> <span class="nav-text">RACTargetQueueScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACSubscriptionScheduler"><span class="nav-number">5.</span> <span class="nav-text">RACSubscriptionScheduler</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RACScheduler"><span class="nav-number">1.</span> <span class="nav-text">RACScheduler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#currentScheduler%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">+currentScheduler：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#immediateScheduler"><span class="nav-number">1.2.</span> <span class="nav-text">+immediateScheduler:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mainThreadScheduler"><span class="nav-number">1.3.</span> <span class="nav-text">+mainThreadScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subscriptionScheduler"><span class="nav-number">1.4.</span> <span class="nav-text">+subscriptionScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduleRecursiveBlock-addingToDisposable"><span class="nav-number">1.5.</span> <span class="nav-text">-scheduleRecursiveBlock:addingToDisposable:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACImmediateScheduler"><span class="nav-number">2.</span> <span class="nav-text">RACImmediateScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACQueueScheduler"><span class="nav-number">3.</span> <span class="nav-text">RACQueueScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACTargetQueueScheduler"><span class="nav-number">4.</span> <span class="nav-text">RACTargetQueueScheduler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RACSubscriptionScheduler"><span class="nav-number">5.</span> <span class="nav-text">RACSubscriptionScheduler</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -891,98 +511,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 

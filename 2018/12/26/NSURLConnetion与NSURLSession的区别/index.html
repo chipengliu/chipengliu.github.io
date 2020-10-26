@@ -1,128 +1,49 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.0.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-aj.png?v=7.0.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-aj.png?v=7.0.0">
-
-
-  <link rel="mask-icon" href="/images/logo-aj.svg?v=7.0.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.0.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chipengliu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
   <meta name="description" content="相同点:一、当服务器返回的数据较小时，NSURLSession与NSURLConnection执行普通任务的操作步骤没有区别；二、 执行上传任务时，NSURLSession与NSURLConnection一样同样需要设置POST请求的请求体进行上传；">
-<meta name="keywords" content="iOS,网络">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NSURLConnetion与NSURLSession的区别">
-<meta property="og:url" content="https://chipengliu.github.io/2018/12/26/NSURLConnetion与NSURLSession的区别/index.html">
+<meta property="og:url" content="https://chipengliu.github.io/2018/12/26/NSURLConnetion%E4%B8%8ENSURLSession%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="Laucp&#39;s Blog">
 <meta property="og:description" content="相同点:一、当服务器返回的数据较小时，NSURLSession与NSURLConnection执行普通任务的操作步骤没有区别；二、 执行上传任务时，NSURLSession与NSURLConnection一样同样需要设置POST请求的请求体进行上传；">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-10-24T01:58:24.799Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-26T08:30:54.000Z">
+<meta property="article:modified_time" content="2020-10-24T01:58:24.799Z">
+<meta property="article:author" content="Chipengliu">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="NSURLConnetion与NSURLSession的区别">
-<meta name="twitter:description" content="相同点:一、当服务器返回的数据较小时，NSURLSession与NSURLConnection执行普通任务的操作步骤没有区别；二、 执行上传任务时，NSURLSession与NSURLConnection一样同样需要设置POST请求的请求体进行上传；">
+
+<link rel="canonical" href="https://chipengliu.github.io/2018/12/26/NSURLConnetion%E4%B8%8ENSURLSession%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
 
-
-  <link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
-
-
-
-
-  <link rel="canonical" href="https://chipengliu.github.io/2018/12/26/NSURLConnetion与NSURLSession的区别/">
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -134,25 +55,8 @@
 
 
 
-  <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d6b51085664ec346aabac2fbff8b0b07";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-
-
-
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -161,9 +65,8 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .logo,
   .use-motion .site-title,
   .use-motion .site-subtitle {
     opacity: initial;
@@ -175,131 +78,61 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Laucp's Blog" type="application/atom+xml">
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Laucp's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Laucp's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
 
 
+
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
+        <li class="menu-item menu-item-categories">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
+        <li class="menu-item menu-item-archives">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-
-  
+  </ul>
 </nav>
 
-
-
-  
 
 
 
@@ -307,127 +140,70 @@
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content post posts-expand">
             
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2018/12/26/NSURLConnetion%E4%B8%8ENSURLSession%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://chipengliu.github.io/2018/12/26/NSURLConnetion与NSURLSession的区别/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chipengliu">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Laucp's Blog">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">NSURLConnetion与NSURLSession的区别
-
-              
-            
-          </h2>
-        
+        <h1 class="post-title" itemprop="name headline">
+          NSURLConnetion与NSURLSession的区别
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="far fa-calendar"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2018-12-26 16:30:54" itemprop="dateCreated datePublished" datetime="2018-12-26T16:30:54+08:00">2018-12-26</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-24 09:58:24" itemprop="dateModified" datetime="2020-10-24T09:58:24+08:00">2020-10-24</time>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
-
-                
-                
-              
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
             </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -435,11 +211,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
         <h2 id="相同点"><a href="#相同点" class="headerlink" title="相同点:"></a>相同点:</h2><p>一、当服务器返回的数据较小时，NSURLSession与NSURLConnection执行普通任务的操作步骤没有区别；<br>二、 执行上传任务时，NSURLSession与NSURLConnection一样同样需要设置POST请求的请求体进行上传；</p>
 <a id="more"></a>
+
 <ul>
 <li>1、比如进行普通的Get/Post请求<br><code>说明：任何NSURLRequest默认都是get请求。</code><ul>
 <li>（1）创建一个NSURL对象，设置请求路径（设置请求路径）</li>
@@ -450,19 +224,31 @@
 </ul>
 <h3 id="NSURLConnetion"><a href="#NSURLConnetion" class="headerlink" title="NSURLConnetion:"></a>NSURLConnetion:</h3><ol>
 <li><p>方法1：NSURLConnetion通过类方法直接发送request，通过闭包处理异步操作</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)connetionPost &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *username = <span class="keyword">self</span>.usernameText.text;</span><br><span class="line">    <span class="built_in">NSString</span> *pwd = [<span class="keyword">self</span> base64Encode:<span class="keyword">self</span>.pwdText.text];</span><br><span class="line">    <span class="built_in">NSString</span> *urlString = <span class="string">@"http://10.0.1.7/login.php"</span>;</span><br><span class="line">    urlString = [urlString stringByAddingPercentEscapesUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:urlString];</span><br><span class="line">    <span class="built_in">NSMutableURLRequest</span> *request = [<span class="built_in">NSMutableURLRequest</span> requestWithURL:url];</span><br><span class="line">    request.HTTPMethod = <span class="string">@"POST"</span>;</span><br><span class="line">    <span class="built_in">NSString</span> *bodyString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"username=%@&amp;password=%@"</span>, username, pwd];</span><br><span class="line">request.HTTPBody = [bodyString dataUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同步请求，代码会阻塞在这里一直等待服务器返回，如果data为nil则请求失败，当获取少量数据时可以使用此方法。</span></span><br><span class="line">    <span class="comment">// sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse * _Nullable * _Nullable)response error:(NSError **)error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意，block的执行线程为queue，如果block涉及到UI操作，则必须回到主线程：[NSOperationQueue mainQueue]</span></span><br><span class="line">    [<span class="built_in">NSURLConnection</span> sendAsynchronousRequest:request queue:[<span class="built_in">NSOperationQueue</span> mainQueue] completionHandler:^(<span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSData</span> *data, <span class="built_in">NSError</span> *connectionError) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSDictionary</span> *result = [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:data options:<span class="number">0</span> error:<span class="literal">NULL</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据处理代码...</span></span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)connetionPost &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *username = <span class="keyword">self</span>.usernameText.text;</span><br><span class="line">    <span class="built_in">NSString</span> *pwd = [<span class="keyword">self</span> base64Encode:<span class="keyword">self</span>.pwdText.text];</span><br><span class="line">    <span class="built_in">NSString</span> *urlString = <span class="string">@&quot;http://10.0.1.7/login.php&quot;</span>;</span><br><span class="line">    urlString = [urlString stringByAddingPercentEscapesUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:urlString];</span><br><span class="line">    <span class="built_in">NSMutableURLRequest</span> *request = [<span class="built_in">NSMutableURLRequest</span> requestWithURL:url];</span><br><span class="line">    request.HTTPMethod = <span class="string">@&quot;POST&quot;</span>;</span><br><span class="line">    <span class="built_in">NSString</span> *bodyString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;username=%@&amp;password=%@&quot;</span>, username, pwd];</span><br><span class="line">request.HTTPBody = [bodyString dataUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同步请求，代码会阻塞在这里一直等待服务器返回，如果data为nil则请求失败，当获取少量数据时可以使用此方法。</span></span><br><span class="line">    <span class="comment">// sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse * _Nullable * _Nullable)response error:(NSError **)error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意，block的执行线程为queue，如果block涉及到UI操作，则必须回到主线程：[NSOperationQueue mainQueue]</span></span><br><span class="line">    [<span class="built_in">NSURLConnection</span> sendAsynchronousRequest:request queue:[<span class="built_in">NSOperationQueue</span> mainQueue] completionHandler:^(<span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSData</span> *data, <span class="built_in">NSError</span> *connectionError) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSDictionary</span> *result = [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:data options:<span class="number">0</span> error:<span class="literal">NULL</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据处理代码...</span></span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <hr>
 <ol start="2">
 <li><p>方法2：获取NSURLConnetion对立对象，将对象加入到runloop，通过delegate回调获取数据</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建连接有三个方法需要了解一下</span></span><br><span class="line"><span class="comment">// 该方法是NSURLConnection的默认构造函数，startImmediately参数，如果为YES，代表会将当前的connection实例加入到当前的runloop中，该connection的delegate的回调方法都会在当前线程执行，自动实现调度，所以这种情况下甚至是不需要调用 -start方法来开始请求；</span></span><br><span class="line"><span class="comment">//如果为NO，则需要手动调度，将当前的connection加入到一个线程的runloop中（如果不添加，默认会添加到当前线程的runloop中）。</span></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">instancetype</span>)initWithRequest:(<span class="built_in">NSURLRequest</span> *)request delegate:(<span class="keyword">nullable</span> <span class="keyword">id</span>)delegate startImmediately:(<span class="built_in">BOOL</span>)startImmediately  startImmediately;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实质为调用用的 [self initWithRequest:request delegate:delegate startImmediately:YES];</span></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">instancetype</span>)initWithRequest:(<span class="built_in">NSURLRequest</span> *)request delegate:(<span class="keyword">nullable</span> <span class="keyword">id</span>)delegate ;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类方法，不需要手动调用[connection start]，加入到当前的Runloop</span></span><br><span class="line">+ (<span class="built_in">NSURLConnection</span>*)connectionWithRequest:(<span class="built_in">NSURLRequest</span> *)request delegate:(<span class="keyword">id</span>)delegate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.connection = [<span class="built_in">NSURLConnection</span> connectionWithRequest:<span class="keyword">self</span>.request delegate:<span class="keyword">self</span>];</span><br><span class="line"><span class="comment">// 设置运行循环</span></span><br><span class="line">[<span class="keyword">self</span>.connection scheduleInRunLoop:[<span class="built_in">NSRunLoop</span> currentRunLoop] forMode:<span class="built_in">NSRunLoopCommonModes</span>];</span><br><span class="line"><span class="comment">// 设置代理工作队列</span></span><br><span class="line">[<span class="keyword">self</span>.connection setDelegateQueue:[[<span class="built_in">NSOperationQueue</span> alloc] init]];</span><br></pre></td></tr></table></figure>
+
 <p>使用代理模式需要实现NSURLConnectionDataDelegate协议，此协议提供了几个代理方法，涵盖了请求交互的几个步骤</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当接收到服务器响应时调用，response为响应头部</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveResponse:(<span class="built_in">NSURLResponse</span> *)response;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接收到服务返回的数据时调用，多次调用，直至接受到全部数据，每次接受一部分数据，放入到data中</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveData:(<span class="built_in">NSData</span> *)data;</span><br><span class="line"></span><br><span class="line"><span class="comment">//数据接收完成是调用</span></span><br><span class="line">- (<span class="keyword">void</span>)connectionDidFinishLoading:(<span class="built_in">NSURLConnection</span> *)connection;</span><br><span class="line"></span><br><span class="line"><span class="comment">//监控上传数据的进度，再上传数据时调用</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection   didSendBodyData:(<span class="built_in">NSInteger</span>)bytesWritten</span><br><span class="line">                                                 totalBytesWritten:(<span class="built_in">NSInteger</span>)totalBytesWritten</span><br><span class="line">                                         totalBytesExpectedToWrite:(<span class="built_in">NSInteger</span>)totalBytesExpectedToWrite;</span><br><span class="line"></span><br><span class="line"><span class="comment">//请求错误（失败）的时候调用</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didFailWithError:(<span class="built_in">NSError</span> *)error;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <hr>
 <h3 id="NSURLSession"><a href="#NSURLSession" class="headerlink" title="NSURLSession:"></a>NSURLSession:</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)SessionPost &#123;</span><br><span class="line">    <span class="comment">// 苹果直接提供了一个全局的session</span></span><br><span class="line">    <span class="built_in">NSURLSessionDataTask</span> *task = [[<span class="built_in">NSURLSession</span> sharedSession] dataTaskWithRequest:[<span class="keyword">self</span> request] completionHandler:^(<span class="built_in">NSData</span> * _Nullable data, <span class="built_in">NSURLResponse</span> * _Nullable response, <span class="built_in">NSError</span> * _Nullable error) &#123;</span><br><span class="line">        <span class="comment">// 处理数据</span></span><br><span class="line">    &#125;];</span><br><span class="line">    <span class="comment">// 需要把任务开始。 默认都是挂起</span></span><br><span class="line">    [task resume];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
 <h2 id="不同点"><a href="#不同点" class="headerlink" title="不同点:"></a>不同点:</h2><h3 id="一、-普通任务和上传"><a href="#一、-普通任务和上传" class="headerlink" title="一、 普通任务和上传"></a>一、 普通任务和上传</h3><p>NSURLSession针对下载/上传等复杂的网络操作提供了专门的解决方案，针对普通、上传和下载分别对应三种不同的网络请求任务：<code>NSURLSessionDataTask</code>,  <code>NSURLSessionUploadTask</code> 和 <code>NSURLSessionDownloadTask</code>。创建的task都是<code>挂起</code>状态，需要resume才能执行。</p>
 <h3 id="二、-下载任务方式"><a href="#二、-下载任务方式" class="headerlink" title="二、 下载任务方式"></a>二、 下载任务方式</h3><p>NSURLConnection下载文件时，先将<code>整个文件下载到内存</code>，然后再写入沙盒，如果文件比较大，就会出现内存暴涨的情况。而使用NSURLSessionUploadTask下载文件，会默认下载到沙盒中的tem文件夹中，不会出现内存暴涨的情况，但在<code>下载完成后会将tem中的临时文件删除</code>，需要在初始化任务方法时，在completionHandler回调中增加保存文件的代码。</p>
 <p>具体差别还可以分为以下几个部分：</p>
@@ -475,9 +261,10 @@
 </li>
 </ul>
 <p>首先建立下载的请求：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span> *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *urlString = <span class="string">@"http://dldir1.qq.com/invc/tt/QQBrowser_for_Mac.dmg"</span>;</span><br><span class="line">    urlString = [urlString stringByAddingPercentEscapesUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:urlString];</span><br><span class="line">    <span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:url cachePolicy:<span class="built_in">NSURLRequestReloadIgnoringLocalCacheData</span> timeoutInterval:<span class="number">10.0</span>];</span><br><span class="line">    <span class="comment">// NSURLRequestReloadIgnoringLocalCacheData  忽略本地的缓存数据</span></span><br><span class="line">    <span class="keyword">self</span>.conn = [<span class="built_in">NSURLConnection</span> connectionWithRequest:request delegate:<span class="keyword">self</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 设置运行循环</span></span><br><span class="line">    [<span class="keyword">self</span>.conn scheduleInRunLoop:[<span class="built_in">NSRunLoop</span> currentRunLoop] forMode:<span class="built_in">NSRunLoopCommonModes</span>];</span><br><span class="line">    <span class="comment">// 设置代理工作队列，也就是代理回调会在子线程上进行</span></span><br><span class="line">    [<span class="keyword">self</span>.conn setDelegateQueue:[[<span class="built_in">NSOperationQueue</span> alloc] init]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)writeToSandbox:(<span class="built_in">NSData</span> *)data &#123;</span><br><span class="line">    <span class="built_in">NSFileHandle</span> *fp = [<span class="built_in">NSFileHandle</span> fileHandleForWritingAtPath:<span class="keyword">self</span>.targetPath];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (fp == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [data writeToFile:<span class="keyword">self</span>.targetPath atomically:<span class="literal">YES</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [fp seekToEndOfFile];</span><br><span class="line">        [fp writeData:data];</span><br><span class="line">        [fp closeFile];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span> *)touches withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *urlString = <span class="string">@&quot;http://dldir1.qq.com/invc/tt/QQBrowser_for_Mac.dmg&quot;</span>;</span><br><span class="line">    urlString = [urlString stringByAddingPercentEscapesUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:urlString];</span><br><span class="line">    <span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:url cachePolicy:<span class="built_in">NSURLRequestReloadIgnoringLocalCacheData</span> timeoutInterval:<span class="number">10.0</span>];</span><br><span class="line">    <span class="comment">// NSURLRequestReloadIgnoringLocalCacheData  忽略本地的缓存数据</span></span><br><span class="line">    <span class="keyword">self</span>.conn = [<span class="built_in">NSURLConnection</span> connectionWithRequest:request delegate:<span class="keyword">self</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 设置运行循环</span></span><br><span class="line">    [<span class="keyword">self</span>.conn scheduleInRunLoop:[<span class="built_in">NSRunLoop</span> currentRunLoop] forMode:<span class="built_in">NSRunLoopCommonModes</span>];</span><br><span class="line">    <span class="comment">// 设置代理工作队列，也就是代理回调会在子线程上进行</span></span><br><span class="line">    [<span class="keyword">self</span>.conn setDelegateQueue:[[<span class="built_in">NSOperationQueue</span> alloc] init]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)writeToSandbox:(<span class="built_in">NSData</span> *)data &#123;</span><br><span class="line">    <span class="built_in">NSFileHandle</span> *fp = [<span class="built_in">NSFileHandle</span> fileHandleForWritingAtPath:<span class="keyword">self</span>.targetPath];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (fp == <span class="literal">nil</span>) &#123;</span><br><span class="line">        [data writeToFile:<span class="keyword">self</span>.targetPath atomically:<span class="literal">YES</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [fp seekToEndOfFile];</span><br><span class="line">        [fp writeData:data];</span><br><span class="line">        [fp closeFile];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>delegate回调处理数据:</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 接收到服务器响应</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveResponse:(<span class="built_in">NSURLResponse</span> *)response &#123; </span><br><span class="line">    <span class="comment">// 保存要下载的文件的二进制数据长度，一边做进度观察</span></span><br><span class="line">    <span class="keyword">self</span>.expectedContentLength = response.expectedContentLength;</span><br><span class="line">    <span class="comment">//  清空当前下载的长度</span></span><br><span class="line">    <span class="keyword">self</span>.currentLength = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.targetPath = [<span class="string">@"/Users/mac/Desktop"</span> stringByAppendingPathComponent:response.suggestedFilename];</span><br><span class="line">    [[<span class="built_in">NSFileManager</span> defaultManager] removeItemAtPath:<span class="keyword">self</span>.targetPath error:<span class="literal">NULL</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 接收到服务器数据</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveData:(<span class="built_in">NSData</span> *)data &#123;    </span><br><span class="line">    <span class="comment">// 1&gt; 计算下载进度</span></span><br><span class="line">    <span class="keyword">self</span>.currentLength += data.length;</span><br><span class="line">    <span class="keyword">float</span> progress = (<span class="keyword">float</span>) <span class="keyword">self</span>.currentLength / <span class="keyword">self</span>.expectedContentLength;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%f %@"</span>, progress, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        [[<span class="built_in">NSRunLoop</span> currentRunLoop] runMode:<span class="built_in">NSDefaultRunLoopMode</span> beforeDate:[<span class="built_in">NSDate</span> date]];</span><br><span class="line">        <span class="keyword">self</span>.progressView.progress = progress;</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 2&gt; 拼接文件数据</span></span><br><span class="line">    [<span class="keyword">self</span> writeToSandbox:data];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 接收到服务器响应</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveResponse:(<span class="built_in">NSURLResponse</span> *)response &#123; </span><br><span class="line">    <span class="comment">// 保存要下载的文件的二进制数据长度，一边做进度观察</span></span><br><span class="line">    <span class="keyword">self</span>.expectedContentLength = response.expectedContentLength;</span><br><span class="line">    <span class="comment">//  清空当前下载的长度</span></span><br><span class="line">    <span class="keyword">self</span>.currentLength = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span>.targetPath = [<span class="string">@&quot;/Users/mac/Desktop&quot;</span> stringByAppendingPathComponent:response.suggestedFilename];</span><br><span class="line">    [[<span class="built_in">NSFileManager</span> defaultManager] removeItemAtPath:<span class="keyword">self</span>.targetPath error:<span class="literal">NULL</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 接收到服务器数据</span></span><br><span class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveData:(<span class="built_in">NSData</span> *)data &#123;    </span><br><span class="line">    <span class="comment">// 1&gt; 计算下载进度</span></span><br><span class="line">    <span class="keyword">self</span>.currentLength += data.length;</span><br><span class="line">    <span class="keyword">float</span> progress = (<span class="keyword">float</span>) <span class="keyword">self</span>.currentLength / <span class="keyword">self</span>.expectedContentLength;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%f %@&quot;</span>, progress, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        [[<span class="built_in">NSRunLoop</span> currentRunLoop] runMode:<span class="built_in">NSDefaultRunLoopMode</span> beforeDate:[<span class="built_in">NSDate</span> date]];</span><br><span class="line">        <span class="keyword">self</span>.progressView.progress = progress;</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 2&gt; 拼接文件数据</span></span><br><span class="line">    [<span class="keyword">self</span> writeToSandbox:data];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>解决办法:</p>
 <ul>
@@ -487,10 +274,10 @@
 </li>
 </ol>
 <h3 id="三、断点续传的方式"><a href="#三、断点续传的方式" class="headerlink" title="三、断点续传的方式"></a>三、断点续传的方式</h3><ol>
-<li><p><code>NSURLConnection</code>进行断点下载，通过设置访问请求的 <code>HTTPHeaderField</code> 的 <code>Range</code> 属性，开启运行循环，<code>NSURLConnection</code> 的代理方法作为运行循环的事件源，接收到下载数据时代理方法就会持续调用，并使 用 <code>NSOutputStream</code> 管道流进行数据保存。</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置请求头信息，说明只需要请求该资源嗯一部分数据</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> bytes=0-1000   表示下载0-1000的数据</span></span><br><span class="line"><span class="comment"> bytes=0-       表示从0开始下载到下载完毕</span></span><br><span class="line"><span class="comment"> bytes=100-     表示从100开始下载到下载完毕</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="built_in">NSMutableURLRequest</span> *request = [<span class="built_in">NSMutableURLRequest</span> requestWithURL:url];</span><br><span class="line"><span class="built_in">NSString</span> *range = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"bytes=%zd-"</span>, <span class="keyword">self</span>.currentSize];</span><br><span class="line">[request setValue:range forHTTPHeaderField:<span class="string">@"Range"</span>];</span><br></pre></td></tr></table></figure>
+<li><p><code>NSURLConnection </code>进行断点下载，通过设置访问请求的 <code>HTTPHeaderField</code> 的 <code>Range</code> 属性，开启运行循环，<code>NSURLConnection</code> 的代理方法作为运行循环的事件源，接收到下载数据时代理方法就会持续调用，并使 用 <code>NSOutputStream</code> 管道流进行数据保存。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置请求头信息，说明只需要请求该资源嗯一部分数据</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> bytes=0-1000   表示下载0-1000的数据</span></span><br><span class="line"><span class="comment"> bytes=0-       表示从0开始下载到下载完毕</span></span><br><span class="line"><span class="comment"> bytes=100-     表示从100开始下载到下载完毕</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="built_in">NSMutableURLRequest</span> *request = [<span class="built_in">NSMutableURLRequest</span> requestWithURL:url];</span><br><span class="line"><span class="built_in">NSString</span> *range = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;bytes=%zd-&quot;</span>, <span class="keyword">self</span>.currentSize];</span><br><span class="line">[request setValue:range forHTTPHeaderField:<span class="string">@&quot;Range&quot;</span>];</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><code>NSURLSession</code>进行断点下载，当暂停下载任务后，如果<code>downloadTask</code> （下载任务）为非空，调用 <code>- (void)cancelByProducingResumeData:(void (^)(NSData * _Nullable resumeData))completionHandler;</code>这个方法，这个方法接收一个参数，完成处理代码块，这个代码块有一个 NSData 参数 <code>resumeData</code>，如果 <code>resumeData</code> 非空，我们就保存这个对象到视图控制器的<code>resumeData</code> 属性中。在点击再次下载时，通过调用 <code>[ [self.session downloadTaskWithResumeData:self.resumeData]resume]</code> 方法进行继续下载操作。<br>经过以上比较可以发现，使用 <code>NSURLSession</code> 进行断点下载更加便捷。</p>
+<li><p><code>NSURLSession</code>进行断点下载，当暂停下载任务后，如果<code> downloadTask</code> （下载任务）为非空，调用 <code>- (void)cancelByProducingResumeData:(void (^)(NSData * _Nullable resumeData))completionHandler;</code>这个方法，这个方法接收一个参数，完成处理代码块，这个代码块有一个 NSData 参数 <code>resumeData</code>，如果 <code>resumeData</code> 非空，我们就保存这个对象到视图控制器的<code> resumeData</code> 属性中。在点击再次下载时，通过调用 <code> [ [self.session downloadTaskWithResumeData:self.resumeData]resume]</code> 方法进行继续下载操作。<br>经过以上比较可以发现，使用 <code>NSURLSession</code> 进行断点下载更加便捷。</p>
 </li>
 </ol>
 <h3 id="四、请求方法的控制"><a href="#四、请求方法的控制" class="headerlink" title="四、请求方法的控制"></a>四、请求方法的控制</h3><ol>
@@ -499,361 +286,172 @@
 </ol>
 <h3 id="五、-配置信息"><a href="#五、-配置信息" class="headerlink" title="五、 配置信息"></a>五、 配置信息</h3><p><code>NSURLSession</code> 的构造方法 <code>sessionWithConfiguration:delegate:delegateQueue</code>  中有一个  <code>NSURLSessionConfiguration</code> 类的参数可以设置配置信息，其决定了<code>cookie</code>，安全和高速缓存策略，最大主机连接数，资源管理，网络超时等配置。<code>NSURLConnection</code> 不能进行这个配置，相比于 <code>NSURLConnection</code> 依赖于一个全局的配置对象，缺乏灵活性而言，<code>NSURLSession</code> 有很大的改进了。</p>
 <p>NSURLSession可以设置三种配置信息，分别通过调用三个累方法返回配置对象：</p>
-<pre><code>1. `(NSURLSessionConfiguration *)defaultSessionConfiguration`，配置信息使用基于硬盘的持久话Cache，保存用户的证书到钥匙串,使用共享cookie存储；
-2. `+ (NSURLSessionConfiguration *)ephemeralSessionConfiguration` ，配置信息和default大致相同。除了，不会把cache，证书，或者任何和Session相关的数据存储到硬盘，而是存储在内存中，生命周期和Session一致。比如浏览器无痕浏览等功能就可以基于这个来做；
-3. `+ (NSURLSessionConfiguration *)backgroundSessionConfigurationWithIdentifier:(NSString *)identifier`，配置信息可以创建一个可以在后台甚至APP已经关闭的时候仍然在传输数据的session。注意，后台Session一定要在创建的时候赋予一个唯一的identifier，这样在APP下次运行的时候，能够根据identifier来进行相关的区分。如果用户关闭了APP,IOS 系统会关闭所有的background Session。而且，被用户强制关闭了以后，IOS系统不会主动唤醒APP，只有用户下次启动了APP，数据传输才会继续
-</code></pre><h3 id="六、其他"><a href="#六、其他" class="headerlink" title="六、其他"></a>六、其他</h3><p>其中几点和NSURLConnetion相似：</p>
+<pre><code> 1. `(NSURLSessionConfiguration *)defaultSessionConfiguration`，配置信息使用基于硬盘的持久话Cache，保存用户的证书到钥匙串,使用共享cookie存储；
+ 2. `+ (NSURLSessionConfiguration *)ephemeralSessionConfiguration` ，配置信息和default大致相同。除了，不会把cache，证书，或者任何和Session相关的数据存储到硬盘，而是存储在内存中，生命周期和Session一致。比如浏览器无痕浏览等功能就可以基于这个来做；
+ 3. `+ (NSURLSessionConfiguration *)backgroundSessionConfigurationWithIdentifier:(NSString *)identifier`，配置信息可以创建一个可以在后台甚至APP已经关闭的时候仍然在传输数据的session。注意，后台Session一定要在创建的时候赋予一个唯一的identifier，这样在APP下次运行的时候，能够根据identifier来进行相关的区分。如果用户关闭了APP,IOS 系统会关闭所有的background Session。而且，被用户强制关闭了以后，IOS系统不会主动唤醒APP，只有用户下次启动了APP，数据传输才会继续</code></pre>
+<h3 id="六、其他"><a href="#六、其他" class="headerlink" title="六、其他"></a>六、其他</h3><p>其中几点和NSURLConnetion相似：</p>
 <h4 id="Cookie-策略"><a href="#Cookie-策略" class="headerlink" title="Cookie 策略"></a>Cookie 策略</h4><blockquote>
 <p>HTTPCookieStorage存储了 session 所使用的 cookie。默认情况下会使用 NSHTTPCookieShorage的 +sharedHTTPCookieStorage这个单例对象，这与 NSURLConnection是相同的。<br>HTTPCookieAcceptPolicy决定了什么情况下 session 应该接受从服务器发出的 cookie。<br>HTTPShouldSetCookies指定了请求是否应该使用 session 存储的 cookie，即 HTTPCookieSorage属性的值。</p>
 </blockquote>
 <h4 id="安全策略"><a href="#安全策略" class="headerlink" title="安全策略"></a>安全策略</h4><blockquote>
-<p>URLCredentialStorage存储了 session 所使用的证书。默认情况下会使用 NSURLCredentialStorage的 +sharedCredentialStorage这个单例对象，这与 NSURLConnection是相同的。TLSMaximumSupportedProtocol<br>和 TLSMinimumSupportedProtocol<br>确定 session 是否支持 <a href="http://zh.wikipedia.org/wiki/%E5%AE%89%E5%85%A8%E5%A5%97%E6%8E%A5%E5%B1%82" target="_blank" rel="noopener">SSL 协议</a>。</p>
+<p>URLCredentialStorage存储了 session 所使用的证书。默认情况下会使用 NSURLCredentialStorage的 +sharedCredentialStorage这个单例对象，这与 NSURLConnection是相同的。TLSMaximumSupportedProtocol<br>和 TLSMinimumSupportedProtocol<br>确定 session 是否支持 <a target="_blank" rel="noopener" href="http://zh.wikipedia.org/wiki/%E5%AE%89%E5%85%A8%E5%A5%97%E6%8E%A5%E5%B1%82">SSL 协议</a>。</p>
 </blockquote>
 <h4 id="缓存策略"><a href="#缓存策略" class="headerlink" title="缓存策略"></a>缓存策略</h4><blockquote>
 <p>URLCache是 session 使用的缓存。默认情况下会使用 NSURLCache的 +sharedURLCache这个单例对象，这与 NSURLConnection是相同的。requestCachePolicy指定了一个请求的缓存响应应该在什么时候返回。这相当于 NSURLRequest的 -cachePolicy方法。</p>
 </blockquote>
-<p>具体可以参考<a href="https://objccn.io/issue-5-4/" target="_blank" rel="noopener">从 NSURLConnection 到 NSURLSession</a>。<br>​    </p>
+<p>具体可以参考<a target="_blank" rel="noopener" href="https://objccn.io/issue-5-4/">从 NSURLConnection 到 NSURLSession</a>。<br>​    </p>
 
-      
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
     
     
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
-          
-            <a href="/tags/网络/" rel="tag"># 网络</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/12/26/iOS内存管理机制详解/" rel="next" title="iOS内存管理机制详解">
-                <i class="fa fa-chevron-left"></i> iOS内存管理机制详解
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/12/28/RACSignal源码解析-RACSignal发送信号过程解析/" rel="prev" title="RACSignal源码解析">
-                RACSignal源码解析 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/26/iOS%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/" rel="prev" title="iOS内存管理机制详解">
+      <i class="fa fa-chevron-left"></i> iOS内存管理机制详解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/28/RACSignal%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-RACSignal%E5%8F%91%E9%80%81%E4%BF%A1%E5%8F%B7%E8%BF%87%E7%A8%8B%E8%A7%A3%E6%9E%90/" rel="next" title="RACSignal源码解析">
+      RACSignal源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-  </div>
 
 
           </div>
           
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Chipengliu</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">20</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">2</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/chipengliu" title="GitHub &rarr; https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:liuchipeng1991@163.com" title="E-Mail &rarr; mailto:liuchipeng1991@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#相同点"><span class="nav-number">1.</span> <span class="nav-text">相同点:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSURLConnetion"><span class="nav-number">1.1.</span> <span class="nav-text">NSURLConnetion:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSURLSession"><span class="nav-number">1.2.</span> <span class="nav-text">NSURLSession:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同点"><span class="nav-number">2.</span> <span class="nav-text">不同点:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、-普通任务和上传"><span class="nav-number">2.1.</span> <span class="nav-text">一、 普通任务和上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、-下载任务方式"><span class="nav-number">2.2.</span> <span class="nav-text">二、 下载任务方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、断点续传的方式"><span class="nav-number">2.3.</span> <span class="nav-text">三、断点续传的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、请求方法的控制"><span class="nav-number">2.4.</span> <span class="nav-text">四、请求方法的控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、-配置信息"><span class="nav-number">2.5.</span> <span class="nav-text">五、 配置信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、其他"><span class="nav-number">2.6.</span> <span class="nav-text">六、其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie-策略"><span class="nav-number">2.6.1.</span> <span class="nav-text">Cookie 策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安全策略"><span class="nav-number">2.6.2.</span> <span class="nav-text">安全策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存策略"><span class="nav-number">2.6.3.</span> <span class="nav-text">缓存策略</span></a></li></ol></li></ol></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
-
-  
-
-  
-</div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.0</div>
-
-
-
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="总访客量">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="总访问量">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
-</div>
-
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
   }
 </script>
 
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text">相同点:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSURLConnetion"><span class="nav-number">1.1.</span> <span class="nav-text">NSURLConnetion:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSURLSession"><span class="nav-number">1.2.</span> <span class="nav-text">NSURLSession:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">不同点:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81-%E6%99%AE%E9%80%9A%E4%BB%BB%E5%8A%A1%E5%92%8C%E4%B8%8A%E4%BC%A0"><span class="nav-number">2.1.</span> <span class="nav-text">一、 普通任务和上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-%E4%B8%8B%E8%BD%BD%E4%BB%BB%E5%8A%A1%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">二、 下载任务方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">三、断点续传的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95%E7%9A%84%E6%8E%A7%E5%88%B6"><span class="nav-number">2.4.</span> <span class="nav-text">四、请求方法的控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81-%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="nav-number">2.5.</span> <span class="nav-text">五、 配置信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%85%B6%E4%BB%96"><span class="nav-number">2.6.</span> <span class="nav-text">六、其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie-%E7%AD%96%E7%95%A5"><span class="nav-number">2.6.1.</span> <span class="nav-text">Cookie 策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5"><span class="nav-number">2.6.2.</span> <span class="nav-text">安全策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5"><span class="nav-number">2.6.3.</span> <span class="nav-text">缓存策略</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chipengliu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/chipengliu" title="GitHub → https://github.com/chipengliu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chipengliu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
 
 
 
@@ -862,98 +460,43 @@
 
 
 
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
+<script src="/js/schemes/muse.js"></script>
 
 
-
-
-
-
-
-
-
-
-
+<script src="/js/next-boot.js"></script>
 
 
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=7.0.0"></script>
-
-  <script src="/js/src/motion.js?v=7.0.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=7.0.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=7.0.0"></script>
 
 
 
 
-  
-  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
-<script src="/js/src/post-details.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
-
-  
-
-  
-
-  
-
-  
 
   
 
